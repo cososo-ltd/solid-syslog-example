@@ -34,4 +34,5 @@ stack, a filesystem, and TLS. So the figures answer the real question: *what doe
 remote syslog cost on a device that already does networking, storage, and crypto?* The platform's
 own footprint (lwIP, mbedTLS, FatFS) lives below the line — see those projects' docs, not ours.
 
-See [`EPIC.md`](EPIC.md) for the full plan, tag sequence, and measurement method.
+See the [tracking epic (#1)](https://github.com/cososo-ltd/solid-syslog-example/issues/1)
+for the full plan, tag sequence, and measurement method — the work is broken into its sub-issues.
