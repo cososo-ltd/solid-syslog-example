@@ -1,0 +1,15 @@
+# Build output
+/build/
+*.map
+*.elf
+
+# Semihosting disk image created at runtime by the FatFs exercise
+*.img
+baseline-disk.img
+
+# Editor / OS
+.DS_Store
+*.swp
+
+# Local Claude Code project settings (tooling, not part of the example)
+.claude/

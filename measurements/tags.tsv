@@ -1,0 +1,4 @@
+# State metadata for the README cost table (scripts/gen-cost-table.py).
+# Tab-separated: state <TAB> what-it-adds. One row per tag, in order (Baseline
+# first). Each state also has a measurements/<state>.csv of figures.
+Baseline	simulated existing application — FreeRTOS + lwIP + mbedTLS + FatFs, no SolidSyslog
