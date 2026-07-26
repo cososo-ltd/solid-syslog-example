@@ -6,10 +6,10 @@
 [device]   sim app (lwIP up, FatFs mounted, mbedTLS linked): ready
 [report] --- SolidSyslog cost above baseline (simulated existing application) ---
 [report] key,current,baseline,used_above_baseline
-[report] flash_text,344104,344104,0
-[report] flash_data,232,232,0
-[report] static_bss,161824,161824,0
-[report] heap_used,35856,35856,0
+[report] flash_text,344504,344104,400
+[report] flash_data,236,232,4
+[report] static_bss,161828,161824,4
+[report] heap_used,35864,35856,8
 [report] stack_log,56,56,0
 [report] stack_service,56,56,0
 [report] --- end ---
@@ -17,7 +17,7 @@
 
   size cross-check:
        text	   data	    bss	    dec	    hex	filename
-     344096	    240	 161824	 506160	  7b930	/w/build/baseline-cross/baseline.elf
+     344496	    244	 161828	 506568	  7bac8	/w/build/baseline-cross/baseline.elf
 
 --- Collector (syslog-ng) received ---
   (nothing — the Baseline sends no records; SolidSyslog logs from Minimal)

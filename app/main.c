@@ -20,6 +20,7 @@
 #include "SemihostingExit.h"
 #include "ServiceTask.h"
 #include "SimulatedExistingApp.h"
+#include "SyslogErrorHandler.h"
 
 #include "lwip/tcpip.h"
 
@@ -100,6 +101,13 @@ int main(void)
 {
     CmsdkUart_Init(&UART_ACCESS, DEVICE_UART0_BASE);
     (void) printf("[device] solid-syslog-example (FreeRTOS + lwIP + mbedTLS + FatFs)\n");
+
+    /* Before anything SolidSyslog, including the first _Create. Every _Create
+     * degrades to a Null object rather than failing, so without a handler
+     * installed first, a mis-wired logger is indistinguishable from a quiet
+     * one. Nothing calls into SolidSyslog yet, so this only costs image space
+     * for now — it earns its place from Minimal. */
+    SyslogErrorHandler_Install();
 
     /* lwIP tcpip thread + core-lock mutex + mbox. Pre-scheduler safe. */
     tcpip_init(NULL, NULL);
