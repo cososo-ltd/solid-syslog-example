@@ -1,0 +1,29 @@
+{
+    "name": "solid-syslog-example",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "dev",
+    "workspaceFolder": "/w",
+    "remoteUser": "developer",
+    "updateRemoteUserUID": false,
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "editor.formatOnSave": true,
+                "editor.defaultFormatter": "xaver.clang-format",
+                "[c]": { "editor.defaultFormatter": "xaver.clang-format" },
+                "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json"
+            },
+            "extensions": [
+                "ms-vscode.cpptools",
+                "ms-vscode.cmake-tools",
+                "marus25.cortex-debug",
+                "xaver.clang-format",
+                "anthropic.claude-code"
+            ]
+        }
+    },
+    // Configure on start so compile_commands.json exists and the SolidSyslog
+    // sources are fetched — without them there is nothing to navigate.
+    "postStartCommand": "cmake --preset baseline-cross"
+}
