@@ -20,6 +20,7 @@
 #include "SemihostingExit.h"
 #include "ServiceTask.h"
 #include "SimulatedExistingApp.h"
+#include "Syslog.h"
 #include "SyslogErrorHandler.h"
 
 #include "lwip/tcpip.h"
@@ -108,6 +109,10 @@ int main(void)
      * one. Nothing calls into SolidSyslog yet, so this only costs image space
      * for now — it earns its place from Minimal. */
     SyslogErrorHandler_Install();
+
+    /* Create the logger. Nothing is wired into it yet, so expect the handler to
+     * report what is missing — that report is the point of this step. */
+    Syslog_Start();
 
     /* lwIP tcpip thread + core-lock mutex + mbox. Pre-scheduler safe. */
     tcpip_init(NULL, NULL);
