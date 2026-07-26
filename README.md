@@ -71,6 +71,10 @@ logs from Minimal), and the **baseline self-check** against `measurements/Baseli
 exits non-zero if the run fails or the baseline drifts, so CI gates on it. The
 same report is saved to `build/run-report.txt` (and shown on the CI run summary).
 
+A copy is committed as [`run-report.txt`](run-report.txt) and updated by every
+step, so `git log -p run-report.txt` replays what the device did as the
+integration was built up, one change at a time.
+
 - `CAPTURE=1 ./run.sh` — (re)freeze `measurements/<TAG>.csv` from this run.
 - `TAG=Minimal ./run.sh` — run and self-check a later tag.
 

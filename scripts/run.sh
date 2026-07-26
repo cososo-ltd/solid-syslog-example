@@ -115,7 +115,7 @@ report="$(
     echo "================ solid-syslog-example :: run (${TAG}) ================"
     echo
     echo "--- Device (self-measured; app talks to no collector at Baseline) ---"
-    grep -E '^\[device\]|^\[report\]' <<<"$APP_OUT" || true
+    grep -E '^\[device\]|^\[report\]|^\[syslog\]' <<<"$APP_OUT" || true
     echo
     echo "  size cross-check:"
     arm-none-eabi-size "$ELF" | sed 's/^/    /'
@@ -137,5 +137,15 @@ report="$(
 printf '%s\n' "$report"
 mkdir -p "$REPO/build"
 printf '%s\n' "$report" > "$REPO/build/run-report.txt"
+
+# A second, committed copy. Each step in this repository carries the run it
+# produced, so the diff between two commits shows what actually changed on the
+# device — a line the logger started printing, a figure that moved — and not
+# just the source that caused it.
+#
+# Verbatim, timestamps included. They differ on every run, which is honest: the
+# device reads a real clock, and how long it took to get a record out is exactly
+# the kind of thing worth being able to see move.
+printf '%s\n' "$report" > "$REPO/run-report.txt"
 
 exit "$exit_code"
