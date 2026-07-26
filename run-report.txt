@@ -1,0 +1,34 @@
+================ solid-syslog-example :: run (Baseline) ================
+
+--- Device (self-measured; app talks to no collector at Baseline) ---
+[device] solid-syslog-example (FreeRTOS + lwIP + mbedTLS + FatFs)
+[device] starting simulated existing application...
+[device]   sim app (lwIP up, FatFs mounted, mbedTLS linked): ready
+[report] --- SolidSyslog cost above baseline (simulated existing application) ---
+[report] key,current,baseline,used_above_baseline
+[report] flash_text,344104,344104,0
+[report] flash_data,232,232,0
+[report] static_bss,161824,161824,0
+[report] heap_used,35856,35856,0
+[report] stack_log,56,56,0
+[report] stack_service,56,56,0
+[report] --- end ---
+[device] ready
+
+  size cross-check:
+       text	   data	    bss	    dec	    hex	filename
+     344096	    240	 161824	 506160	  7b930	/w/build/baseline-cross/baseline.elf
+
+--- Collector (syslog-ng) received ---
+  (nothing — the Baseline sends no records; SolidSyslog logs from Minimal)
+
+--- Baseline self-check (vs measurements/Baseline.csv, tolerance 64 B) ---
+  OK    flash_text: 344104 (expected 344104, Δ0)
+  OK    flash_data: 232 (expected 232, Δ0)
+  OK    static_bss: 161824 (expected 161824, Δ0)
+  OK    heap_used: 35856 (expected 35856, Δ0)
+  OK    stack_log: 56 (expected 56, Δ0)
+  OK    stack_service: 56 (expected 56, Δ0)
+
+RESULT: PASS
+===================================================================
