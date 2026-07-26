@@ -2,14 +2,17 @@
 
 --- Device (self-measured; app talks to no collector at Baseline) ---
 [device] solid-syslog-example (FreeRTOS + lwIP + mbedTLS + FatFs)
+[syslog] CRITICAL SolidSyslog bad-config (detail 1)
+[syslog] CRITICAL SolidSyslog bad-config (detail 2)
+[syslog] CRITICAL SolidSyslog bad-config (detail 3)
 [device] starting simulated existing application...
 [device]   sim app (lwIP up, FatFs mounted, mbedTLS linked): ready
 [report] --- SolidSyslog cost above baseline (simulated existing application) ---
 [report] key,current,baseline,used_above_baseline
-[report] flash_text,344504,344104,400
-[report] flash_data,236,232,4
-[report] static_bss,161828,161824,4
-[report] heap_used,35864,35856,8
+[report] flash_text,345072,344104,968
+[report] flash_data,300,232,68
+[report] static_bss,161936,161824,112
+[report] heap_used,35856,35856,0
 [report] stack_log,56,56,0
 [report] stack_service,56,56,0
 [report] --- end ---
@@ -17,7 +20,7 @@
 
   size cross-check:
        text	   data	    bss	    dec	    hex	filename
-     344496	    244	 161828	 506568	  7bac8	/w/build/baseline-cross/baseline.elf
+     345064	    308	 161936	 507308	  7bdac	/w/build/baseline-cross/baseline.elf
 
 --- Collector (syslog-ng) received ---
   (nothing — the Baseline sends no records; SolidSyslog logs from Minimal)
