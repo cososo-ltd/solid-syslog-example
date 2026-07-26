@@ -17,9 +17,19 @@ services:
 
   run:
     image: ghcr.io/cososo-ltd/cpputest-freertos-cross:sha-ad10bf2
+    # Root so it can write the bind-mounted workspace on a Linux CI runner (the
+    # checkout is owned by the runner user, not the image's default user).
+    user: "0"
     network_mode: "service:syslog-ng"
     depends_on:
       - syslog-ng
+    # The dependency trees the build consumes. Set explicitly so they are present
+    # regardless of which user's shell profile the image exports them from.
+    environment:
+      FREERTOS_KERNEL_PATH: /opt/freertos/kernel
+      LWIP_PATH: /opt/lwip
+      MBEDTLS_DIR: /opt/mbedtls
+      FATFS_PATH: /opt/fatfs
     volumes:
       - ..:/w
       - oracle-output:/collector:ro
