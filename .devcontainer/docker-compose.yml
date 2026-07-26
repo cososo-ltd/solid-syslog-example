@@ -42,7 +42,12 @@ services:
       - SYS_PTRACE
     security_opt:
       - seccomp:unconfined
-    user: developer
+    # One ownership contract for /w. docker/docker-compose.yml runs as root so a
+    # Linux CI runner can write the bind-mounted checkout; if this ran as a normal
+    # user, the two paths would write the shared build tree as different owners and
+    # on a Linux host — where bind mounts preserve real UIDs, unlike Docker Desktop —
+    # whichever ran second could not overwrite the first's artefacts.
+    user: "0"
     command: sleep infinity
 
 volumes:

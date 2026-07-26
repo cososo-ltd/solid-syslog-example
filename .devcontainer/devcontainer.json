@@ -3,8 +3,9 @@
     "dockerComposeFile": "docker-compose.yml",
     "service": "dev",
     "workspaceFolder": "/w",
-    "remoteUser": "developer",
-    "updateRemoteUserUID": false,
+    // Root, matching docker/docker-compose.yml — see the ownership note in
+    // docker-compose.yml. UID remapping is moot for root, so it is not set.
+    "remoteUser": "root",
     "customizations": {
         "vscode": {
             "settings": {
@@ -24,6 +25,9 @@
         }
     },
     // Configure on start so compile_commands.json exists and the SolidSyslog
-    // sources are fetched — without them there is nothing to navigate.
-    "postStartCommand": "cmake --preset baseline-cross"
+    // sources are fetched — without them there is nothing to navigate. The copy
+    // is explicit rather than left to cmake.copyCompileCommands above, which only
+    // fires on a CMake Tools configure: that setting keeps the root copy fresh on
+    // later reconfigures, this guarantees it is there on the first open.
+    "postStartCommand": "cmake --preset baseline-cross && cp build/baseline-cross/compile_commands.json compile_commands.json"
 }
