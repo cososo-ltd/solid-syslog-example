@@ -40,6 +40,33 @@ endif()
 set(FREERTOS_PORT_DIR "${FREERTOS_KERNEL_PATH}/portable/GCC/ARM_CM3")
 set(LWIP_CONTRIB_FREERTOS_DIR "${LWIP_DIR}/contrib/ports/freertos")
 
+# --- SolidSyslog ---------------------------------------------------------------
+#
+# Pulled in the way an integrator does. FetchContent is the documented route; it
+# nests the library under this build (MakeAvailable calls add_subdirectory), so
+# the library's own tests, BDD targets, and developer checks stay out of ours.
+#
+# Pinned to a commit because the library has no release tag yet. Swap this for a
+# version tag at 0.1.0. To try an unreleased library checkout without editing
+# this file:
+#
+#   cmake --preset baseline-cross -DFETCHCONTENT_SOURCE_DIR_SOLIDSYSLOG=/path/to/solid-syslog
+#
+# Name the platforms, rather than letting the library infer them from whatever
+# the build environment happens to export. lwIP alone: a passthrough buffer
+# needs no mutex, and sysUpTime is read only by structured data, so nothing here
+# reaches the FreeRTOS platform. The list is authoritative — anything unnamed is
+# off, including the host platforms — so this one line is the whole selection.
+# The configure echoes back which roles it filled.
+set(SOLIDSYSLOG_PLATFORMS "LwipRaw" CACHE STRING "" FORCE)
+
+include(FetchContent)
+FetchContent_Declare(SolidSyslog
+    GIT_REPOSITORY https://github.com/cososo-ltd/solid-syslog.git
+    GIT_TAG        e4bc54d23d8b46c7479f319886bc775e4e8f3fbd
+)
+FetchContent_MakeAvailable(SolidSyslog)
+
 # --- stage FatFs so ff.h's `#include "ffconf.h"` resolves to our integrator config
 # GCC's "" lookup checks the including file's own directory first, so colocating
 # the upstream ff.c/ff.h/diskio.h with our ffconf.h is how our config wins.
@@ -153,7 +180,12 @@ target_include_directories(baseline PRIVATE
 # config as the library, or context struct sizes diverge between consumer and library.
 target_compile_definitions(baseline PRIVATE MBEDTLS_USER_CONFIG_FILE=${MBEDTLS_USER_CONFIG_HEADER})
 
-target_link_libraries(baseline PRIVATE mbedtls mbedx509 mbedcrypto)
+# SolidSyslog is the Core library (a real .a); SolidSyslog::LwipRaw is a *source*
+# pack — linking it compiles the lwIP adapters into this target, so they see our
+# lwipopts.h and our warning bar, which is the point of a header-configured
+# upstream. Nothing calls into either yet: --gc-sections strips it all, so the
+# measured cost above the baseline at this step is 0 bytes, not merely small.
+target_link_libraries(baseline PRIVATE mbedtls mbedx509 mbedcrypto SolidSyslog SolidSyslog::LwipRaw)
 
 target_link_options(baseline PRIVATE
     -mcpu=cortex-m3 -mthumb
