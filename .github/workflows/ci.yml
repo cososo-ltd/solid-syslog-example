@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    name: Run (oracle + baseline + measurements + self-check)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      # Exactly what a developer runs locally: ./run.sh brings up the syslog-ng
+      # oracle + the public cross image, builds and runs the baseline under QEMU,
+      # captures the device measurements and whatever the oracle received, and
+      # self-checks against the frozen baseline. Fails on drift.
+      - name: ./run.sh
+        run: bash run.sh
+
+      # Surface the combined report right on the run summary page.
+      - name: Publish run report to job summary
+        if: always()
+        run: |
+          if [ -f build/run-report.txt ]; then
+            { echo '```text'; cat build/run-report.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload run report + measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-report
+          path: |
+            build/run-report.txt
+            measurements/
+          if-no-files-found: ignore

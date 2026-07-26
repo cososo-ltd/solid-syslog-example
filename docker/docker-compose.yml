@@ -1,0 +1,30 @@
+# The one way to run this repo — drive it with ./run.sh (which wraps this).
+#
+# Two containers:
+#   syslog-ng : the collector oracle (the same balabit image the BDD harness uses).
+#   run       : the cross image (arm-none-eabi-gcc + qemu-system-arm). It shares
+#               syslog-ng's network namespace, so the app's QEMU slirp gateway
+#               (10.0.2.2) reaches the oracle exactly as it will from Minimal. At the Baseline the
+#               app sends nothing, so the oracle records nothing — the run reports
+#               that honestly. It reads the oracle's output via the shared volume.
+
+services:
+  syslog-ng:
+    image: balabit/syslog-ng:4.8.2
+    volumes:
+      - ./syslog-ng/syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf:ro
+      - oracle-output:/var/log/syslog-ng
+
+  run:
+    image: ghcr.io/cososo-ltd/cpputest-freertos-cross:sha-ad10bf2
+    network_mode: "service:syslog-ng"
+    depends_on:
+      - syslog-ng
+    volumes:
+      - ..:/w
+      - oracle-output:/collector:ro
+    working_dir: /w
+    command: bash -lc "bash scripts/run.sh"
+
+volumes:
+  oracle-output:
