@@ -67,7 +67,10 @@ static void HarnessTask(void* parameters)
 
     (void) printf("[device] starting simulated existing application...\n");
     bool simReady = SimulatedExistingApp_Start();
-    (void) printf("[device]   sim app (lwIP up, FatFs mounted, mbedTLS linked): %s\n", simReady ? "ready" : "FAILED");
+    (void) printf(
+        "[device]   sim app (lwIP up, FatFs mounted, mTLS credentials loaded, mbedTLS linked): %s\n",
+        simReady ? "ready" : "FAILED"
+    );
 
     /* Make sure both idle seams have been scheduled so their stack high-water
      * marks are meaningful (idle, but real). */
