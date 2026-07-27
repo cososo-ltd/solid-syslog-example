@@ -1,0 +1,9 @@
+# State metadata for the README cost table (scripts/gen-cost-table.py).
+# Tab-separated: state <TAB> what-it-adds. One row per tag, in order (Baseline
+# first), the last being the state currently under construction.
+#
+# A row is added when a state's work starts; its measurements/<state>.csv is
+# frozen at the end. Until then the cost table leaves the state out and the
+# run's self-check has nothing to compare against — both say so rather than
+# guessing. scripts/run.sh reads the last row to know which state it is building.
+Baseline	simulated existing application — FreeRTOS + lwIP + mbedTLS + FatFs, no SolidSyslog

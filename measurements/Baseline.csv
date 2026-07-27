@@ -1,0 +1,8 @@
+# Baseline figures (bytes) — captured by scripts/run.sh (CAPTURE=1).
+# The device reads measurements/Baseline.csv as its frozen baseline and reports current-minus-Baseline.
+flash_text,345752
+flash_data,236
+static_bss,164500
+heap_used,39032
+stack_log,56
+stack_service,56

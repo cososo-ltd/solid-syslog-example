@@ -1,0 +1,58 @@
+# The one way to run this repo — drive it with ./run.sh (which wraps this).
+#
+# Three containers:
+#   certs     : generates the test PKI (one CA, a collector certificate, a device
+#               certificate) into build/certs. Runs to completion before the
+#               oracle starts, because the oracle reads its certificate at boot.
+#   syslog-ng : the collector oracle (the same balabit image the BDD harness uses).
+#               Listens on UDP, TCP and TLS/mTLS from the Baseline onwards.
+#   run       : the cross image (arm-none-eabi-gcc + qemu-system-arm). It shares
+#               syslog-ng's network namespace, so the app's QEMU slirp gateway
+#               (10.0.2.2) reaches the oracle exactly as it will from Minimal. At the Baseline the
+#               app sends nothing, so the oracle records nothing — the run reports
+#               that honestly. It reads the oracle's output via the shared volume.
+
+x-cross-image: &cross-image ghcr.io/cososo-ltd/cpputest-freertos-cross:sha-ad10bf2@sha256:481267bea7200641fac41d7136e7e08deeba1b311e9873aa6d1c311db5b4cf58
+
+services:
+  certs:
+    image: *cross-image
+    user: "0"
+    volumes:
+      - ..:/w
+    working_dir: /w
+    command: bash -lc "bash scripts/gen-certs.sh /w/build/certs"
+
+  syslog-ng:
+    image: balabit/syslog-ng:4.8.2@sha256:728cc5b63b9044ad5f18062bac73fd5c30bb7ad256c2aa12799d924d4f6f1e72
+    volumes:
+      - ./syslog-ng/syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf:ro
+      - ../build/certs:/certs:ro
+      - oracle-output:/var/log/syslog-ng
+    depends_on:
+      certs:
+        condition: service_completed_successfully
+
+  run:
+    image: *cross-image
+    # Root so it can write the bind-mounted workspace on a Linux CI runner (the
+    # checkout is owned by the runner user, not the image's default user).
+    user: "0"
+    network_mode: "service:syslog-ng"
+    depends_on:
+      - syslog-ng
+    # The dependency trees the build consumes. Set explicitly so they are present
+    # regardless of which user's shell profile the image exports them from.
+    environment:
+      FREERTOS_KERNEL_PATH: /opt/freertos/kernel
+      LWIP_PATH: /opt/lwip
+      MBEDTLS_DIR: /opt/mbedtls
+      FATFS_PATH: /opt/fatfs
+    volumes:
+      - ..:/w
+      - oracle-output:/collector:ro
+    working_dir: /w
+    command: bash -lc "bash scripts/run.sh"
+
+volumes:
+  oracle-output:
