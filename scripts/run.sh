@@ -39,6 +39,13 @@ echo "=== build (${TAG}) ==="
 cmake --build "$BUILD_DIR" -j"$(nproc)"
 [ -f "$ELF" ] || { echo "FAIL: $ELF not built" >&2; exit 1; }
 
+echo "=== prove the oracle listeners ==="
+set +e
+SMOKE_OUT="$(ORACLE_LOG_DIR="$ORACLE_LOG_DIR" bash "${REPO}/scripts/smoke-oracle.sh")"
+SMOKE_RC=$?
+set -e
+printf '%s\n' "$SMOKE_OUT"
+
 echo "=== run under QEMU (oracle up; app reaches it via slirp from Minimal) ==="
 rm -f baseline-disk.img
 set +e
@@ -110,7 +117,9 @@ fi
 # ---- verdict ----
 verdict="PASS"
 exit_code=0
-if [ "$RC" -ne 0 ]; then
+if [ "$SMOKE_RC" -ne 0 ]; then
+    verdict="FAIL (${SMOKE_RC} oracle listener(s) unproved)"; exit_code=1
+elif [ "$RC" -ne 0 ]; then
     verdict="FAIL (qemu exit $RC)"; exit_code=1
 elif [ "$run_ok" != "1" ]; then
     verdict="FAIL (incomplete device report)"; exit_code=1
@@ -129,6 +138,9 @@ report="$(
     echo
     echo "  size cross-check:"
     arm-none-eabi-size "$ELF" | sed 's/^/    /'
+    echo
+    echo "--- Oracle listeners (proved before the device ran) ---"
+    printf '%s\n' "$SMOKE_OUT"
     echo
     echo "--- Collector (syslog-ng) received ---"
     if [ -n "$ORACLE_OUT" ]; then
