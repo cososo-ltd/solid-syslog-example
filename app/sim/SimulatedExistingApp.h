@@ -24,6 +24,13 @@ extern "C"
      * Must be called after tcpip_init() and after the scheduler has started. */
     bool SimulatedExistingApp_Start(void);
 
+    /* The device's crypto: mbedTLS's allocator, PSA, and the credentials it holds
+     * for the mTLS it speaks elsewhere. Separate from the above and callable before
+     * the scheduler, because anything that takes an mbedTLS handle has to be given
+     * one that was built after the allocator was set — including SolidSyslog, which
+     * captures them at create time. */
+    bool SimulatedExistingApp_StartCrypto(void);
+
 #ifdef __cplusplus
 }
 #endif

@@ -247,11 +247,31 @@ static bool SimulatedExistingApp_MountFatFs(void)
     return true;
 }
 
-bool SimulatedExistingApp_Start(void)
+bool SimulatedExistingApp_StartCrypto(void)
 {
-    /* Before anything mbedTLS allocates — the cert store parses immediately. */
+    /* Before anything mbedTLS allocates, or the allocation lands on newlib's heap
+     * and no figure this repository publishes ever sees it. */
     mbedtls_platform_set_calloc_free(MbedTlsCalloc, MbedTlsFree);
 
+    /* 3.6's TLS 1.3 path is built on PSA, so no handshake succeeds until this has.
+     * Process-global, and the library adapters deliberately never call it. */
+    const psa_status_t psaReady = psa_crypto_init();
+    if (psaReady != PSA_SUCCESS)
+    {
+        (void) printf("[sim] PSA crypto init failed: %d\n", (int) psaReady);
+        return false;
+    }
+
+    if (!DeviceCertStore_Load())
+    {
+        (void) printf("[sim] cert store unavailable\n");
+        return false;
+    }
+    return true;
+}
+
+bool SimulatedExistingApp_Start(void)
+{
     /* mbedTLS + the lwIP raw / FatFs file APIs: linked, never run. */
     KeepPlatformLinked();
 
@@ -263,19 +283,5 @@ bool SimulatedExistingApp_Start(void)
     }
 
     /* FatFs: mount (format a fresh image on first use). */
-    if (!SimulatedExistingApp_MountFatFs())
-    {
-        return false;
-    }
-
-    /* The credentials this device already holds for the mTLS it speaks elsewhere.
-     * Loaded and parsed here, not merely linked: a device that had not parsed
-     * them could not open a session, and SolidSyslog is handed the objects rather
-     * than the bytes. */
-    if (!DeviceCertStore_Load())
-    {
-        (void) printf("[sim] cert store unavailable\n");
-        return false;
-    }
-    return true;
+    return SimulatedExistingApp_MountFatFs();
 }
