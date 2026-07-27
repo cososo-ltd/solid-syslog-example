@@ -20,9 +20,16 @@
        text	   data	    bss	    dec	    hex	filename
      350160	    372	 162056	 512588	  7d24c	/w/build/baseline-cross/baseline.elf
 
+--- Oracle listeners (proved before the device ran) ---
+  OK    udp   5514
+  OK    tcp   5601
+  OK    tls   6514
+  OK    mtls  6515
+  OK    mtls  6515 — refused a client with no certificate
+
 --- Collector (syslog-ng) received ---
-  wire   <134>1 2026-07-27T18:48:49.100000Z 10.0.2.15 solid-syslog-example - BOOT - ﻿device started
-  parsed PRIORITY=134 TIMESTAMP=2026-07-27T18:48:49+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA= MSG=device started
+  wire   <134>1 2026-07-27T19:15:08.100000Z 10.0.2.15 solid-syslog-example - BOOT - ﻿device started
+  parsed PRIORITY=134 TIMESTAMP=2026-07-27T19:15:08+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA= MSG=device started
 
 --- Baseline self-check (vs measurements/Minimal.csv, tolerance 64 B) ---
   (no committed measurements/Minimal.csv yet — rerun with CAPTURE=1 to freeze it)
