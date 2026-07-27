@@ -62,8 +62,14 @@ rm -f baseline-disk.img
 sleep 1
 ORACLE_OUT="$(cat "$ORACLE_LOG_DIR"/received*.log 2>/dev/null || true)"
 
-# A run is usable only if QEMU exited cleanly AND the device emitted a full report.
+# A run is usable only if the oracle proved out, QEMU exited cleanly, AND the device
+# emitted a full report. One definition, honoured by both the freeze below and the
+# self-check: figures from a run whose collector was not listening are not figures
+# worth keeping, and from Secure they are not even the same figures — the device
+# sends over TLS, so a dead listener changes what the device does and not just what
+# the collector heard.
 run_ok=1
+[ "$SMOKE_RC" -eq 0 ] || run_ok=0
 [ "$RC" -eq 0 ] || run_ok=0
 grep -q '\[report\] --- end ---' <<<"$APP_OUT" || run_ok=0
 grep -q '\[device\] ready' <<<"$APP_OUT" || run_ok=0
@@ -81,7 +87,7 @@ if [ "$CAPTURE" = "1" ]; then
         } > "$EXPECTED"
         echo "froze measurements/${TAG}.csv"
     else
-        echo "refusing to freeze measurements/${TAG}.csv — the run did not produce a complete report" >&2
+        echo "refusing to freeze measurements/${TAG}.csv — the run did not complete cleanly" >&2
     fi
 fi
 

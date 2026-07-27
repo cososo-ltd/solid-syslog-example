@@ -46,6 +46,10 @@ send_mtls() {
 # no certificate must be turned away. If this record arrives, 6515 is accepting
 # unauthenticated clients and the tags that rely on it are not proving what they
 # claim to prove.
+#
+# Only meaningful next to the positive check above. On its own it also passes when
+# there is no listener at all — nothing arrives either way. The pair is what says
+# "6515 is up and it enforces".
 send_mtls_nocert() {
     framed MTLSNOCERT | timeout 10 openssl s_client -connect "${HOST}:6515" \
         -CAfile "${CERTS}/ca.crt" -quiet -no_ign_eof >/dev/null 2>&1
