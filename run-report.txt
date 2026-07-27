@@ -1,4 +1,4 @@
-================ solid-syslog-example :: run (Minimal) ================
+================ solid-syslog-example :: run (Secure) ================
 
 --- Device (self-measured; app talks to no collector at Baseline) ---
 [device] solid-syslog-example (FreeRTOS + lwIP + mbedTLS + FatFs)
@@ -28,11 +28,11 @@
   OK    mtls  6515 — refused a client with no certificate
 
 --- Collector (syslog-ng) received ---
-  wire   <134>1 2026-07-27T19:39:54.100000Z 10.0.2.15 solid-syslog-example - BOOT - ﻿device started
-  parsed PRIORITY=134 TIMESTAMP=2026-07-27T19:39:54+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA= MSG=device started
+  wire   <134>1 2026-07-27T19:47:23.100000Z 10.0.2.15 solid-syslog-example - BOOT - ﻿device started
+  parsed PRIORITY=134 TIMESTAMP=2026-07-27T19:47:23+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA= MSG=device started
 
---- Baseline self-check (vs measurements/Minimal.csv, tolerance 64 B) ---
-  (no committed measurements/Minimal.csv yet — rerun with CAPTURE=1 to freeze it)
+--- Baseline self-check (vs measurements/Secure.csv, tolerance 64 B) ---
+  (no committed measurements/Secure.csv yet — rerun with CAPTURE=1 to freeze it)
 
 RESULT: PASS (self-check skipped — no committed baseline)
 ===================================================================
