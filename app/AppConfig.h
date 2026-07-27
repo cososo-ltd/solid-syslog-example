@@ -15,9 +15,12 @@
 /* CMSDK UART0 on the mps2-an385, surfaced by QEMU over -serial stdio. */
 #define DEVICE_UART0_BASE ((uintptr_t) 0x40004000U)
 
-/* The two application seams SolidSyslog will occupy:
+/* The two application seams SolidSyslog may occupy:
  *   - log     : the task the application logs FROM (producer)   [from Minimal]
- *   - service : the drain/send worker (SolidSyslog Service)      [from Minimal]
+ *   - service : the drain/send worker (SolidSyslog Service)     [from Secure]
+ * Minimal occupies only the first — it sends inline on the logging task and adds
+ * no thread at all. The service worker starts costing at Secure, when a queue
+ * and store-and-forward give it something to drain.
  * Both are idle at Baseline. Their stacks are sized generously for the full Hardened
  * build and FROZEN at Baseline — only *usage* moves across tags, never the allocation,
  * so the stack figures we publish are always a delta on the same allocation.

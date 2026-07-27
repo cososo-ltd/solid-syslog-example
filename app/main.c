@@ -14,6 +14,7 @@
 #include "AppConfig.h"
 
 #include "CmsdkUart.h"
+#include "DeviceClock.h"
 #include "LogTask.h"
 #include "Measure.h"
 #include "SemihostingExit.h"
@@ -58,6 +59,9 @@ static const CmsdkUartMemoryAccess UART_ACCESS = {
 static void HarnessTask(void* parameters)
 {
     (void) parameters;
+
+    /* Acquire the time before anything that stamps with it. */
+    DeviceClock_Start();
 
     (void) printf("[device] starting simulated existing application...\n");
     bool simReady = SimulatedExistingApp_Start();

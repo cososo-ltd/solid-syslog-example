@@ -13,8 +13,8 @@ static void ServiceTask_Entry(void* parameters)
 {
     (void) parameters;
 
-    /* At Baseline the service worker does nothing. From Minimal the SolidSyslog Service
-     * drains and sends here. */
+    /* Idle at Baseline and at Minimal, which sends inline on the log task. From
+     * Secure the SolidSyslog Service drains and sends here. */
     (void) xSemaphoreGive(s_reachedIdle);
 
     for (;;)
