@@ -21,5 +21,5 @@ cleanup
 
 # Pass TAG / TOL / CAPTURE through to the in-container script.
 "${compose[@]}" run --rm \
-    -e "TAG=${TAG:-Baseline}" -e "TOL=${TOL:-64}" -e "CAPTURE=${CAPTURE:-0}" \
+    -e "TAG=${TAG:-}" -e "TOL=${TOL:-64}" -e "CAPTURE=${CAPTURE:-0}" \
     run

@@ -14,7 +14,17 @@
 set -euo pipefail
 
 REPO="${REPO:-/w}"
-TAG="${TAG:-Baseline}"
+
+# Which state are we building? The last row of measurements/tags.tsv — the states
+# in the order they were added, so the newest is the one under construction. A
+# tag's row is added when its work starts; its measurements/<Tag>.csv arrives only
+# when the figures are frozen at the end, and until then the self-check below has
+# nothing to compare against and says so.
+#
+# Defaulting to Baseline instead would drift-check every later tag against the
+# baseline image and fail for the whole of its development, which is the guard
+# firing at the one time it has nothing to protect.
+TAG="${TAG:-$(awk -F'\t' '!/^[[:space:]]*#/ && NF { state = $1 } END { print state }' "${REPO}/measurements/tags.tsv")}"
 TOL="${TOL:-64}"
 CAPTURE="${CAPTURE:-0}"
 BUILD_DIR="$REPO/build/baseline-cross"

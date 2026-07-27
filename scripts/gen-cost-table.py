@@ -58,7 +58,15 @@ def load_states():
 
 
 def main():
+    # A state gets its tags.tsv row when its work starts and its CSV only when the
+    # figures are frozen, so the two are briefly out of step. Show what is frozen
+    # and say what was skipped, rather than failing or publishing a blank row.
     states = load_states()
+    pending = [state for state, _ in states if not (MEAS / f"{state}.csv").exists()]
+    states = [row for row in states if row[0] not in pending]
+    if not states:
+        raise SystemExit("no state has a measurements/<State>.csv yet")
+
     base_state = states[0][0]
     base = {name: fn(load_csv(base_state)) for name, fn in DERIVED}
 
@@ -89,6 +97,8 @@ def main():
         raise SystemExit("COST-TABLE markers not found in README.md")
     README.write_text(new_text, encoding="utf-8", newline="\n")
     print(f"updated README cost table ({len(states)} state(s))")
+    if pending:
+        print(f"not yet frozen, so left out: {', '.join(pending)}")
 
 
 if __name__ == "__main__":
