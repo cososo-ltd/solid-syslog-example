@@ -12,8 +12,9 @@ extern "C"
 {
 #endif
 
-    /* The service seam. At Baseline it does nothing — created, reaches idle, blocks.
-     * From Minimal this is where the SolidSyslog Service worker drains the buffer and
+    /* The service seam. Idle at Baseline, and still idle at Minimal — a passthrough
+     * buffer sends inline, so there is nothing to drain and no second thread.
+     * From Secure this is where the SolidSyslog Service worker drains the buffer and
      * sends (and, from Secure, runs the TLS handshake — hence the larger stack). Its
      * stack high-water mark is the second figure we track a delta on. */
     bool ServiceTask_Create(void);

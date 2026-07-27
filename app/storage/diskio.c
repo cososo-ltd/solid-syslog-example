@@ -15,6 +15,7 @@
 #include "ff.h"
 #include "diskio.h"
 
+#include "DeviceClock.h"
 #include "SemihostingDisk.h"
 
 #include <stdbool.h>
@@ -121,4 +122,22 @@ DRESULT disk_ioctl(BYTE pdrv, BYTE cmd, void* buff)
         default:
             return RES_PARERR;
     }
+}
+
+/* FatFs file timestamps, from the device wall clock. Packed as FatFs wants it:
+ * year from 1980 in bits 25..31, then month, day, hour, minute, and seconds
+ * halved in bits 0..4. A clock that has not been acquired yields 0, which FatFs
+ * reads as "no timestamp". */
+DWORD get_fattime(void)
+{
+    struct tm utc;
+    uint32_t microseconds = 0U;
+
+    if (!DeviceClock_Now(&utc, &microseconds) || (utc.tm_year < 80))
+    {
+        return 0U;
+    }
+
+    return ((DWORD) (utc.tm_year - 80) << 25) | ((DWORD) (utc.tm_mon + 1) << 21) | ((DWORD) utc.tm_mday << 16)
+           | ((DWORD) utc.tm_hour << 11) | ((DWORD) utc.tm_min << 5) | ((DWORD) (utc.tm_sec / 2));
 }

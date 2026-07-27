@@ -54,7 +54,7 @@
 /* System */
 #define FF_FS_TINY 0
 #define FF_FS_EXFAT 0
-#define FF_FS_NORTC 1 /* No RTC on the QEMU target — fixed-date stamps. */
+#define FF_FS_NORTC 0 /* get_fattime() stamps files from the device wall clock. */
 #define FF_NORTC_MON 1
 #define FF_NORTC_MDAY 1
 #define FF_NORTC_YEAR 2026

@@ -48,7 +48,7 @@ occupies — a **log** source and a **service** worker — and nowhere else.
 |---|---|---|---|---|---|---|
 | Baseline | simulated existing application — FreeRTOS + lwIP + mbedTLS + FatFs, no SolidSyslog | baseline | baseline | baseline | baseline | baseline |
 
-*Baseline: Flash 343,488 B, Static RAM 162,044 B, Heap 35,864 B, Log stack 56 B, Service stack 56 B.*
+*Baseline: Flash 344,336 B, Static RAM 162,056 B, Heap 35,856 B, Log stack 56 B, Service stack 56 B.*
 
 <!-- COST-TABLE:END -->
 

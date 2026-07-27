@@ -115,6 +115,7 @@ add_executable(baseline
     ${APP_DIR}/measure/Baseline.c
     ${APP_DIR}/platform/Startup.c
     ${APP_DIR}/platform/CmsdkUart.c
+    ${APP_DIR}/platform/DeviceClock.c
     ${APP_DIR}/platform/Syscalls.c
     ${APP_DIR}/platform/SemihostingExit.c
     ${APP_DIR}/platform/SemihostingIo.c
