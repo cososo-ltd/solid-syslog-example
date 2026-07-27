@@ -7,22 +7,22 @@
 [device]   first record logged: yes
 [report] --- SolidSyslog cost above baseline (simulated existing application) ---
 [report] key,current,baseline,used_above_baseline
-[report] flash_text,349448,344104,5344
+[report] flash_text,349440,344104,5336
 [report] flash_data,364,232,132
-[report] static_bss,162072,161824,248
+[report] static_bss,162056,161824,232
 [report] heap_used,36024,35856,168
-[report] stack_log,2640,56,2584
+[report] stack_log,848,56,792
 [report] stack_service,56,56,0
 [report] --- end ---
 [device] ready
 
   size cross-check:
        text	   data	    bss	    dec	    hex	filename
-     349440	    372	 162072	 511884	  7cf8c	/w/build/baseline-cross/baseline.elf
+     349432	    372	 162056	 511860	  7cf74	/w/build/baseline-cross/baseline.elf
 
 --- Collector (syslog-ng) received ---
-  wire   <134>1 2026-07-27T11:52:31.100000Z 10.0.2.15 solid-syslog-example - BOOT - ﻿device started
-  parsed PRIORITY=134 TIMESTAMP=2026-07-27T11:52:31+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA= MSG=device started
+  wire   <134>1 2026-07-27T11:53:03.100000Z 10.0.2.15 solid-syslog-example - BOOT - ﻿device started
+  parsed PRIORITY=134 TIMESTAMP=2026-07-27T11:53:03+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA= MSG=device started
 
 --- Baseline self-check (vs measurements/Minimal.csv, tolerance 64 B) ---
   (no committed measurements/Minimal.csv yet — rerun with CAPTURE=1 to freeze it)
