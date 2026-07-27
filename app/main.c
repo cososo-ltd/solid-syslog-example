@@ -77,11 +77,13 @@ static void HarnessTask(void* parameters)
     bool logIdle = LogTask_WaitIdle(2000U);
     bool serviceIdle = ServiceTask_WaitIdle(2000U);
 
-    /* Now the network is up, have the log source emit one record. It goes out
-     * inline on that task's stack, which is why the log-stack figure below is
-     * measured after this and not before. */
+    /* Now the network is up, have the log source emit one record. Log enqueues
+     * and returns; the service task sends it, so give that a moment to happen
+     * before the figures are taken. What actually arrived is the collector's
+     * word, not ours. */
     bool logged = LogTask_EmitOnce(5000U);
     (void) printf("[device]   first record logged: %s\n", logged ? "yes" : "FAILED");
+    vTaskDelay(pdMS_TO_TICKS(500U));
 
     (void) Measure_Report();
 

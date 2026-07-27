@@ -53,12 +53,11 @@ set(LWIP_CONTRIB_FREERTOS_DIR "${LWIP_DIR}/contrib/ports/freertos")
 #   cmake --preset baseline-cross -DFETCHCONTENT_SOURCE_DIR_SOLIDSYSLOG=/path/to/solid-syslog
 #
 # Name the platforms, rather than letting the library infer them from whatever
-# the build environment happens to export. lwIP alone: a passthrough buffer
-# needs no mutex, and sysUpTime is read only by structured data, so nothing here
-# reaches the FreeRTOS platform. The list is authoritative — anything unnamed is
+# the build environment happens to export. FreeRtos supplies the mutex the
+# circular buffer needs. The list is authoritative — anything unnamed is
 # off, including the host platforms — so this one line is the whole selection.
 # The configure echoes back which roles it filled.
-set(SOLIDSYSLOG_PLATFORMS "LwipRaw" CACHE STRING "" FORCE)
+set(SOLIDSYSLOG_PLATFORMS "LwipRaw;FreeRtos" CACHE STRING "" FORCE)
 
 # Compile-time limits. Every tunable is #ifndef-guarded, so this file only needs
 # the ones this device wants changed.
@@ -194,7 +193,10 @@ target_compile_definitions(baseline PRIVATE MBEDTLS_USER_CONFIG_FILE=${MBEDTLS_U
 # lwipopts.h and our warning bar, which is the point of a header-configured
 # upstream. Nothing calls into either yet: --gc-sections strips it all, so the
 # measured cost above the baseline at this step is 0 bytes, not merely small.
-target_link_libraries(baseline PRIVATE mbedtls mbedx509 mbedcrypto SolidSyslog SolidSyslog::LwipRaw)
+# Platform packs are INTERFACE libraries, not part of libSolidSyslog.a: they are
+# header-configured, so each consumer compiles the adapters against its own config.
+# Naming one in SOLIDSYSLOG_PLATFORMS is not enough — link it too.
+target_link_libraries(baseline PRIVATE mbedtls mbedx509 mbedcrypto SolidSyslog SolidSyslog::LwipRaw SolidSyslog::FreeRtos)
 
 target_link_options(baseline PRIVATE
     -mcpu=cortex-m3 -mthumb
