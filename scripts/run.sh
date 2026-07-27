@@ -74,6 +74,16 @@ run_ok=1
 grep -q '\[report\] --- end ---' <<<"$APP_OUT" || run_ok=0
 grep -q '\[device\] ready' <<<"$APP_OUT" || run_ok=0
 
+# The Baseline sends nothing; every state after it must deliver. A device can be
+# perfectly healthy while its records go nowhere — a failed handshake, a sender
+# left unwired, a drain window too short for a TLS connect — and until this check
+# existed the run said PASS and printed an empty collector section.
+delivered=1
+if [ "$TAG" != "Baseline" ] && [ -z "$ORACLE_OUT" ]; then
+    delivered=0
+    run_ok=0
+fi
+
 # "key,current" pairs from the report — reused for both capture and self-check.
 figures="$(sed -n 's/^\[report\] \([a-z_][a-z_]*\),\([0-9][0-9-]*\),.*/\1,\2/p' <<<"$APP_OUT")"
 
@@ -127,6 +137,8 @@ if [ "$SMOKE_RC" -ne 0 ]; then
     verdict="FAIL (${SMOKE_RC} oracle listener(s) unproved)"; exit_code=1
 elif [ "$RC" -ne 0 ]; then
     verdict="FAIL (qemu exit $RC)"; exit_code=1
+elif [ "$delivered" != "1" ]; then
+    verdict="FAIL (nothing reached the collector)"; exit_code=1
 elif [ "$run_ok" != "1" ]; then
     verdict="FAIL (incomplete device report)"; exit_code=1
 elif [ "$selfcheck_rc" -eq 1 ]; then
