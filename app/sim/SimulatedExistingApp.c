@@ -35,6 +35,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 /* mbedTLS allocates through the FreeRTOS heap, not newlib's.
  *
