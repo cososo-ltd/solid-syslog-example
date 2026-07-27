@@ -10,6 +10,7 @@
 
 #include "SimulatedExistingApp.h"
 
+#include "DeviceCertStore.h"
 #include "EthernetIf.h"
 
 #include "lwip/ip4_addr.h"
@@ -22,6 +23,7 @@
 
 #include "mbedtls/ctr_drbg.h"
 #include "mbedtls/pk.h"
+#include "mbedtls/platform.h"
 #include "mbedtls/ssl.h"
 #include "mbedtls/x509_crt.h"
 #include "psa/crypto.h"
@@ -33,6 +35,34 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
+
+/* mbedTLS allocates through the FreeRTOS heap, not newlib's.
+ *
+ * A device with a FreeRTOS heap does not want a second one growing towards it
+ * from the other end, so this is how it would be wired regardless. It also makes
+ * the allocation measurable: heap_used is configTOTAL_HEAP_SIZE minus
+ * xPortGetFreeHeapSize, so anything mbedTLS takes from _sbrk instead is real RAM
+ * that no figure in this repository would ever show. Parsed certificates now,
+ * and the far larger TLS session buffers from Secure. */
+static void* MbedTlsCalloc(size_t count, size_t size)
+{
+    if ((count != 0U) && (size > (SIZE_MAX / count)))
+    {
+        return NULL;
+    }
+    const size_t bytes = count * size;
+    void* allocation = pvPortMalloc(bytes);
+    if (allocation != NULL)
+    {
+        (void) memset(allocation, 0, bytes);
+    }
+    return allocation;
+}
+
+static void MbedTlsFree(void* allocation)
+{
+    vPortFree(allocation);
+}
 
 /* lwIP randomness source (referenced by arch/cc.h's LWIP_RAND for TCP ISN
  * selection). Self-contained xorshift32 — no entropy backend in the baseline. */
@@ -218,6 +248,9 @@ static bool SimulatedExistingApp_MountFatFs(void)
 
 bool SimulatedExistingApp_Start(void)
 {
+    /* Before anything mbedTLS allocates — the cert store parses immediately. */
+    mbedtls_platform_set_calloc_free(MbedTlsCalloc, MbedTlsFree);
+
     /* mbedTLS + the lwIP raw / FatFs file APIs: linked, never run. */
     KeepPlatformLinked();
 
@@ -229,5 +262,19 @@ bool SimulatedExistingApp_Start(void)
     }
 
     /* FatFs: mount (format a fresh image on first use). */
-    return SimulatedExistingApp_MountFatFs();
+    if (!SimulatedExistingApp_MountFatFs())
+    {
+        return false;
+    }
+
+    /* The credentials this device already holds for the mTLS it speaks elsewhere.
+     * Loaded and parsed here, not merely linked: a device that had not parsed
+     * them could not open a session, and SolidSyslog is handed the objects rather
+     * than the bytes. */
+    if (!DeviceCertStore_Load())
+    {
+        (void) printf("[sim] cert store unavailable\n");
+        return false;
+    }
+    return true;
 }
