@@ -102,8 +102,16 @@ __attribute__((used)) static void KeepPlatformLinked(void)
         (uintptr_t) &f_truncate,
         (uintptr_t) &f_unlink,
         (uintptr_t) &f_stat,
-        /* mbedTLS client + x509 + pk + DRBG + PSA — the SolidSyslog TLS transport (Secure/Hardened). */
+        /* mbedTLS client + x509 + pk + DRBG + PSA — the SolidSyslog TLS transport
+         * (Secure/Hardened). Lifecycle and client-auth entry points are here too:
+         * a device already running mTLS calls those, not only the transfer ones.
+         * No CRL and no session resumption — this device checks neither. */
+        (uintptr_t) &mbedtls_ssl_init,
+        (uintptr_t) &mbedtls_ssl_free,
+        (uintptr_t) &mbedtls_ssl_config_init,
+        (uintptr_t) &mbedtls_ssl_config_free,
         (uintptr_t) &mbedtls_ssl_setup,
+        (uintptr_t) &mbedtls_ssl_session_reset,
         (uintptr_t) &mbedtls_ssl_handshake,
         (uintptr_t) &mbedtls_ssl_read,
         (uintptr_t) &mbedtls_ssl_write,
@@ -111,11 +119,14 @@ __attribute__((used)) static void KeepPlatformLinked(void)
         (uintptr_t) &mbedtls_ssl_config_defaults,
         (uintptr_t) &mbedtls_ssl_conf_authmode,
         (uintptr_t) &mbedtls_ssl_conf_ca_chain,
+        (uintptr_t) &mbedtls_ssl_conf_own_cert,
         (uintptr_t) &mbedtls_ssl_conf_rng,
         (uintptr_t) &mbedtls_ssl_set_bio,
         (uintptr_t) &mbedtls_ssl_set_hostname,
+        (uintptr_t) &mbedtls_ssl_get_verify_result,
         (uintptr_t) &mbedtls_x509_crt_parse,
         (uintptr_t) &mbedtls_pk_parse_key,
+        (uintptr_t) &mbedtls_ctr_drbg_init,
         (uintptr_t) &mbedtls_ctr_drbg_seed,
         (uintptr_t) &mbedtls_ctr_drbg_random,
         (uintptr_t) &psa_crypto_init,
