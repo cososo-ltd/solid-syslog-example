@@ -124,6 +124,15 @@ int main(void)
     /* lwIP tcpip thread + core-lock mutex + mbox. Pre-scheduler safe. */
     tcpip_init(NULL, NULL);
 
+    /* The device's crypto, before anything that takes a handle from it. Syslog_Start
+     * captures the trust anchor and DRBG at create time, so loading them with the
+     * rest of the existing application would be far too late. */
+    if (!SimulatedExistingApp_StartCrypto())
+    {
+        (void) printf("[device] FATAL: device crypto unavailable\n");
+        SemihostingExit(1);
+    }
+
     /* After tcpip_init, not before: the marshal Syslog_Start installs takes the
      * lwIP core lock, and tcpip_init is what creates it. Nothing is sent here —
      * the sender resolves and opens lazily on its first record. */
