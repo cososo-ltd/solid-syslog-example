@@ -3,8 +3,8 @@
 
 Reads the per-state figures in measurements/<State>.csv and the state metadata in
 measurements/tags.tsv, and rewrites the block between the COST-TABLE markers in
-README.md. The first row (Baseline) is the frozen baseline; every later state is
-shown as a byte delta above it. Run from anywhere:
+README.md. The Baseline row is the frozen baseline; every later state is shown as
+a byte delta above it. Run from anywhere:
 
     python3 scripts/gen-cost-table.py
 """
@@ -16,6 +16,8 @@ MEAS = ROOT / "measurements"
 README = ROOT / "README.md"
 
 RAW_KEYS = ["flash_text", "flash_data", "static_bss", "heap_used", "stack_log", "stack_service"]
+
+BASE_STATE = "Baseline"
 
 # Derived, marketing-facing columns from the raw self-measured keys.
 #   Flash      = read-only image (.text + .rodata) + .data init image
@@ -61,14 +63,19 @@ def main():
     # A state gets its tags.tsv row when its work starts and its CSV only when the
     # figures are frozen, so the two are briefly out of step. Show what is frozen
     # and say what was skipped, rather than failing or publishing a blank row.
+    #
+    # The baseline is named, not inferred from position: every figure in the table
+    # is a delta above it, so the wrong reference is wrong silently.
     states = load_states()
-    pending = [state for state, _ in states if not (MEAS / f"{state}.csv").exists()]
-    states = [row for row in states if row[0] not in pending]
-    if not states:
-        raise SystemExit("no state has a measurements/<State>.csv yet")
+    if not any(state == BASE_STATE for state, _ in states):
+        raise SystemExit(f"measurements/tags.tsv has no {BASE_STATE} row")
+    if not (MEAS / f"{BASE_STATE}.csv").exists():
+        raise SystemExit(f"measurements/{BASE_STATE}.csv is required: every figure is a delta above it")
 
-    base_state = states[0][0]
-    base = {name: fn(load_csv(base_state)) for name, fn in DERIVED}
+    pending = [state for state, _ in states if state != BASE_STATE and not (MEAS / f"{state}.csv").exists()]
+    states = [row for row in states if row[0] not in pending]
+
+    base = {name: fn(load_csv(BASE_STATE)) for name, fn in DERIVED}
 
     header = ["State", "What it adds"] + [name for name, _ in DERIVED]
     lines = ["| " + " | ".join(header) + " |", "|" + "|".join(["---"] * len(header)) + "|"]
@@ -76,7 +83,7 @@ def main():
     for state, what in states:
         cur = load_csv(state)
         cells = [state, what]
-        if state == base_state:
+        if state == BASE_STATE:
             cells += ["baseline" for _ in DERIVED]
         else:
             cells += [f"{fn(cur) - base[name]:+,}" for name, fn in DERIVED]
