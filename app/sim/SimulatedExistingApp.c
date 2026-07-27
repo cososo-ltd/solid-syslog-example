@@ -99,6 +99,7 @@ __attribute__((used)) static void KeepPlatformLinked(void)
         (uintptr_t) &f_write,
         (uintptr_t) &f_sync,
         (uintptr_t) &f_lseek,
+        (uintptr_t) &f_truncate,
         (uintptr_t) &f_unlink,
         (uintptr_t) &f_stat,
         /* mbedTLS client + x509 + pk + DRBG + PSA — the SolidSyslog TLS transport (Secure/Hardened). */
