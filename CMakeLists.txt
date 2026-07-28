@@ -53,12 +53,11 @@ set(LWIP_CONTRIB_FREERTOS_DIR "${LWIP_DIR}/contrib/ports/freertos")
 #   cmake --preset baseline-cross -DFETCHCONTENT_SOURCE_DIR_SOLIDSYSLOG=/path/to/solid-syslog
 #
 # Name the platforms, rather than letting the library infer them from whatever
-# the build environment happens to export. lwIP for the network and Atomics for
-# the sequence counter; a passthrough buffer needs no mutex and sysUpTime is not
-# wired yet, so nothing here reaches the FreeRTOS platform. The list is
-# authoritative — anything unnamed is off, including the host platforms — so this
-# one line is the whole selection. The configure echoes back which roles it filled.
-set(SOLIDSYSLOG_PLATFORMS "LwipRaw;Atomics" CACHE STRING "" FORCE)
+# the build environment happens to export. Atomics for the sequence counter,
+# FreeRtos for the mutex the circular buffer needs. The list is authoritative —
+# anything unnamed is off, including the host platforms — so this one line is the
+# whole selection. The configure echoes back which roles it filled.
+set(SOLIDSYSLOG_PLATFORMS "LwipRaw;Atomics;FreeRtos" CACHE STRING "" FORCE)
 
 # Compile-time limits. Every tunable is #ifndef-guarded, so this file only needs
 # the ones this device wants changed.
@@ -194,7 +193,7 @@ target_compile_definitions(baseline PRIVATE MBEDTLS_USER_CONFIG_FILE=${MBEDTLS_U
 # our lwipopts.h and our warning bar, which is the point of a header-configured
 # upstream. Only those have a link target: a platform over a stable system API,
 # like Atomics, is already inside libSolidSyslog.a and is named but never linked.
-target_link_libraries(baseline PRIVATE mbedtls mbedx509 mbedcrypto SolidSyslog SolidSyslog::LwipRaw)
+target_link_libraries(baseline PRIVATE mbedtls mbedx509 mbedcrypto SolidSyslog SolidSyslog::LwipRaw SolidSyslog::FreeRtos)
 
 target_link_options(baseline PRIVATE
     -mcpu=cortex-m3 -mthumb

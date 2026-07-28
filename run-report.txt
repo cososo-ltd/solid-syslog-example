@@ -1,4 +1,4 @@
-================ solid-syslog-example :: run (Minimal) ================
+================ solid-syslog-example :: run (Secure) ================
 
 --- Device (self-measured; app talks to no collector at Baseline) ---
 [device] solid-syslog-example (FreeRTOS + lwIP + mbedTLS + FatFs)
@@ -7,18 +7,18 @@
 [device]   first record logged: yes
 [report] --- SolidSyslog cost above baseline (simulated existing application) ---
 [report] key,current,baseline,used_above_baseline
-[report] flash_text,352004,345832,6172
-[report] flash_data,392,236,156
-[report] static_bss,164772,164508,264
-[report] heap_used,39192,39224,-32
-[report] stack_log,848,120,728
-[report] stack_service,56,56,0
+[report] flash_text,352776,345832,6944
+[report] flash_data,408,236,172
+[report] static_bss,166940,164508,2432
+[report] heap_used,39200,39224,-24
+[report] stack_log,568,120,448
+[report] stack_service,832,56,776
 [report] --- end ---
 [device] ready
 
   size cross-check:
        text	   data	    bss	    dec	    hex	filename
-     351996	    400	 164772	 517168	  7e430	/w/build/baseline-cross/baseline.elf
+     352768	    416	 166940	 520124	  7efbc	/w/build/baseline-cross/baseline.elf
 
 --- Oracle listeners (proved before the device ran) ---
   OK    udp   5514
@@ -28,11 +28,11 @@
   OK    mtls  6515 — refused a client with no certificate
 
 --- Collector (syslog-ng) received ---
-  wire   <134>1 2026-07-28T08:56:46.100000Z 10.0.2.15 solid-syslog-example - BOOT [meta sequenceId="1"] ﻿device started
-  parsed PRIORITY=134 TIMESTAMP=2026-07-28T08:56:46+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA=[meta sequenceId="1"] MSG=device started
+  wire   <134>1 2026-07-28T09:01:32.100000Z 10.0.2.15 solid-syslog-example - BOOT [meta sequenceId="1"] ﻿device started
+  parsed PRIORITY=134 TIMESTAMP=2026-07-28T09:01:32+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA=[meta sequenceId="1"] MSG=device started
 
---- Baseline self-check (vs measurements/Minimal.csv, tolerance 64 B) ---
-  (no committed measurements/Minimal.csv yet — rerun with CAPTURE=1 to freeze it)
+--- Baseline self-check (vs measurements/Secure.csv, tolerance 64 B) ---
+  (no committed measurements/Secure.csv yet — rerun with CAPTURE=1 to freeze it)
 
 RESULT: PASS (self-check skipped — no committed baseline)
 ===================================================================

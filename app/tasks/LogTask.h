@@ -12,10 +12,9 @@ extern "C"
 {
 #endif
 
-    /* The log source seam: the one place this device logs from. Its stack
-     * high-water mark is one of the two figures we track a delta on, which only
-     * means anything if logging happens here and not on the harness that asks
-     * for it. */
+    /* The log source seam. With a buffer in front of the sender any task could
+     * now call Log for the same cost, so this stays one task only to keep the
+     * stack figure a single owner's. */
     bool LogTask_Create(void);
     TaskHandle_t LogTask_Handle(void);
 
