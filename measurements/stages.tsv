@@ -1,0 +1,12 @@
+# The stages of the integration, in order, one row per stage — which is one row
+# per commit. Tab-separated: slug <TAB> name <TAB> what it gives you.
+#
+# The slug names the stage's frozen figures (measurements/<slug>.csv) and is what
+# scripts/run.sh builds; the last row is the stage under construction. A stage's
+# row is added when its work starts and its CSV frozen when the figures settle,
+# so the two are briefly out of step — the cost table leaves an unfrozen stage
+# out and says so rather than publishing a blank row.
+#
+# Slugs, not numbers: a stage inserted mid-history would renumber every file
+# after it, and this history has already had one inserted.
+Baseline	Baseline	a device that already networks, stores, and holds an mTLS session — before any syslog

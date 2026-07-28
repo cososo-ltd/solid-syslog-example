@@ -1,0 +1,89 @@
+# The one way to run this repo — drive it with ./run.sh (which wraps this).
+#
+# Four containers:
+#   certs     : generates the test PKI (one CA, a collector certificate, a broker
+#               certificate, a device certificate) into build/certs. Runs to
+#               completion before anything else starts, because both servers read
+#               their certificate at boot.
+#   syslog-ng : the collector oracle. Listens on UDP, TCP and TLS/mTLS from the
+#               start, so every stage has something to talk to the moment it needs
+#               it, and a broken listener is found here rather than several
+#               stages later.
+#   broker    : the system the simulated device already talks to. Nothing to do
+#               with syslog — it stands in for the cloud or broker connection a
+#               secure device holds anyway, so that the mTLS the baseline claims
+#               to speak is a session it really opens. Its cost is therefore in
+#               the baseline, and SolidSyslog is charged only what a second
+#               concurrent session adds.
+#   run       : the cross image (arm-none-eabi-gcc + qemu-system-arm). It shares
+#               syslog-ng's network namespace, so the app's QEMU slirp gateway
+#               (10.0.2.2) reaches the oracle exactly as it will once the device
+#               sends. At the Baseline it sends nothing, so the oracle records
+#               nothing — the run reports that honestly. It reads the oracle's
+#               output via the shared volume.
+
+x-cross-image: &cross-image ghcr.io/cososo-ltd/cpputest-freertos-cross:sha-ad10bf2@sha256:481267bea7200641fac41d7136e7e08deeba1b311e9873aa6d1c311db5b4cf58
+
+services:
+  certs:
+    image: *cross-image
+    user: "0"
+    volumes:
+      - ..:/w
+    working_dir: /w
+    command: bash -lc "bash scripts/gen-certs.sh /w/build/certs"
+
+  syslog-ng:
+    image: balabit/syslog-ng:4.8.2@sha256:728cc5b63b9044ad5f18062bac73fd5c30bb7ad256c2aa12799d924d4f6f1e72
+    volumes:
+      - ./syslog-ng/syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf:ro
+      - ../build/certs:/certs:ro
+      - oracle-output:/var/log/syslog-ng
+    depends_on:
+      certs:
+        condition: service_completed_successfully
+
+  # -rev echoes each buffer back reversed, which is what lets both the smoke check
+  # and the device prove data crossed the session rather than only that the
+  # handshake completed. -Verify (capital V) requires the client certificate; the
+  # lower-case form would request one and accept a client that sent none. And
+  # -verify_return_error, because s_server's default is to report a verification
+  # failure and carry on — required is not the same as trusted, which is the
+  # distinction the collector's own mTLS port already turns on.
+  broker:
+    image: *cross-image
+    network_mode: "service:syslog-ng"
+    volumes:
+      - ../build/certs:/certs:ro
+    depends_on:
+      certs:
+        condition: service_completed_successfully
+    command: >
+      openssl s_server -accept 8883 -rev -quiet
+      -cert /certs/broker.crt -key /certs/broker.key
+      -CAfile /certs/ca.crt -Verify 1 -verify_return_error
+
+  run:
+    image: *cross-image
+    # Root so it can write the bind-mounted workspace on a Linux CI runner (the
+    # checkout is owned by the runner user, not the image's default user).
+    user: "0"
+    network_mode: "service:syslog-ng"
+    depends_on:
+      - syslog-ng
+      - broker
+    # The dependency trees the build consumes. Set explicitly so they are present
+    # regardless of which user's shell profile the image exports them from.
+    environment:
+      FREERTOS_KERNEL_PATH: /opt/freertos/kernel
+      LWIP_PATH: /opt/lwip
+      MBEDTLS_DIR: /opt/mbedtls
+      FATFS_PATH: /opt/fatfs
+    volumes:
+      - ..:/w
+      - oracle-output:/collector:ro
+    working_dir: /w
+    command: bash -lc "bash scripts/run.sh"
+
+volumes:
+  oracle-output:

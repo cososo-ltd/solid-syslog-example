@@ -1,0 +1,8 @@
+# Keep LF endings on everything that runs in the Linux build/test containers,
+# regardless of host platform, so CRLF from a Windows checkout never breaks a
+# shell script, a linker script, or a source file.
+* text=auto eol=lf
+
+# Binary-ish assets that must never be normalized.
+*.pem -text
+*.img binary

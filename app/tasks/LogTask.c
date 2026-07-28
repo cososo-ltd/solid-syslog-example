@@ -1,0 +1,70 @@
+/* The log-source seam — see LogTask.h. */
+
+#include "LogTask.h"
+
+#include "AppConfig.h"
+
+#include "semphr.h"
+
+static TaskHandle_t s_handle = NULL;
+static StaticTask_t s_taskBuffer;
+static StackType_t s_stack[LOG_TASK_STACK_WORDS];
+static SemaphoreHandle_t s_reachedIdle = NULL;
+static SemaphoreHandle_t s_emitRequested = NULL;
+static SemaphoreHandle_t s_emitDone = NULL;
+static StaticSemaphore_t s_reachedIdleBuffer;
+static StaticSemaphore_t s_emitRequestedBuffer;
+static StaticSemaphore_t s_emitDoneBuffer;
+
+static void LogTask_Entry(void* parameters)
+{
+    (void) parameters;
+
+    (void) xSemaphoreGive(s_reachedIdle);
+
+    for (;;)
+    {
+        if (xSemaphoreTake(s_emitRequested, portMAX_DELAY) == pdTRUE)
+        {
+            /* Nothing to say: this device has no logger. */
+            (void) xSemaphoreGive(s_emitDone);
+        }
+    }
+}
+
+bool LogTask_Create(void)
+{
+    s_reachedIdle = xSemaphoreCreateBinaryStatic(&s_reachedIdleBuffer);
+    s_emitRequested = xSemaphoreCreateBinaryStatic(&s_emitRequestedBuffer);
+    s_emitDone = xSemaphoreCreateBinaryStatic(&s_emitDoneBuffer);
+    if ((s_reachedIdle == NULL) || (s_emitRequested == NULL) || (s_emitDone == NULL))
+    {
+        return false;
+    }
+    s_handle = xTaskCreateStatic(
+        LogTask_Entry,
+        "log",
+        LOG_TASK_STACK_WORDS,
+        NULL,
+        LOG_TASK_PRIORITY,
+        s_stack,
+        &s_taskBuffer
+    );
+    return s_handle != NULL;
+}
+
+TaskHandle_t LogTask_Handle(void)
+{
+    return s_handle;
+}
+
+bool LogTask_WaitIdle(uint32_t timeoutMs)
+{
+    return xSemaphoreTake(s_reachedIdle, pdMS_TO_TICKS(timeoutMs)) == pdTRUE;
+}
+
+bool LogTask_EmitOnce(uint32_t timeoutMs)
+{
+    (void) xSemaphoreGive(s_emitRequested);
+    return xSemaphoreTake(s_emitDone, pdMS_TO_TICKS(timeoutMs)) == pdTRUE;
+}
