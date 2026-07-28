@@ -1,0 +1,18 @@
+# Build output
+/build/
+*.map
+*.elf
+
+# Copied to the workspace root by the devcontainer's CMake Tools setting
+/compile_commands.json
+
+# Semihosting disk image created at runtime by the FatFs exercise
+*.img
+baseline-disk.img
+
+# Editor / OS
+.DS_Store
+*.swp
+
+# Local Claude Code project settings (tooling, not part of the example)
+.claude/
