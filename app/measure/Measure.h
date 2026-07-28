@@ -17,8 +17,7 @@ extern "C"
         MEASURE_FLASH_TEXT = 0, /* .text + .rodata + init arrays (bytes) */
         MEASURE_FLASH_DATA, /* .data (bytes) */
         MEASURE_STATIC_BSS, /* .bss (bytes; includes the reserved FreeRTOS heap array) */
-        MEASURE_HEAP_USED, /* configTOTAL_HEAP_SIZE - free heap (bytes) */
-        MEASURE_HEAP_PEAK, /* configTOTAL_HEAP_SIZE - lowest free heap ever (bytes) */
+        MEASURE_HEAP_USED, /* configTOTAL_HEAP_SIZE - free heap; heap_1 never frees, so also the peak */
         MEASURE_MBEDTLS_PEAK, /* high-water mark of the static mbedTLS buffer (bytes) */
         MEASURE_STACK_LOG, /* log task peak stack used (bytes) */
         MEASURE_STACK_SERVICE, /* service task peak stack used (bytes) */
