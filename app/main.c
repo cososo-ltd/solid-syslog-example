@@ -9,6 +9,7 @@
 #include "SemihostingExit.h"
 #include "ServiceTask.h"
 #include "SimulatedExistingApp.h"
+#include "SyslogErrorHandler.h"
 
 #include "lwip/tcpip.h"
 
@@ -92,6 +93,9 @@ int main(void)
 {
     CmsdkUart_Init(&UART_ACCESS, DEVICE_UART0_BASE);
     (void) printf("[device] solid-syslog-example (FreeRTOS + lwIP + mbedTLS + FatFs)\n");
+
+    /* Before the first _Create — see SyslogErrorHandler.h for why that matters. */
+    SyslogErrorHandler_Install();
 
     /* lwIP tcpip thread + core-lock mutex + mbox. Pre-scheduler safe. */
     tcpip_init(NULL, NULL);
