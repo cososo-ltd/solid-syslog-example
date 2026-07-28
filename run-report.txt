@@ -2,14 +2,17 @@
 
 --- Device (self-measured; app talks to no collector at Baseline) ---
 [device] solid-syslog-example (FreeRTOS + lwIP + mbedTLS + FatFs)
+[syslog] CRITICAL SolidSyslog bad-config (detail 1)
+[syslog] CRITICAL SolidSyslog bad-config (detail 2)
+[syslog] CRITICAL SolidSyslog bad-config (detail 3)
 [device] starting simulated existing application...
 [device]   sim app (lwIP up, FatFs mounted, mTLS credentials loaded, mbedTLS linked): ready
 [report] --- SolidSyslog cost above baseline (simulated existing application) ---
 [report] key,current,baseline,used_above_baseline
-[report] flash_text,346216,345832,384
-[report] flash_data,240,236,4
-[report] static_bss,164512,164508,4
-[report] heap_used,39232,39224,8
+[report] flash_text,346792,345832,960
+[report] flash_data,304,236,68
+[report] static_bss,164620,164508,112
+[report] heap_used,39192,39224,-32
 [report] stack_log,120,120,0
 [report] stack_service,56,56,0
 [report] --- end ---
@@ -17,7 +20,7 @@
 
   size cross-check:
        text	   data	    bss	    dec	    hex	filename
-     346208	    248	 164512	 510968	  7cbf8	/w/build/baseline-cross/baseline.elf
+     346784	    312	 164620	 511716	  7cee4	/w/build/baseline-cross/baseline.elf
 
 --- Oracle listeners (proved before the device ran) ---
   OK    udp   5514
