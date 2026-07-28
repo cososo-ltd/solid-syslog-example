@@ -9,6 +9,7 @@
 #include "SemihostingExit.h"
 #include "ServiceTask.h"
 #include "SimulatedExistingApp.h"
+#include "Syslog.h"
 #include "SyslogErrorHandler.h"
 
 #include "lwip/tcpip.h"
@@ -96,6 +97,8 @@ int main(void)
 
     /* Before the first _Create — see SyslogErrorHandler.h for why that matters. */
     SyslogErrorHandler_Install();
+
+    Syslog_Start();
 
     /* lwIP tcpip thread + core-lock mutex + mbox. Pre-scheduler safe. */
     tcpip_init(NULL, NULL);
