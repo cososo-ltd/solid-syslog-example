@@ -92,7 +92,7 @@ add_library(baseline_upstream OBJECT
     ${FREERTOS_KERNEL_PATH}/timers.c
     ${FREERTOS_KERNEL_PATH}/event_groups.c
     ${FREERTOS_PORT_DIR}/port.c
-    ${FREERTOS_KERNEL_PATH}/portable/MemMang/heap_4.c
+    ${FREERTOS_KERNEL_PATH}/portable/MemMang/heap_1.c
     ${lwipcore_SRCS}
     ${lwipcore4_SRCS}
     ${lwipapi_SRCS}
