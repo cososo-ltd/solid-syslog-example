@@ -74,9 +74,15 @@ static void HarnessTask(void* parameters)
     bool logIdle = LogTask_WaitIdle(2000U);
     bool serviceIdle = ServiceTask_WaitIdle(2000U);
 
+    /* Now the network is up, have the log source emit one record. It goes out
+     * inline on that task's stack, which is why the log-stack figure below is
+     * measured after this and not before. */
+    bool logged = LogTask_EmitOnce(5000U);
+    (void) printf("[device]   first record logged: %s\n", logged ? "yes" : "FAILED");
+
     (void) Measure_Report();
 
-    bool ready = simReady && logIdle && serviceIdle;
+    bool ready = simReady && logIdle && serviceIdle && logged;
     (void) printf("[device] %s\n", ready ? "ready" : "FAILED");
     SemihostingExit(ready ? 0 : 1);
 }
@@ -110,10 +116,6 @@ int main(void)
      * for now — it earns its place from Minimal. */
     SyslogErrorHandler_Install();
 
-    /* Create the logger. Nothing is wired into it yet, so expect the handler to
-     * report what is missing — that report is the point of this step. */
-    Syslog_Start();
-
     /* lwIP tcpip thread + core-lock mutex + mbox. Pre-scheduler safe. */
     tcpip_init(NULL, NULL);
 
@@ -125,6 +127,11 @@ int main(void)
         (void) printf("[device] FATAL: device crypto unavailable\n");
         SemihostingExit(1);
     }
+
+    /* After tcpip_init, not before: the marshal Syslog_Start installs takes the
+     * lwIP core lock, and tcpip_init is what creates it. Nothing is sent here —
+     * the sender resolves and opens lazily on its first record. */
+    Syslog_Start();
 
     if (!LogTask_Create() || !ServiceTask_Create())
     {

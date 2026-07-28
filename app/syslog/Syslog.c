@@ -1,35 +1,91 @@
 /* See Syslog.h.
  *
- * At this step the logger is created with nothing wired into it, on purpose.
- * SolidSyslog_Create never fails and never returns NULL: a missing collaborator
- * is substituted with its Null object and reported through the error handler.
- * Creating it empty first is how this example shows what that looks like — the
- * run report carries the faults, and the next step makes them go quiet by
- * wiring a buffer and a sender. */
+ * The smallest wiring that delivers: a UDP sender over lwIP, and a passthrough
+ * buffer in front of it. Passthrough means Log sends inline on the calling
+ * task — no queue, no background drain, nothing to service. That is the
+ * cheapest configuration SolidSyslog offers and the one this tag measures.
+ *
+ * The header fields are deliberately left unset. RFC 5424 defines a NILVALUE
+ * for every one of them, so a record carrying "-" for timestamp, hostname,
+ * app-name and procid is valid and the collector accepts it. Filling them in is
+ * a later step, with a cost of its own. */
 
 #include "Syslog.h"
 
 #include "SolidSyslogConfig.h"
+#include "SolidSyslogEndpoint.h"
+#include "SolidSyslogEndpointHost.h"
+#include "SolidSyslogLwipRawAddress.h"
+#include "SolidSyslogLwipRawDatagram.h"
+#include "SolidSyslogLwipRawMarshal.h"
+#include "SolidSyslogLwipRawResolver.h"
+#include "SolidSyslogNullStore.h"
+#include "SolidSyslogPassthroughBuffer.h"
+#include "SolidSyslogUdpSender.h"
+
+#include "lwip/tcpip.h"
 
 #include <stddef.h>
+#include <stdint.h>
+#include <string.h>
+
+/* The collector, reached through QEMU's slirp gateway. A numeric literal keeps
+ * the resolver numeric-only — no DNS, so no LWIP_DNS and no DNS resolver
+ * component to compile. */
+#define SYSLOG_COLLECTOR_HOST "10.0.2.2"
+#define SYSLOG_COLLECTOR_PORT ((uint16_t) 5514U)
 
 static struct SolidSyslog* s_logger = NULL;
 
+/* Every lwIP Raw call the datagram makes has to happen on the thread that owns
+ * the lwIP core. lwipopts.h sets LWIP_TCPIP_CORE_LOCKING, so taking the core
+ * lock in the caller's own task is simpler and cheaper than posting to the tcpip
+ * mailbox — and unconditionally synchronous, which the marshal contract
+ * requires. The lock is recursive and these callbacks never re-marshal, so it
+ * cannot deadlock against itself. */
+static void LwipCoreLockMarshal(SolidSyslogLwipRawCallback callback, void* context)
+{
+    LOCK_TCPIP_CORE();
+    callback(context);
+    UNLOCK_TCPIP_CORE();
+}
+
+/* Pulled by the sender when it connects, not on every send. Host is a bounded
+ * sink rather than a raw buffer, so a destination cannot overrun the field. */
+static void CollectorEndpoint(struct SolidSyslogEndpoint* endpoint, void* context)
+{
+    (void) context;
+
+    SolidSyslogEndpointHost_String(endpoint->Host, SYSLOG_COLLECTOR_HOST, strlen(SYSLOG_COLLECTOR_HOST));
+    endpoint->Port = SYSLOG_COLLECTOR_PORT;
+}
+
 void Syslog_Start(void)
 {
-    /* Buffer and Sender are the two collaborators that decide where a record
-     * goes. Both absent for now. NULL here means "not supplied" and is reported;
-     * from the next step, a collaborator we deliberately do without is passed as
-     * its Null object instead, which is how the library tells "I meant this"
-     * apart from "I forgot". */
+    SolidSyslogLwipRaw_SetMarshal(LwipCoreLockMarshal);
+
+    /* One UDP sender: a numeric resolver to parse the literal, a datagram for
+     * the socket, and an address slot for the resolver to write into. No
+     * EndpointVersion — this collector never moves, so the sender resolves once
+     * and pins it. */
+    struct SolidSyslogUdpSenderConfig senderConfig = {
+        .Resolver = SolidSyslogLwipRawResolver_Create(),
+        .Datagram = SolidSyslogLwipRawDatagram_Create(),
+        .Address = SolidSyslogLwipRawAddress_Create(),
+        .Endpoint = CollectorEndpoint,
+    };
+    struct SolidSyslogSender* sender = SolidSyslogUdpSender_Create(&senderConfig);
+
     struct SolidSyslogConfig config = {
-        .Buffer = NULL,
-        .Sender = NULL,
+        .Buffer = SolidSyslogPassthroughBuffer_Create(sender),
+        .Sender = sender,
+        /* This device does no store-and-forward. Passing the Null object rather
+         * than NULL is how that is said out loud: NULL means "I forgot" and is
+         * reported as a fault, the Null object means "I meant this" and is
+         * silent. The two behave identically at run time. */
+        .Store = SolidSyslogNullStore_Get(),
     };
 
-    /* No null check: Create returns a shared null instance rather than NULL on
-     * any failure, so callers never have to test it. What it does not do is stay
-     * silent — that is the error handler's job. */
     s_logger = SolidSyslog_Create(&config);
 }
 

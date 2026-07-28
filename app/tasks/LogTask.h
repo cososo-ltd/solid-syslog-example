@@ -23,8 +23,7 @@ extern "C"
      * stack high-water mark reflects real scheduling). */
     bool LogTask_WaitIdle(uint32_t timeoutMs);
 
-    /* Have the log source emit one record, and wait for it to finish. It has
-     * nothing to emit until the device has a logger. */
+    /* Have the log source emit one record, and wait for it to finish. */
     bool LogTask_EmitOnce(uint32_t timeoutMs);
 
 #ifdef __cplusplus

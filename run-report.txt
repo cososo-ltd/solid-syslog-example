@@ -2,25 +2,23 @@
 
 --- Device (self-measured; app talks to no collector at Baseline) ---
 [device] solid-syslog-example (FreeRTOS + lwIP + mbedTLS + FatFs)
-[syslog] CRITICAL SolidSyslog bad-config (detail 1)
-[syslog] CRITICAL SolidSyslog bad-config (detail 2)
-[syslog] CRITICAL SolidSyslog bad-config (detail 3)
 [device] starting simulated existing application...
 [device]   sim app (lwIP up, FatFs mounted, mTLS credentials loaded, mbedTLS linked): ready
+[device]   first record logged: yes
 [report] --- SolidSyslog cost above baseline (simulated existing application) ---
 [report] key,current,baseline,used_above_baseline
-[report] flash_text,346792,345832,960
-[report] flash_data,304,236,68
-[report] static_bss,164620,164508,112
-[report] heap_used,39192,39224,-32
-[report] stack_log,120,120,0
+[report] flash_text,350696,345832,4864
+[report] flash_data,368,236,132
+[report] static_bss,164748,164508,240
+[report] heap_used,39200,39224,-24
+[report] stack_log,2640,120,2520
 [report] stack_service,56,56,0
 [report] --- end ---
 [device] ready
 
   size cross-check:
        text	   data	    bss	    dec	    hex	filename
-     346784	    312	 164620	 511716	  7cee4	/w/build/baseline-cross/baseline.elf
+     350688	    376	 164748	 515812	  7dee4	/w/build/baseline-cross/baseline.elf
 
 --- Oracle listeners (proved before the device ran) ---
   OK    udp   5514
@@ -30,7 +28,8 @@
   OK    mtls  6515 — refused a client with no certificate
 
 --- Collector (syslog-ng) received ---
-  (nothing — the Baseline sends no records; SolidSyslog logs from Minimal)
+  wire   <134>1 - - - - BOOT - ﻿device started
+  parsed PRIORITY=134 TIMESTAMP=2026-07-28T06:00:59+00:00 HOSTNAME=localhost APP_NAME= PROCID= MSGID=BOOT STRUCTURED_DATA= MSG=device started
 
 --- Baseline self-check (vs measurements/Minimal.csv, tolerance 64 B) ---
   (no committed measurements/Minimal.csv yet — rerun with CAPTURE=1 to freeze it)

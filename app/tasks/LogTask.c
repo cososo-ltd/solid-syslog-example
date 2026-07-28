@@ -2,6 +2,11 @@
 
 #include "LogTask.h"
 
+#include "Syslog.h"
+
+#include "SolidSyslog.h"
+#include "SolidSyslogPrival.h"
+
 #include "AppConfig.h"
 
 #include "semphr.h"
@@ -21,7 +26,17 @@ static void LogTask_Entry(void* parameters)
     {
         if (xSemaphoreTake(s_emitRequested, portMAX_DELAY) == pdTRUE)
         {
-            /* Nothing to say yet — a later step gives this device a logger. */
+            const struct SolidSyslogMessage message = {
+                .Facility = SOLIDSYSLOG_FACILITY_LOCAL0,
+                .Severity = SOLIDSYSLOG_SEVERITY_INFORMATIONAL,
+                .MessageId = "BOOT",
+                .Msg = "device started",
+            };
+
+            /* Passthrough buffer: this call does the send, on this stack, and
+             * returns once it is done. */
+            SolidSyslog_Log(Syslog_Handle(), &message);
+
             (void) xSemaphoreGive(s_emitDone);
         }
     }
