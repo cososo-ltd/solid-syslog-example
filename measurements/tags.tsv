@@ -7,4 +7,4 @@
 # run's self-check has nothing to compare against — both say so rather than
 # guessing. scripts/run.sh reads the last row to know which state it is building.
 Baseline	simulated existing application — FreeRTOS + lwIP + mbedTLS + FatFs, no SolidSyslog
-Minimal	a valid RFC 5424 record over UDP — passthrough buffer, no structured data, no store
+Minimal	a valid RFC 5424 record over UDP — passthrough buffer, meta sequenceId, no store

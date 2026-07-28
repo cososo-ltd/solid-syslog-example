@@ -5,10 +5,9 @@
  * task — no queue, no background drain, nothing to service. That is the
  * cheapest configuration SolidSyslog offers and the one this tag measures.
  *
- * The header fields are deliberately left unset. RFC 5424 defines a NILVALUE
- * for every one of them, so a record carrying "-" for timestamp, hostname,
- * app-name and procid is valid and the collector accepts it. Filling them in is
- * a later step, with a cost of its own. */
+ * The record carries a meta SD-ELEMENT alongside the filled-in header fields.
+ * Unlike a header field, an SD PARAM has no NILVALUE: an unset one is omitted
+ * entirely rather than written as "-". */
 
 #include "Syslog.h"
 
@@ -19,8 +18,10 @@
 #include "SolidSyslogLwipRawDatagram.h"
 #include "SolidSyslogLwipRawMarshal.h"
 #include "SolidSyslogLwipRawResolver.h"
+#include "SolidSyslogMetaSd.h"
 #include "SolidSyslogNullStore.h"
 #include "SolidSyslogPassthroughBuffer.h"
+#include "SolidSyslogStdAtomicCounter.h"
 #include "SolidSyslogUdpSender.h"
 #include "SyslogFields.h"
 
@@ -37,6 +38,9 @@
 #define SYSLOG_COLLECTOR_PORT ((uint16_t) 5514U)
 
 static struct SolidSyslog* s_logger = NULL;
+
+/* The logger reads these on every record, so they outlive Syslog_Start. */
+static struct SolidSyslogStructuredData* s_sd[1];
 
 /* Every lwIP Raw call the datagram makes has to happen on the thread that owns
  * the lwIP core. lwipopts.h sets LWIP_TCPIP_CORE_LOCKING, so taking the core
@@ -77,6 +81,11 @@ void Syslog_Start(void)
     };
     struct SolidSyslogSender* sender = SolidSyslogUdpSender_Create(&senderConfig);
 
+    /* One counter Increment per record formatted, so a record that never reaches
+     * the collector leaves a gap in the sequence rather than no trace at all. */
+    struct SolidSyslogMetaSdConfig metaConfig = {.Counter = SolidSyslogStdAtomicCounter_Create()};
+    s_sd[0] = SolidSyslogMetaSd_Create(&metaConfig);
+
     struct SolidSyslogConfig config = {
         .Buffer = SolidSyslogPassthroughBuffer_Create(sender),
         .Sender = sender,
@@ -89,6 +98,8 @@ void Syslog_Start(void)
         .Clock = SyslogFields_Clock,
         .GetHostname = SyslogFields_Hostname,
         .GetAppName = SyslogFields_AppName,
+        .Sd = s_sd,
+        .SdCount = sizeof(s_sd) / sizeof(s_sd[0]),
     };
 
     s_logger = SolidSyslog_Create(&config);
