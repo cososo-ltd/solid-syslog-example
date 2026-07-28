@@ -57,7 +57,7 @@ set(LWIP_CONTRIB_FREERTOS_DIR "${LWIP_DIR}/contrib/ports/freertos")
 # circular buffer needs. The list is authoritative — anything unnamed is
 # off, including the host platforms — so this one line is the whole selection.
 # The configure echoes back which roles it filled.
-set(SOLIDSYSLOG_PLATFORMS "LwipRaw;FreeRtos" CACHE STRING "" FORCE)
+set(SOLIDSYSLOG_PLATFORMS "LwipRaw;FreeRtos;MbedTls" CACHE STRING "" FORCE)
 
 # Compile-time limits. Every tunable is #ifndef-guarded, so this file only needs
 # the ones this device wants changed.
@@ -196,7 +196,7 @@ target_compile_definitions(baseline PRIVATE MBEDTLS_USER_CONFIG_FILE=${MBEDTLS_U
 # Platform packs are INTERFACE libraries, not part of libSolidSyslog.a: they are
 # header-configured, so each consumer compiles the adapters against its own config.
 # Naming one in SOLIDSYSLOG_PLATFORMS is not enough — link it too.
-target_link_libraries(baseline PRIVATE mbedtls mbedx509 mbedcrypto SolidSyslog SolidSyslog::LwipRaw SolidSyslog::FreeRtos)
+target_link_libraries(baseline PRIVATE mbedtls mbedx509 mbedcrypto SolidSyslog SolidSyslog::LwipRaw SolidSyslog::FreeRtos SolidSyslog::MbedTls)
 
 target_link_options(baseline PRIVATE
     -mcpu=cortex-m3 -mthumb

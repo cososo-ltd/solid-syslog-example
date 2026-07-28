@@ -1,25 +1,31 @@
 /* See Syslog.h.
  *
- * A UDP sender over lwIP behind a circular buffer: Log enqueues and returns, and
- * the service task drains and sends. The mutex is what makes those two sides
+ * A TLS stream over lwIP TCP behind a circular buffer: Log enqueues and returns,
+ * and the service task drains and sends. The mutex is what makes those two sides
  * safe on different tasks. */
 
 #include "Syslog.h"
 
+#include "DeviceCertStore.h"
+
+#include "SolidSyslogCircularBuffer.h"
 #include "SolidSyslogConfig.h"
 #include "SolidSyslogEndpoint.h"
 #include "SolidSyslogEndpointHost.h"
+#include "SolidSyslogFreeRtosMutex.h"
 #include "SolidSyslogLwipRawAddress.h"
-#include "SolidSyslogLwipRawDatagram.h"
 #include "SolidSyslogLwipRawMarshal.h"
 #include "SolidSyslogLwipRawResolver.h"
-#include "SolidSyslogCircularBuffer.h"
-#include "SolidSyslogFreeRtosMutex.h"
+#include "SolidSyslogLwipRawTcpStream.h"
+#include "SolidSyslogMbedTlsStream.h"
 #include "SolidSyslogNullStore.h"
-#include "SolidSyslogUdpSender.h"
+#include "SolidSyslogStreamSender.h"
 #include "SyslogFields.h"
 
 #include "lwip/tcpip.h"
+
+#include "FreeRTOS.h"
+#include "task.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -29,7 +35,7 @@
  * the resolver numeric-only — no DNS, so no LWIP_DNS and no DNS resolver
  * component to compile. */
 #define SYSLOG_COLLECTOR_HOST "10.0.2.2"
-#define SYSLOG_COLLECTOR_PORT ((uint16_t) 5514U)
+#define SYSLOG_COLLECTOR_PORT ((uint16_t) 6514U)
 
 /* Depth enough to absorb a burst while the sender is busy — a full TLS handshake
  * from Secure — without sizing for a backlog the store is there to hold. */
@@ -37,6 +43,12 @@
 
 static struct SolidSyslog* s_logger = NULL;
 static uint8_t s_ring[SOLIDSYSLOG_CIRCULAR_BUFFER_RING_BYTES(SYSLOG_BUFFER_RECORDS)];
+
+/* Bounds the connect and handshake spins so they yield instead of busy-waiting. */
+static void SyslogSleep(int milliseconds)
+{
+    vTaskDelay(pdMS_TO_TICKS(milliseconds));
+}
 
 /* Every lwIP Raw call the datagram makes has to happen on the thread that owns
  * the lwIP core. lwipopts.h sets LWIP_TCPIP_CORE_LOCKING, so taking the core
@@ -65,17 +77,30 @@ void Syslog_Start(void)
 {
     SolidSyslogLwipRaw_SetMarshal(LwipCoreLockMarshal);
 
-    /* One UDP sender: a numeric resolver to parse the literal, a datagram for
-     * the socket, and an address slot for the resolver to write into. No
-     * EndpointVersion — this collector never moves, so the sender resolves once
-     * and pins it. */
-    struct SolidSyslogUdpSenderConfig senderConfig = {
+    struct SolidSyslogLwipRawTcpStreamConfig tcpConfig = {.Sleep = SyslogSleep};
+
+    /* Server authentication only: the device verifies the collector against the
+     * trust anchor it already holds, and presents nothing of its own. ServerName
+     * is checked against the certificate, so "" or NULL here would drop the peer
+     * identity check and leave only the chain. */
+    struct SolidSyslogMbedTlsStreamConfig tlsConfig = {
+        .Transport = SolidSyslogLwipRawTcpStream_Create(&tcpConfig),
+        .Sleep = SyslogSleep,
+        .Rng = DeviceCertStore_Rng(),
+        .CaChain = DeviceCertStore_CaChain(),
+        .ServerName = SYSLOG_COLLECTOR_HOST,
+    };
+
+    /* A numeric resolver to parse the literal and an address slot for it to write
+     * into. No EndpointVersion — this collector never moves, so the sender
+     * resolves once and pins it. */
+    struct SolidSyslogStreamSenderConfig senderConfig = {
         .Resolver = SolidSyslogLwipRawResolver_Create(),
-        .Datagram = SolidSyslogLwipRawDatagram_Create(),
+        .Stream = SolidSyslogMbedTlsStream_Create(&tlsConfig),
         .Address = SolidSyslogLwipRawAddress_Create(),
         .Endpoint = CollectorEndpoint,
     };
-    struct SolidSyslogSender* sender = SolidSyslogUdpSender_Create(&senderConfig);
+    struct SolidSyslogSender* sender = SolidSyslogStreamSender_Create(&senderConfig);
 
     struct SolidSyslogConfig config = {
         .Buffer = SolidSyslogCircularBuffer_Create(SolidSyslogFreeRtosMutex_Create(), s_ring, sizeof(s_ring)),

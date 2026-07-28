@@ -83,7 +83,7 @@ static void HarnessTask(void* parameters)
      * word, not ours. */
     bool logged = LogTask_EmitOnce(5000U);
     (void) printf("[device]   first record logged: %s\n", logged ? "yes" : "FAILED");
-    vTaskDelay(pdMS_TO_TICKS(500U));
+    vTaskDelay(pdMS_TO_TICKS(3000U));
 
     (void) Measure_Report();
 
@@ -124,9 +124,9 @@ int main(void)
     /* lwIP tcpip thread + core-lock mutex + mbox. Pre-scheduler safe. */
     tcpip_init(NULL, NULL);
 
-    /* The device's crypto: mbedTLS's allocator, PSA, and the credentials it holds
-     * for the mTLS it speaks elsewhere. Before the scheduler, because anything
-     * taking an mbedTLS handle needs one built after the allocator was set. */
+    /* The device's crypto, before anything that takes a handle from it. Syslog_Start
+     * captures the trust anchor and DRBG at create time, so loading them with the
+     * rest of the existing application would be far too late. */
     if (!SimulatedExistingApp_StartCrypto())
     {
         (void) printf("[device] FATAL: device crypto unavailable\n");
