@@ -9,10 +9,10 @@
 [report] key,current,baseline,used_above_baseline
 [report] flash_text,362008,345832,16176
 [report] flash_data,656,236,420
-[report] static_bss,147004,164508,-17504
+[report] static_bss,132668,164508,-31840
 [report] heap_used,4888,39224,-34336
 [report] heap_peak,4888,0,4888
-[report] mbedtls_peak,22184,0,22184
+[report] mbedtls_peak,22152,0,22152
 [report] stack_log,832,120,712
 [report] stack_service,3852,56,3796
 [report] --- end ---
@@ -20,7 +20,7 @@
 
   size cross-check:
        text	   data	    bss	    dec	    hex	filename
-     362000	    664	 147004	 509668	  7c6e4	/w/build/baseline-cross/baseline.elf
+     362000	    664	 132668	 495332	  78ee4	/w/build/baseline-cross/baseline.elf
 
 --- Oracle listeners (proved before the device ran) ---
   OK    udp   5514
@@ -30,8 +30,8 @@
   OK    mtls  6515 — refused a client with no certificate
 
 --- Collector (syslog-ng) received ---
-  wire   <134>1 2026-07-28T16:01:20.100000Z 10.0.2.15 solid-syslog-example - BOOT [meta sequenceId="1" sysUpTime="210"][timeQuality tzKnown="1" isSynced="0"][origin software="solid-syslog-example" swVersion="0.1.0" enterpriseId="32473" ip="10.0.2.15"][logPipeline@32473 transport="mtls" atRest="aes-256-gcm"] ﻿device started
-  parsed PRIORITY=134 TIMESTAMP=2026-07-28T16:01:20+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA=[meta sequenceId="1" sysUpTime="210"][timeQuality tzKnown="1" isSynced="0"][origin software="solid-syslog-example" swVersion="0.1.0" enterpriseId="32473" ip="10.0.2.15"][logPipeline@32473 transport="mtls" atRest="aes-256-gcm"] MSG=device started
+  wire   <134>1 2026-07-28T16:03:07.100000Z 10.0.2.15 solid-syslog-example - BOOT [meta sequenceId="1" sysUpTime="210"][timeQuality tzKnown="1" isSynced="0"][origin software="solid-syslog-example" swVersion="0.1.0" enterpriseId="32473" ip="10.0.2.15"][logPipeline@32473 transport="mtls" atRest="aes-256-gcm"] ﻿device started
+  parsed PRIORITY=134 TIMESTAMP=2026-07-28T16:03:07+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA=[meta sequenceId="1" sysUpTime="210"][timeQuality tzKnown="1" isSynced="0"][origin software="solid-syslog-example" swVersion="0.1.0" enterpriseId="32473" ip="10.0.2.15"][logPipeline@32473 transport="mtls" atRest="aes-256-gcm"] MSG=device started
 
 --- Baseline self-check (vs measurements/Secure.csv, tolerance 64 B) ---
   (no committed measurements/Secure.csv yet — rerun with CAPTURE=1 to freeze it)
