@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
-# Prove every oracle listener, before any tag depends on one.
+# Prove every listener the run depends on, before the device runs.
 #
 # A listener that syslog-ng parsed is not a listener that works: a wrong path in a
 # tls() block, a certificate without the right SAN, a peer-verify that quietly
 # accepts nobody — all of those start cleanly and fail only when a device finally
 # tries to connect, several tags later. This sends one record over each transport
 # and checks it arrived, so the failure lands here instead.
+#
+# The device's broker is proved for a different reason. The baseline holds an mTLS
+# session to it for the whole run, and what that session costs is what SolidSyslog
+# is then NOT charged for. A dead broker would read as "the baseline uses less
+# memory" rather than as a failure, so it is proved here too.
 #
 # Runs in the `run` container, which shares the oracle's network namespace, so the
 # listeners are on localhost. Records carry app-name "oracle-smoke", which
@@ -55,39 +60,69 @@ send_mtls_nocert() {
         -CAfile "${CERTS}/ca.crt" -quiet -no_ign_eof >/dev/null 2>&1
 }
 
+# The broker speaks no syslog, so its evidence is the reversed echo it sends back
+# rather than a line in the collector's log — proof the session carried bytes,
+# not merely that a handshake completed.
+BROKER_PROBE=BROKER
+BROKER_ECHO=REKORB
+
+broker_echo() { # extra s_client args, e.g. the client certificate
+    printf '%s\n' "$BROKER_PROBE" | timeout 10 openssl s_client -connect "${HOST}:8883" \
+        -CAfile "${CERTS}/ca.crt" -verify_return_error -quiet "$@" 2>/dev/null
+}
+
 send_udp || true
 send_tcp || true
 send_tls || true
 send_mtls || true
 send_mtls_nocert || true
 
+# depends_on guarantees the broker container was started, not that s_server has
+# bound its socket, so the first probe doubles as the wait. Retrying the real
+# check rather than polling the port separately keeps one mechanism: if it never
+# answers, this fails exactly as it would have anyway. The certless probe follows
+# it, so it runs against a broker already known to be up — which is the only way
+# a refusal proves anything.
+broker_authenticated=""
+for _ in $(seq 1 10); do
+    broker_authenticated="$(broker_echo -cert "${CERTS}/device.crt" -key "${CERTS}/device.key")"
+    if grep -qxF "$BROKER_ECHO" <<<"$broker_authenticated"; then
+        break
+    fi
+    sleep 1
+done
+broker_certless="$(broker_echo)"
+
 # Let syslog-ng flush all four before reading back.
 sleep 2
 received="$(cat "$SMOKE_LOG" 2>/dev/null || true)"
 
 failures=0
-check() { # $1 = label, $2 = port, $3 = expected line
-    if grep -qxF "$3" <<<"$received"; then
-        printf '  OK    %-5s %s\n' "$1" "$2"
+check() { # $1 = haystack, $2 = label, $3 = port, $4 = expected line
+    if grep -qxF "$4" <<<"$1"; then
+        printf '  OK    %-6s %s\n' "$2" "$3"
     else
-        printf '  FAIL  %-5s %s — no record arrived\n' "$1" "$2"
+        printf '  FAIL  %-6s %s — nothing came back\n' "$2" "$3"
         failures=$((failures + 1))
     fi
 }
 
-refuse() { # $1 = label, $2 = port, $3 = line that must NOT be there
-    if grep -qxF "$3" <<<"$received"; then
-        printf '  FAIL  %-5s %s — accepted a client with no certificate\n' "$1" "$2"
+refuse() { # $1 = haystack, $2 = label, $3 = port, $4 = line that must NOT be there
+    if grep -qxF "$4" <<<"$1"; then
+        printf '  FAIL  %-6s %s — accepted a client with no certificate\n' "$2" "$3"
         failures=$((failures + 1))
     else
-        printf '  OK    %-5s %s — refused a client with no certificate\n' "$1" "$2"
+        printf '  OK    %-6s %s — refused a client with no certificate\n' "$2" "$3"
     fi
 }
 
-check  udp  5514 "UDP"
-check  tcp  5601 "TCP"
-check  tls  6514 "TLS"
-check  mtls 6515 "MTLS"
-refuse mtls 6515 "MTLSNOCERT"
+check  "$received" udp  5514 "UDP"
+check  "$received" tcp  5601 "TCP"
+check  "$received" tls  6514 "TLS"
+check  "$received" mtls 6515 "MTLS"
+refuse "$received" mtls 6515 "MTLSNOCERT"
+
+check  "$broker_authenticated" broker 8883 "$BROKER_ECHO"
+refuse "$broker_certless"      broker 8883 "$BROKER_ECHO"
 
 exit "$failures"
