@@ -4,12 +4,10 @@
 #ifndef SOLID_SYSLOG_TUNABLES_H
 #define SOLID_SYSLOG_TUNABLES_H
 
-/* The longest record this device will emit. The library defaults to 2048, the
- * size RFC 5424 section 6.1 says a receiver should accept; over UDP, RFC 5426
- * section 3.2 guarantees only that 480 will be accepted. This device's records are
- * far shorter, so 256 stays well inside every guarantee and anything longer is
- * truncated rather than dropped. */
-#define SOLIDSYSLOG_MAX_MESSAGE_SIZE 256U
+/* The longest record this device will emit; anything longer is truncated rather
+ * than dropped. Sized to this device's worst-case record, and within what RFC 5424
+ * section 6.1 asks a receiver to accept. */
+#define SOLIDSYSLOG_MAX_MESSAGE_SIZE 512U
 
 /* One sender, so one destination address. The default of 3 suits a device
  * running UDP, plain TCP and TLS at once. */
