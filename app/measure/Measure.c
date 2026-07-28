@@ -10,6 +10,7 @@
 #include "Baseline.h"
 #include "LogTask.h"
 #include "ServiceTask.h"
+#include "SimulatedExistingApp.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -31,6 +32,7 @@ const char* const MEASURE_KEYS[MEASURE_KEY_COUNT] = {
     "static_bss",
     "heap_used",
     "heap_peak",
+    "mbedtls_peak",
     "stack_log",
     "stack_service",
 };
@@ -54,6 +56,7 @@ void Measure_Current(MeasureValues* out)
      * on completion, so the figure above understates what was needed to reach it. */
     out->value[MEASURE_HEAP_PEAK] =
         (int32_t) ((uint32_t) configTOTAL_HEAP_SIZE - (uint32_t) xPortGetMinimumEverFreeHeapSize());
+    out->value[MEASURE_MBEDTLS_PEAK] = (int32_t) SimulatedExistingApp_MbedTlsPeak();
     out->value[MEASURE_STACK_LOG] = Measure_StackUsedBytes(LogTask_Handle(), LOG_TASK_STACK_WORDS);
     out->value[MEASURE_STACK_SERVICE] = Measure_StackUsedBytes(ServiceTask_Handle(), SERVICE_TASK_STACK_WORDS);
 }

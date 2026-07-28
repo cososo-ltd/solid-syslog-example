@@ -42,4 +42,9 @@
  * the report prints absolutes for us to commit as the baseline. */
 #define BASELINE_FILE_PATH "measurements/Baseline.csv"
 
+/* The static buffer mbedTLS sub-allocates from. Sized from the high-water mark the
+ * device reports, so a step that asks more of mbedTLS grows this and is charged for
+ * it — the baseline holds no spare capacity on a later step's behalf. */
+#define SIMULATED_APP_MBEDTLS_HEAP_BYTES (32 * 1024)
+
 #endif /* APP_CONFIG_H */

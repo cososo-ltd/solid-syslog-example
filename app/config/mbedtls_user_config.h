@@ -80,6 +80,15 @@
  * FreeRTOS+mbedTLS integration. */
 #define MBEDTLS_PLATFORM_MEMORY
 
+/* mbedTLS sub-allocates from one static buffer the device hands it, rather than
+ * from the FreeRTOS heap. Nothing the device provisions for logging can then fail
+ * on a fragmented heap, and what mbedTLS costs is a number chosen up front rather
+ * than one observed afterwards. MEMORY_DEBUG is what makes that number
+ * defensible: mbedtls_memory_buffer_alloc_max_get reports the high-water mark, so
+ * the buffer is sized from measurement. */
+#define MBEDTLS_MEMORY_BUFFER_ALLOC_C
+#define MBEDTLS_MEMORY_DEBUG
+
 /* Route PSA crypto's randomness through an integrator-supplied callback rather
  * than PSA's internal entropy pool. mbedTLS 3.6's TLS 1.3 path is built on PSA,
  * so psa_crypto_init() must succeed before any TLS 1.3 handshake — and the

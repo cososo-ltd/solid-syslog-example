@@ -2,6 +2,7 @@
 #define APP_SIM_SIMULATED_EXISTING_APP_H
 
 #include <stdbool.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -30,6 +31,10 @@ extern "C"
      * one that was built after the allocator was set — including SolidSyslog, which
      * captures them at create time. */
     bool SimulatedExistingApp_StartCrypto(void);
+
+    /* High-water mark of the static mbedTLS buffer, for sizing it from measurement
+     * rather than guesswork. */
+    size_t SimulatedExistingApp_MbedTlsPeak(void);
 
 #ifdef __cplusplus
 }
