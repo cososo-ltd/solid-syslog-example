@@ -11,11 +11,10 @@
 #define DEVICE_UART0_BASE ((uintptr_t) 0x40004000U)
 
 /* Twice the measured high-water mark, or the FreeRTOS floor where that is below
- * it — as the service seam still is, being idle. Whatever deepens a seam grows
- * it here and is charged for it. The reported figure is high-water usage, which
- * does not depend on the allocation. */
+ * it. Whatever deepens a seam grows it here and is charged for it. The reported
+ * figure is high-water usage, which does not depend on the allocation. */
 #define LOG_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE * 4U)
-#define SERVICE_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE)
+#define SERVICE_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE * 4U)
 #define LOG_TASK_PRIORITY (tskIDLE_PRIORITY + 1U)
 #define SERVICE_TASK_PRIORITY (tskIDLE_PRIORITY + 1U)
 
