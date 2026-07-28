@@ -14,6 +14,8 @@
 #define SERVICE_POLL_MS 20U
 
 static TaskHandle_t s_handle = NULL;
+static StaticTask_t s_taskBuffer;
+static StackType_t s_stack[SERVICE_TASK_STACK_WORDS];
 static SemaphoreHandle_t s_reachedIdle = NULL;
 
 static void ServiceTask_Entry(void* parameters)
@@ -36,14 +38,16 @@ bool ServiceTask_Create(void)
     {
         return false;
     }
-    return xTaskCreate(
-               ServiceTask_Entry,
-               "service",
-               SERVICE_TASK_STACK_WORDS,
-               NULL,
-               SERVICE_TASK_PRIORITY,
-               &s_handle
-           ) == pdPASS;
+    s_handle = xTaskCreateStatic(
+        ServiceTask_Entry,
+        "service",
+        SERVICE_TASK_STACK_WORDS,
+        NULL,
+        SERVICE_TASK_PRIORITY,
+        s_stack,
+        &s_taskBuffer
+    );
+    return s_handle != NULL;
 }
 
 TaskHandle_t ServiceTask_Handle(void)

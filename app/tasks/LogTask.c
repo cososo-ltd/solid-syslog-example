@@ -12,6 +12,8 @@
 #include "semphr.h"
 
 static TaskHandle_t s_handle = NULL;
+static StaticTask_t s_taskBuffer;
+static StackType_t s_stack[LOG_TASK_STACK_WORDS];
 static SemaphoreHandle_t s_reachedIdle = NULL;
 static SemaphoreHandle_t s_emitRequested = NULL;
 static SemaphoreHandle_t s_emitDone = NULL;
@@ -51,7 +53,16 @@ bool LogTask_Create(void)
     {
         return false;
     }
-    return xTaskCreate(LogTask_Entry, "log", LOG_TASK_STACK_WORDS, NULL, LOG_TASK_PRIORITY, &s_handle) == pdPASS;
+    s_handle = xTaskCreateStatic(
+        LogTask_Entry,
+        "log",
+        LOG_TASK_STACK_WORDS,
+        NULL,
+        LOG_TASK_PRIORITY,
+        s_stack,
+        &s_taskBuffer
+    );
+    return s_handle != NULL;
 }
 
 TaskHandle_t LogTask_Handle(void)

@@ -143,7 +143,18 @@ int main(void)
         (void) printf("[device] FATAL: application task create failed\n");
         SemihostingExit(1);
     }
-    if (xTaskCreate(HarnessTask, "harness", HARNESS_TASK_STACK_WORDS, NULL, HARNESS_TASK_PRIORITY, NULL) != pdPASS)
+    static StaticTask_t harnessTaskBuffer;
+    static StackType_t harnessStack[HARNESS_TASK_STACK_WORDS];
+
+    if (xTaskCreateStatic(
+            HarnessTask,
+            "harness",
+            HARNESS_TASK_STACK_WORDS,
+            NULL,
+            HARNESS_TASK_PRIORITY,
+            harnessStack,
+            &harnessTaskBuffer
+        ) == NULL)
     {
         (void) printf("[device] FATAL: harness task create failed\n");
         SemihostingExit(1);
