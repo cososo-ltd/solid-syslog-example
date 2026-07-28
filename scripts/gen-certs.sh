@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# The test secrets for ./run.sh: one CA, a collector server certificate, a device
-# client certificate for mTLS, and the device's provisioned symmetric keys.
+# The test secrets for ./run.sh: one CA, a collector server certificate, a broker
+# server certificate, a device client certificate for mTLS, and the device's
+# provisioned symmetric keys.
 #
 # Regenerated on every run and never committed. Nothing here is a secret worth
 # keeping, and a fresh PKI each run is what stops the device quietly passing
@@ -18,9 +19,9 @@ set -euo pipefail
 OUT="${1:-/w/build/certs}"
 DAYS=3650
 
-# The address the device reaches the collector on: QEMU's slirp gateway. It must
-# appear as a SAN or the device's hostname verification rejects the collector.
-COLLECTOR_IP="10.0.2.2"
+# The address the device reaches everything on: QEMU's slirp gateway. It must
+# appear as a SAN or the device's hostname verification rejects the peer.
+GATEWAY_IP="10.0.2.2"
 
 mkdir -p "$OUT"
 cd "$OUT"
@@ -39,7 +40,17 @@ openssl req -new -key collector.key \
     -subj "/O=solid-syslog-example/CN=collector" -out collector.csr 2>/dev/null
 openssl x509 -req -in collector.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
     -days "$DAYS" -sha256 -out collector.crt \
-    -extfile <(printf 'subjectAltName=IP:%s\nextendedKeyUsage=serverAuth\n' "$COLLECTOR_IP") 2>/dev/null
+    -extfile <(printf 'subjectAltName=IP:%s\nextendedKeyUsage=serverAuth\n' "$GATEWAY_IP") 2>/dev/null
+
+# --- the broker (server) -----------------------------------------------------
+# The system the device already speaks mTLS to, before SolidSyslog exists. Its
+# own certificate rather than the collector's, because it is a different peer.
+newkey broker.key
+openssl req -new -key broker.key \
+    -subj "/O=solid-syslog-example/CN=broker" -out broker.csr 2>/dev/null
+openssl x509 -req -in broker.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
+    -days "$DAYS" -sha256 -out broker.crt \
+    -extfile <(printf 'subjectAltName=IP:%s\nextendedKeyUsage=serverAuth\n' "$GATEWAY_IP") 2>/dev/null
 
 # --- the device (client, for mTLS) -------------------------------------------
 newkey device.key
@@ -57,7 +68,7 @@ for name in device-storage log-store; do
     openssl rand -out "${name}.key" 32
 done
 
-rm -f collector.csr device.csr ca.srl
+rm -f collector.csr broker.csr device.csr ca.srl
 chmod 644 ./*.crt ./*.key
 
 echo "PKI in ${OUT}: $(ls *.crt *.key | tr '\n' ' ')"

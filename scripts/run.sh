@@ -39,7 +39,7 @@ echo "=== build (${TAG}) ==="
 cmake --build "$BUILD_DIR" -j"$(nproc)"
 [ -f "$ELF" ] || { echo "FAIL: $ELF not built" >&2; exit 1; }
 
-echo "=== prove the oracle listeners ==="
+echo "=== prove the listeners ==="
 set +e
 SMOKE_OUT="$(ORACLE_LOG_DIR="$ORACLE_LOG_DIR" bash "${REPO}/scripts/smoke-oracle.sh")"
 SMOKE_RC=$?
@@ -137,7 +137,7 @@ fi
 verdict="PASS"
 exit_code=0
 if [ "$SMOKE_RC" -ne 0 ]; then
-    verdict="FAIL (${SMOKE_RC} oracle listener(s) unproved)"; exit_code=1
+    verdict="FAIL (${SMOKE_RC} listener(s) unproved)"; exit_code=1
 elif [ "$RC" -ne 0 ]; then
     verdict="FAIL (qemu exit $RC)"; exit_code=1
 elif [ "$delivered" != "1" ]; then
@@ -155,12 +155,12 @@ report="$(
     echo "================ solid-syslog-example :: run (${TAG}) ================"
     echo
     echo "--- Device (self-measured; app talks to no collector at Baseline) ---"
-    grep -E '^\[device\]|^\[report\]|^\[syslog\]' <<<"$APP_OUT" || true
+    grep -E '^\[device\]|^\[sim\]|^\[report\]|^\[syslog\]' <<<"$APP_OUT" || true
     echo
     echo "  size cross-check:"
     arm-none-eabi-size "$ELF" | sed 's/^/    /'
     echo
-    echo "--- Oracle listeners (proved before the device ran) ---"
+    echo "--- Listeners (proved before the device ran) ---"
     printf '%s\n' "$SMOKE_OUT"
     echo
     echo "--- Collector (syslog-ng) received ---"

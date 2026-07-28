@@ -1,11 +1,18 @@
 # The one way to run this repo — drive it with ./run.sh (which wraps this).
 #
-# Three containers:
-#   certs     : generates the test PKI (one CA, a collector certificate, a device
-#               certificate) into build/certs. Runs to completion before the
-#               oracle starts, because the oracle reads its certificate at boot.
+# Four containers:
+#   certs     : generates the test PKI (one CA, a collector certificate, a broker
+#               certificate, a device certificate) into build/certs. Runs to
+#               completion before anything else starts, because both servers read
+#               their certificate at boot.
 #   syslog-ng : the collector oracle (the same balabit image the BDD harness uses).
 #               Listens on UDP, TCP and TLS/mTLS from the Baseline onwards.
+#   broker    : the system the simulated device already talks to. Nothing to do
+#               with syslog — it stands in for the cloud or broker connection a
+#               secure device holds anyway, so that the mTLS the baseline claims
+#               to speak is a session it really opens. Its cost is therefore in
+#               the baseline, and SolidSyslog is charged only what a second
+#               concurrent session adds.
 #   run       : the cross image (arm-none-eabi-gcc + qemu-system-arm). It shares
 #               syslog-ng's network namespace, so the app's QEMU slirp gateway
 #               (10.0.2.2) reaches the oracle exactly as it will from Minimal. At the Baseline the
@@ -33,6 +40,26 @@ services:
       certs:
         condition: service_completed_successfully
 
+  # -rev echoes each buffer back reversed, which is what lets both the smoke check
+  # and the device prove data crossed the session rather than only that the
+  # handshake completed. -Verify (capital V) requires the client certificate; the
+  # lower-case form would request one and accept a client that sent none. And
+  # -verify_return_error, because s_server's default is to report a verification
+  # failure and carry on — required is not the same as trusted, which is the
+  # distinction the collector's own mTLS port already turns on.
+  broker:
+    image: *cross-image
+    network_mode: "service:syslog-ng"
+    volumes:
+      - ../build/certs:/certs:ro
+    depends_on:
+      certs:
+        condition: service_completed_successfully
+    command: >
+      openssl s_server -accept 8883 -rev -quiet
+      -cert /certs/broker.crt -key /certs/broker.key
+      -CAfile /certs/ca.crt -Verify 1 -verify_return_error
+
   run:
     image: *cross-image
     # Root so it can write the bind-mounted workspace on a Linux CI runner (the
@@ -41,6 +68,7 @@ services:
     network_mode: "service:syslog-ng"
     depends_on:
       - syslog-ng
+      - broker
     # The dependency trees the build consumes. Set explicitly so they are present
     # regardless of which user's shell profile the image exports them from.
     environment:
