@@ -12,9 +12,9 @@ extern "C"
 {
 #endif
 
-    /* The log source seam: the one place this device logs from. Its stack figure
-     * only means anything if logging happens here and not on the harness that
-     * asks for it. */
+    /* The log source seam. With a buffer in front of the sender any task could
+     * call Log for the same cost; this stays one task so the stack figure has a
+     * single owner. */
     bool LogTask_Create(void);
     TaskHandle_t LogTask_Handle(void);
 
