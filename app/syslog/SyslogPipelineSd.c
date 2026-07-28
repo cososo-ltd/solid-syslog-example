@@ -8,10 +8,12 @@
 #include "SolidSyslogSdValue.h"
 #include "SolidSyslogStructuredDataDefinition.h"
 
-/* Server authentication until Init says otherwise: a missing client credential
- * disables mTLS without failing the connection, and claiming protection the device
- * does not have would defeat the point of reporting it at all. */
+/* The weakest honest answer until Init says otherwise. A missing credential
+ * downgrades the transport or the store policy without failing anything, so
+ * claiming protection the device does not have would defeat the point of
+ * reporting it at all. */
 static const char* s_transport = "tls";
+static const char* s_atRest = "none";
 
 /* Called once per record. A non-zero enterprise number is what makes the SD-ID
  * private — _Begin emits "name@number" for one, a bare IANA "name" for 0. The
@@ -23,7 +25,7 @@ static void SyslogPipelineSd_Format(struct SolidSyslogStructuredData* base, stru
 
     SolidSyslogSdElement_Begin(element, "logPipeline", SYSLOG_ENTERPRISE_NUMBER);
     SolidSyslogSdValue_String(SolidSyslogSdElement_Param(element, "transport"), s_transport);
-    SolidSyslogSdValue_String(SolidSyslogSdElement_Param(element, "atRest"), "hmac-sha256");
+    SolidSyslogSdValue_String(SolidSyslogSdElement_Param(element, "atRest"), s_atRest);
     SolidSyslogSdElement_End(element);
 }
 
@@ -31,8 +33,9 @@ static void SyslogPipelineSd_Format(struct SolidSyslogStructuredData* base, stru
  * stateless one is a vtable this application owns. */
 static struct SolidSyslogStructuredData s_pipelineSd = {SyslogPipelineSd_Format};
 
-struct SolidSyslogStructuredData* SyslogPipelineSd_Init(bool mutualTls)
+struct SolidSyslogStructuredData* SyslogPipelineSd_Init(const char* transport, const char* atRest)
 {
-    s_transport = mutualTls ? "mtls" : "tls";
+    s_transport = transport;
+    s_atRest = atRest;
     return &s_pipelineSd;
 }
