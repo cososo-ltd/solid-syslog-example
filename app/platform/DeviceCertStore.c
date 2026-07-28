@@ -25,6 +25,7 @@ static struct
     uint8_t Key[DEVICE_SYMMETRIC_KEY_LENGTH];
 } s_symmetricKeys[] = {
     {"device-storage", "build/certs/device-storage.key", {0}},
+    {"log-store", "build/certs/log-store.key", {0}},
 };
 
 /* One scratch buffer, reused for each file: mbedtls_x509_crt_parse and
