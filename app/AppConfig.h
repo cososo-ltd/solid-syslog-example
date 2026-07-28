@@ -25,16 +25,16 @@
  * build and FROZEN at Baseline — only *usage* moves across tags, never the allocation,
  * so the stack figures we publish are always a delta on the same allocation.
  * Sizes are in FreeRTOS stack words (StackType_t). */
-#define LOG_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE * 8U) /* ~4 KiB */
+#define LOG_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE * 4U) /* ~2 KiB */
 #define SERVICE_TASK_STACK_WORDS \
-    (configMINIMAL_STACK_SIZE * 24U) /* ~12 KiB — headroom for the TLS handshake path from Secure */
+    (configMINIMAL_STACK_SIZE * 16U) /* ~8 KiB — the TLS handshake path is the deepest */
 #define LOG_TASK_PRIORITY (tskIDLE_PRIORITY + 1U)
 #define SERVICE_TASK_PRIORITY (tskIDLE_PRIORITY + 1U)
 
 /* The harness task brings up the simulated existing application, waits for the
  * two seams to reach idle, measures, and exits. It is test scaffolding, not part
  * of the device, and is not itself measured. */
-#define HARNESS_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE * 24U)
+#define HARNESS_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE * 8U)
 #define HARNESS_TASK_PRIORITY (tskIDLE_PRIORITY + 1U)
 
 /* Frozen baseline figures (Baseline absolutes), read via semihosting relative to
