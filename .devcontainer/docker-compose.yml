@@ -1,0 +1,54 @@
+# The development environment: the same two containers ./run.sh uses, but held
+# open so we can work inside them.
+#
+# Deliberately a separate compose file from docker/docker-compose.yml, which is
+# the build-and-measure path. That file's teardown removes everything in its
+# project; if the devcontainer lived there, running the measurement would delete
+# the container we are sitting in.
+#
+# The image digests below must match docker/docker-compose.yml — the point of
+# working in here is to develop against exactly what CI builds.
+
+services:
+  # The collector, same as the measurement path. Up for the whole session, so a
+  # build inside the devcontainer can send to it without bringing anything up.
+  syslog-ng:
+    image: balabit/syslog-ng:4.8.2@sha256:728cc5b63b9044ad5f18062bac73fd5c30bb7ad256c2aa12799d924d4f6f1e72
+    volumes:
+      - ../docker/syslog-ng/syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf:ro
+      - oracle-output:/var/log/syslog-ng
+
+  dev:
+    image: ghcr.io/cososo-ltd/cpputest-freertos-cross:sha-ad10bf2@sha256:481267bea7200641fac41d7136e7e08deeba1b311e9873aa6d1c311db5b4cf58
+    # Share the collector's network namespace so QEMU's slirp gateway (10.0.2.2)
+    # reaches it from in here exactly as it does under ./run.sh.
+    network_mode: "service:syslog-ng"
+    depends_on:
+      - syslog-ng
+    environment:
+      FREERTOS_KERNEL_PATH: /opt/freertos/kernel
+      LWIP_PATH: /opt/lwip
+      MBEDTLS_DIR: /opt/mbedtls
+      FATFS_PATH: /opt/fatfs
+    volumes:
+      # /w, not /workspaces/... : CMakeCache.txt records the source directory it
+      # was configured against, so the devcontainer and ./run.sh have to agree on
+      # the mount path or they cannot share build/baseline-cross.
+      - ..:/w:cached
+      - oracle-output:/collector:ro
+    working_dir: /w
+    # Let gdb attach to a QEMU gdbstub from in here.
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+    # One ownership contract for /w. docker/docker-compose.yml runs as root so a
+    # Linux CI runner can write the bind-mounted checkout; if this ran as a normal
+    # user, the two paths would write the shared build tree as different owners and
+    # on a Linux host — where bind mounts preserve real UIDs, unlike Docker Desktop —
+    # whichever ran second could not overwrite the first's artefacts.
+    user: "0"
+    command: sleep infinity
+
+volumes:
+  oracle-output:
