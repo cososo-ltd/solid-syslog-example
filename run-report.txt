@@ -1,4 +1,4 @@
-================ solid-syslog-example :: run (Baseline) ================
+================ solid-syslog-example :: run (Minimal) ================
 
 --- Device (self-measured; app talks to no collector at Baseline) ---
 [device] solid-syslog-example (FreeRTOS + lwIP + mbedTLS + FatFs)
@@ -6,11 +6,11 @@
 [device]   sim app (lwIP up, FatFs mounted, mTLS credentials loaded, mbedTLS linked): ready
 [report] --- SolidSyslog cost above baseline (simulated existing application) ---
 [report] key,current,baseline,used_above_baseline
-[report] flash_text,345832,345752,80
+[report] flash_text,345832,345832,0
 [report] flash_data,236,236,0
-[report] static_bss,164508,164500,8
-[report] heap_used,39224,39032,192
-[report] stack_log,120,56,64
+[report] static_bss,164508,164508,0
+[report] heap_used,39224,39224,0
+[report] stack_log,120,120,0
 [report] stack_service,56,56,0
 [report] --- end ---
 [device] ready
@@ -29,13 +29,8 @@
 --- Collector (syslog-ng) received ---
   (nothing — the Baseline sends no records; SolidSyslog logs from Minimal)
 
---- Baseline self-check (vs measurements/Baseline.csv, tolerance 64 B) ---
-  OK    flash_text: 345832 (expected 345832, Δ0)
-  OK    flash_data: 236 (expected 236, Δ0)
-  OK    static_bss: 164508 (expected 164508, Δ0)
-  OK    heap_used: 39224 (expected 39224, Δ0)
-  OK    stack_log: 120 (expected 120, Δ0)
-  OK    stack_service: 56 (expected 56, Δ0)
+--- Baseline self-check (vs measurements/Minimal.csv, tolerance 64 B) ---
+  (no committed measurements/Minimal.csv yet — rerun with CAPTURE=1 to freeze it)
 
-RESULT: PASS
+RESULT: PASS (self-check skipped — no committed baseline)
 ===================================================================
