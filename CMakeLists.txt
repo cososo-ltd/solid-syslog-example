@@ -60,6 +60,10 @@ set(LWIP_CONTRIB_FREERTOS_DIR "${LWIP_DIR}/contrib/ports/freertos")
 # The configure echoes back which roles it filled.
 set(SOLIDSYSLOG_PLATFORMS "LwipRaw" CACHE STRING "" FORCE)
 
+# Compile-time limits. Every tunable is #ifndef-guarded, so this file only needs
+# the ones this device wants changed.
+set(SOLIDSYSLOG_USER_TUNABLES_FILE "${APP_DIR}/config/solid_syslog_tunables.h")
+
 include(FetchContent)
 FetchContent_Declare(SolidSyslog
     GIT_REPOSITORY https://github.com/cososo-ltd/solid-syslog.git
