@@ -11,3 +11,4 @@
 # after it, and this history has already had one inserted.
 Baseline	Baseline	a device that already networks, stores, and holds an mTLS session — before any syslog
 linked	Linked	the core library and lwIP raw-mode networking, linked but not yet called
+error-handler	Error handler	a fault inside the logger reaches the console instead of being silent
