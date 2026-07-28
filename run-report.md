@@ -1,4 +1,4 @@
-# solid-syslog-example — run (Baseline)
+# solid-syslog-example — run (linked)
 
 ## Device (self-measured)
 
@@ -13,8 +13,8 @@
 [report] flash_data,316,316,0
 [report] static_bss,110876,110876,0
 [report] heap_used,4440,4440,0
-[report] mbedtls_peak,21340,21332,8
-[report] mbedtls_free,11428,11436,-8
+[report] mbedtls_peak,21328,21332,-4
+[report] mbedtls_free,11440,11436,4
 [report] lwip_mem_free,7576,7576,0
 [report] lwip_pbufs_free,14,14,0
 [report] stack_log,120,120,0
@@ -49,15 +49,15 @@
 (nothing — this device sends no records yet)
 ```
 
-## Self-check (vs measurements/Baseline.csv)
+## Self-check (vs measurements/linked.csv)
 
 ```text
   OK    flash_text: 349992 (expected 349992, Δ0)
   OK    flash_data: 316 (expected 316, Δ0)
   OK    static_bss: 110876 (expected 110876, Δ0)
   OK    heap_used: 4440 (expected 4440, Δ0)
-  OK    mbedtls_peak: 21340 (expected 21332, Δ8)
-  OK    mbedtls_free: 11428 (expected 11436, Δ8)
+  OK    mbedtls_peak: 21328 (expected 21332, Δ4)
+  OK    mbedtls_free: 11440 (expected 11436, Δ4)
   OK    lwip_mem_free: 7576 (expected 7576, Δ0)
   OK    lwip_pbufs_free: 14 (expected 14, Δ0)
   OK    stack_log: 120 (expected 120, Δ0)
