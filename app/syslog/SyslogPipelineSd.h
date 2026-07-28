@@ -8,9 +8,14 @@
 #ifndef APP_SYSLOG_PIPELINE_SD_H
 #define APP_SYSLOG_PIPELINE_SD_H
 
+#include <stdbool.h>
+
 struct SolidSyslogStructuredData;
 
-/** The shared instance, for SolidSyslogConfig.Sd. Stateless, so never NULL. */
-struct SolidSyslogStructuredData* SyslogPipelineSd_Get(void);
+/** Record what the pipeline was actually configured with and return the shared
+ *  instance, for SolidSyslogConfig.Sd. Never NULL. @p mutualTls must reflect the
+ *  stream config rather than the intent: reporting protection the device does not
+ *  have is worse than reporting none. */
+struct SolidSyslogStructuredData* SyslogPipelineSd_Init(bool mutualTls);
 
 #endif /* APP_SYSLOG_PIPELINE_SD_H */
