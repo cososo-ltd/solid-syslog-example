@@ -47,9 +47,10 @@
 #define SYSLOG_COLLECTOR_HOST "10.0.2.2"
 #define SYSLOG_COLLECTOR_PORT ((uint16_t) 5601U)
 
-/* Depth enough to absorb a burst while the sender is busy — a full TLS handshake
- * from Secure — without sizing for a backlog the store is there to hold. */
-#define SYSLOG_BUFFER_RECORDS 8U
+/* Absorbs records logged while the service task is busy sending. Many devices can
+ * reduce this further: the store holds the backlog, so the ring only has to cover
+ * a burst. */
+#define SYSLOG_BUFFER_RECORDS 4U
 
 /* Blocks live on the volume the device already mounts; each is one "<prefix>NN.log". */
 #define SYSLOG_STORE_PREFIX "syslog"
