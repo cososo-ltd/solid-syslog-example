@@ -22,7 +22,10 @@
 #define configTICK_RATE_HZ ((TickType_t) 100)
 #define configMAX_PRIORITIES 7
 #define configMINIMAL_STACK_SIZE ((unsigned short) 128)
-#define configTOTAL_HEAP_SIZE ((size_t) (96 * 1024))
+/* Only lwIP's own tcpip thread and its mailboxes allocate from here — everything
+ * the application creates is static, and mbedTLS has its own buffer. Sized from
+ * the heap_peak the device reports. */
+#define configTOTAL_HEAP_SIZE ((size_t) (12 * 1024))
 #define configMAX_TASK_NAME_LEN 16
 #define configUSE_TRACE_FACILITY 0
 #define configUSE_16_BIT_TICKS 0

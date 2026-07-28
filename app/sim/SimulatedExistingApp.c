@@ -10,6 +10,7 @@
 
 #include "SimulatedExistingApp.h"
 
+#include "AppConfig.h"
 #include "DeviceCertStore.h"
 #include "EthernetIf.h"
 
@@ -22,6 +23,7 @@
 #include "ff.h"
 
 #include "mbedtls/ctr_drbg.h"
+#include "mbedtls/memory_buffer_alloc.h"
 #include "mbedtls/pk.h"
 #include "mbedtls/platform.h"
 #include "mbedtls/ssl.h"
@@ -37,32 +39,18 @@
 #include <stdio.h>
 #include <string.h>
 
-/* mbedTLS allocates through the FreeRTOS heap, not newlib's.
- *
- * A device with a FreeRTOS heap does not want a second one growing towards it
- * from the other end, so this is how it would be wired regardless. It also makes
- * the allocation measurable: heap_used is configTOTAL_HEAP_SIZE minus
- * xPortGetFreeHeapSize, so anything mbedTLS takes from _sbrk instead is real RAM
- * that no figure in this repository would ever show. Parsed certificates now,
- * and the far larger TLS session buffers from Secure. */
-static void* MbedTlsCalloc(size_t count, size_t size)
-{
-    if ((count != 0U) && (size > (SIZE_MAX / count)))
-    {
-        return NULL;
-    }
-    const size_t bytes = count * size;
-    void* allocation = pvPortMalloc(bytes);
-    if (allocation != NULL)
-    {
-        (void) memset(allocation, 0, bytes);
-    }
-    return allocation;
-}
+/* Everything mbedTLS allocates comes out of this, and nothing else uses it. Sized
+ * from the high-water mark the device reports, so it grows when a step asks more
+ * of mbedTLS rather than carrying spare capacity in advance. */
+static uint8_t s_mbedtlsHeap[SIMULATED_APP_MBEDTLS_HEAP_BYTES];
 
-static void MbedTlsFree(void* allocation)
+size_t SimulatedExistingApp_MbedTlsPeak(void)
 {
-    vPortFree(allocation);
+    size_t maxUsed = 0;
+    size_t maxBlocks = 0;
+
+    mbedtls_memory_buffer_alloc_max_get(&maxUsed, &maxBlocks);
+    return maxUsed;
 }
 
 /* lwIP randomness source (referenced by arch/cc.h's LWIP_RAND for TCP ISN
@@ -255,7 +243,7 @@ bool SimulatedExistingApp_StartCrypto(void)
 {
     /* Before anything mbedTLS allocates, or the allocation lands on newlib's heap
      * and no figure this repository publishes ever sees it. */
-    mbedtls_platform_set_calloc_free(MbedTlsCalloc, MbedTlsFree);
+    mbedtls_memory_buffer_alloc_init(s_mbedtlsHeap, sizeof(s_mbedtlsHeap));
 
     /* 3.6's TLS 1.3 path is built on PSA, so no handshake succeeds until this has.
      * Process-global, and the library adapters deliberately never call it. */
