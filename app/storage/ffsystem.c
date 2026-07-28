@@ -57,6 +57,7 @@ static OS_EVENT* Mutex[FF_VOLUMES + 1]; /* Table of mutex pinter */
 #include "FreeRTOS.h"
 #include "semphr.h"
 static SemaphoreHandle_t Mutex[FF_VOLUMES + 1]; /* Table of mutex handle */
+static StaticSemaphore_t MutexBuffer[FF_VOLUMES + 1]; /* Statically allocated, so nothing here reaches the heap */
 
 #elif OS_TYPE == 4 /* CMSIS-RTOS */
 #include "cmsis_os.h"
@@ -93,7 +94,7 @@ int ff_mutex_create(/* Returns 1:Function succeeded or 0:Could not create the mu
     return (int) (err == OS_NO_ERR);
 
 #elif OS_TYPE == 3 /* FreeRTOS */
-    Mutex[vol] = xSemaphoreCreateMutex();
+    Mutex[vol] = xSemaphoreCreateMutexStatic(&MutexBuffer[vol]);
     return (int) (Mutex[vol] != NULL);
 
 #elif OS_TYPE == 4 /* CMSIS-RTOS */
