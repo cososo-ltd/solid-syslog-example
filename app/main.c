@@ -83,7 +83,7 @@ static void HarnessTask(void* parameters)
      * word, not ours. */
     bool logged = LogTask_EmitOnce(5000U);
     (void) printf("[device]   first record logged: %s\n", logged ? "yes" : "FAILED");
-    vTaskDelay(pdMS_TO_TICKS(500U));
+    vTaskDelay(pdMS_TO_TICKS(3000U));
 
     (void) Measure_Report();
 
