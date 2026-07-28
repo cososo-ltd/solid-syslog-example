@@ -30,6 +30,7 @@ const char* const MEASURE_KEYS[MEASURE_KEY_COUNT] = {
     "flash_data",
     "static_bss",
     "heap_used",
+    "heap_peak",
     "stack_log",
     "stack_service",
 };
@@ -49,6 +50,10 @@ void Measure_Current(MeasureValues* out)
     out->value[MEASURE_FLASH_DATA] = (int32_t) ((uintptr_t) _edata - (uintptr_t) _sdata);
     out->value[MEASURE_STATIC_BSS] = (int32_t) ((uintptr_t) _ebss - (uintptr_t) _sbss);
     out->value[MEASURE_HEAP_USED] = (int32_t) ((uint32_t) configTOTAL_HEAP_SIZE - (uint32_t) xPortGetFreeHeapSize());
+    /* What the device must actually provision: a TLS handshake frees working state
+     * on completion, so the figure above understates what was needed to reach it. */
+    out->value[MEASURE_HEAP_PEAK] =
+        (int32_t) ((uint32_t) configTOTAL_HEAP_SIZE - (uint32_t) xPortGetMinimumEverFreeHeapSize());
     out->value[MEASURE_STACK_LOG] = Measure_StackUsedBytes(LogTask_Handle(), LOG_TASK_STACK_WORDS);
     out->value[MEASURE_STACK_SERVICE] = Measure_StackUsedBytes(ServiceTask_Handle(), SERVICE_TASK_STACK_WORDS);
 }

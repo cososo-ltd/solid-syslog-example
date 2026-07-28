@@ -102,13 +102,17 @@ static void EthernetIf_LowLevelInit(struct netif* netif)
     netif->flags = (u8_t) (NETIF_FLAG_BROADCAST | NETIF_FLAG_ETHARP | NETIF_FLAG_LINK_UP);
 
     /* The ISR notifies this task, so it must exist before the IRQ is enabled. */
-    (void) xTaskCreate(
+    static StaticTask_t rxTaskBuffer;
+    static StackType_t rxStack[ETHERNETIF_RX_TASK_STACK_DEPTH];
+
+    EthernetIf_RxTaskHandle = xTaskCreateStatic(
         EthernetIf_RxTask,
         "ethrx",
         ETHERNETIF_RX_TASK_STACK_DEPTH,
         NULL,
         ETHERNETIF_RX_TASK_PRIORITY,
-        &EthernetIf_RxTaskHandle
+        rxStack,
+        &rxTaskBuffer
     );
 
     (void) smsc9220_init(dev, EthernetIf_WaitMs);
