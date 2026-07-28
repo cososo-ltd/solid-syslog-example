@@ -69,15 +69,9 @@
  * injected Sleep callback, so MBEDTLS_TIMING_C is unused. */
 #undef MBEDTLS_TIMING_C
 
-/* Route mbedTLS allocations through a runtime-installed calloc/free pair. By
- * default mbedTLS calls libc calloc/free, which on this target funnels through
- * newlib into the small 4 KiB syscall heap in Bdd/Targets/FreeRtos/Common/
- * Syscalls.c (shared with this target) — far too small for mbedTLS's
- * per-context allocations (IN/OUT buffers plus handshake state run ~10–20 KiB).
- * Enabling MBEDTLS_PLATFORM_MEMORY lets BddTargetTlsSender_MbedTls_LwipRawTcp.c
- * call mbedtls_platform_set_calloc_free(...) to redirect those allocations to
- * pvPortMalloc, which uses the 96 KiB heap_4 region — the textbook
- * FreeRTOS+mbedTLS integration. */
+/* Route mbedTLS allocations away from libc calloc/free, which on this target
+ * funnels through newlib into a 4 KiB syscall heap — far too small for mbedTLS's
+ * per-context allocations. Required by MBEDTLS_MEMORY_BUFFER_ALLOC_C below. */
 #define MBEDTLS_PLATFORM_MEMORY
 
 /* mbedTLS sub-allocates from one static buffer the device hands it, rather than
