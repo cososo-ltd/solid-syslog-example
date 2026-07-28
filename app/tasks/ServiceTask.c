@@ -17,6 +17,7 @@ static TaskHandle_t s_handle = NULL;
 static StaticTask_t s_taskBuffer;
 static StackType_t s_stack[SERVICE_TASK_STACK_WORDS];
 static SemaphoreHandle_t s_reachedIdle = NULL;
+static StaticSemaphore_t s_reachedIdleBuffer;
 
 static void ServiceTask_Entry(void* parameters)
 {
@@ -33,7 +34,7 @@ static void ServiceTask_Entry(void* parameters)
 
 bool ServiceTask_Create(void)
 {
-    s_reachedIdle = xSemaphoreCreateBinary();
+    s_reachedIdle = xSemaphoreCreateBinaryStatic(&s_reachedIdleBuffer);
     if (s_reachedIdle == NULL)
     {
         return false;

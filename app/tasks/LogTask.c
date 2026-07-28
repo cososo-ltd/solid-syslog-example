@@ -17,6 +17,9 @@ static StackType_t s_stack[LOG_TASK_STACK_WORDS];
 static SemaphoreHandle_t s_reachedIdle = NULL;
 static SemaphoreHandle_t s_emitRequested = NULL;
 static SemaphoreHandle_t s_emitDone = NULL;
+static StaticSemaphore_t s_reachedIdleBuffer;
+static StaticSemaphore_t s_emitRequestedBuffer;
+static StaticSemaphore_t s_emitDoneBuffer;
 
 static void LogTask_Entry(void* parameters)
 {
@@ -46,9 +49,9 @@ static void LogTask_Entry(void* parameters)
 
 bool LogTask_Create(void)
 {
-    s_reachedIdle = xSemaphoreCreateBinary();
-    s_emitRequested = xSemaphoreCreateBinary();
-    s_emitDone = xSemaphoreCreateBinary();
+    s_reachedIdle = xSemaphoreCreateBinaryStatic(&s_reachedIdleBuffer);
+    s_emitRequested = xSemaphoreCreateBinaryStatic(&s_emitRequestedBuffer);
+    s_emitDone = xSemaphoreCreateBinaryStatic(&s_emitDoneBuffer);
     if ((s_reachedIdle == NULL) || (s_emitRequested == NULL) || (s_emitDone == NULL))
     {
         return false;
