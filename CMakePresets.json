@@ -1,0 +1,19 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": { "major": 3, "minor": 25, "patch": 0 },
+    "configurePresets": [
+        {
+            "name": "baseline-cross",
+            "displayName": "Baseline (ARM Cortex-M3, QEMU mps2-an385)",
+            "binaryDir": "${sourceDir}/build/baseline-cross",
+            "toolchainFile": "${sourceDir}/cmake/arm-none-eabi.cmake",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "MinSizeRel",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+            }
+        }
+    ],
+    "buildPresets": [
+        { "name": "baseline-cross", "configurePreset": "baseline-cross" }
+    ]
+}
