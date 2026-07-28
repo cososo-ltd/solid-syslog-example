@@ -7,8 +7,8 @@
 [device]   first record logged: yes
 [report] --- SolidSyslog cost above baseline (simulated existing application) ---
 [report] key,current,baseline,used_above_baseline
-[report] flash_text,359680,345832,13848
-[report] flash_data,644,236,408
+[report] flash_text,359800,345832,13968
+[report] flash_data,648,236,412
 [report] static_bss,169144,164508,4636
 [report] heap_used,55744,39224,16520
 [report] stack_log,832,120,712
@@ -18,7 +18,7 @@
 
   size cross-check:
        text	   data	    bss	    dec	    hex	filename
-     359672	    652	 169144	 529468	  8143c	/w/build/baseline-cross/baseline.elf
+     359792	    656	 169144	 529592	  814b8	/w/build/baseline-cross/baseline.elf
 
 --- Oracle listeners (proved before the device ran) ---
   OK    udp   5514
@@ -28,8 +28,8 @@
   OK    mtls  6515 — refused a client with no certificate
 
 --- Collector (syslog-ng) received ---
-  wire   <134>1 2026-07-28T13:20:07.100000Z 10.0.2.15 solid-syslog-example - BOOT [meta sequenceId="1" sysUpTime="210"][timeQuality tzKnown="1" isSynced="0"][origin software="solid-syslog-example" swVersion="0.1.0" enterpriseId="32473" ip="10.0.2.15"] ﻿device started
-  parsed PRIORITY=134 TIMESTAMP=2026-07-28T13:20:07+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA=[meta sequenceId="1" sysUpTime="210"][timeQuality tzKnown="1" isSynced="0"][origin software="solid-syslog-example" swVersion="0.1.0" enterpriseId="32473" ip="10.0.2.15"] MSG=device started
+  wire   <134>1 2026-07-28T13:52:57.100000Z 10.0.2.15 solid-syslog-example - BOOT [meta sequenceId="1" sysUpTime="210"][timeQuality tzKnown="1" isSynced="0"][origin software="solid-syslog-example" swVersion="0.1.0" enterpriseId="32473" ip="10.0.2.15"][logPipeline@32473 transport="tls" atRest="hmac-sha256"] ﻿device started
+  parsed PRIORITY=134 TIMESTAMP=2026-07-28T13:52:57+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA=[meta sequenceId="1" sysUpTime="210"][timeQuality tzKnown="1" isSynced="0"][origin software="solid-syslog-example" swVersion="0.1.0" enterpriseId="32473" ip="10.0.2.15"][logPipeline@32473 transport="tls" atRest="hmac-sha256"] MSG=device started
 
 --- Baseline self-check (vs measurements/Secure.csv, tolerance 64 B) ---
   (no committed measurements/Secure.csv yet — rerun with CAPTURE=1 to freeze it)
