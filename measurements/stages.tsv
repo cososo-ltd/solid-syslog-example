@@ -1,0 +1,10 @@
+# The stages of the integration, in order, one row per stage — which is one row
+# per commit. Tab-separated: slug <TAB> name <TAB> what it gives you.
+#
+# The last row is the stage this commit builds, and scripts/run.sh names its run
+# after it. A stage adds its own row, so row N is commit N counting back from the
+# last stage, which is how a sweep of the whole history finds each one.
+#
+# Slugs, not numbers: a stage inserted mid-history would renumber every stage
+# after it.
+Baseline	Baseline	a device that already networks, stores, and holds an mTLS session — before any syslog
