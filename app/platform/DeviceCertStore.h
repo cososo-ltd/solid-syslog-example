@@ -22,6 +22,8 @@
 #include "mbedtls/x509_crt.h"
 
 #include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -44,6 +46,10 @@ extern "C"
 
     /** Seeded DRBG for handshakes. NULL until Load succeeds. */
     struct mbedtls_ctr_drbg_context* DeviceCertStore_Rng(void);
+
+    /** Copies the at-rest log-store key out. False if unloaded or @p capacity is
+     *  too small; the key never leaves this module except by copy. */
+    bool DeviceCertStore_StoreKey(uint8_t* out, size_t capacity, size_t* length);
 
 #ifdef __cplusplus
 }

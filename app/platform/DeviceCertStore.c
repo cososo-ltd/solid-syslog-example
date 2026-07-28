@@ -13,6 +13,7 @@
 #define CERT_PATH_CA "build/certs/ca.crt"
 #define CERT_PATH_CLIENT "build/certs/device.crt"
 #define CERT_PATH_CLIENT_KEY "build/certs/device.key"
+#define KEY_PATH_STORE "build/certs/store.key"
 
 /* One scratch buffer, reused for each file: mbedtls_x509_crt_parse and
  * mbedtls_pk_parse_key copy what they need into their own objects, so nothing
@@ -23,6 +24,7 @@ static mbedtls_x509_crt s_caChain;
 static mbedtls_x509_crt s_clientChain;
 static mbedtls_pk_context s_clientKey;
 static mbedtls_ctr_drbg_context s_rng;
+static uint8_t s_storeKey[32];
 static bool s_loaded;
 
 /* NOT an entropy source. mps2-an385 has no TRNG and QEMU models none, so this
@@ -120,6 +122,15 @@ bool DeviceCertStore_Load(void)
         return false;
     }
 
+    size_t storeKeyLength = 0;
+    if (!SemihostingIo_ReadFile(KEY_PATH_STORE, s_scratch, sizeof(s_scratch), &storeKeyLength)
+        || (storeKeyLength != sizeof(s_storeKey)))
+    {
+        (void) printf("[sim] cert store: %s missing or not %u bytes\n", KEY_PATH_STORE, (unsigned) sizeof(s_storeKey));
+        return false;
+    }
+    (void) memcpy(s_storeKey, s_scratch, sizeof(s_storeKey));
+
     s_loaded = true;
     return true;
 }
@@ -142,4 +153,16 @@ struct mbedtls_pk_context* DeviceCertStore_ClientKey(void)
 struct mbedtls_ctr_drbg_context* DeviceCertStore_Rng(void)
 {
     return s_loaded ? &s_rng : NULL;
+}
+
+bool DeviceCertStore_StoreKey(uint8_t* out, size_t capacity, size_t* length)
+{
+    if (!s_loaded || (capacity < sizeof(s_storeKey)))
+    {
+        return false;
+    }
+
+    (void) memcpy(out, s_storeKey, sizeof(s_storeKey));
+    *length = sizeof(s_storeKey);
+    return true;
 }

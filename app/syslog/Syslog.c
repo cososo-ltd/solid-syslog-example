@@ -15,7 +15,7 @@
 #include "SolidSyslogBlockStore.h"
 #include "SolidSyslogCircularBuffer.h"
 #include "SolidSyslogConfig.h"
-#include "SolidSyslogCrc16Policy.h"
+#include "SolidSyslogMbedTlsHmacSha256Policy.h"
 #include "SolidSyslogEndpoint.h"
 #include "SolidSyslogEndpointHost.h"
 #include "SolidSyslogFatFsFile.h"
@@ -107,6 +107,14 @@ static void SyslogOriginIpAt(struct SolidSyslogSdValue* value, void* context, si
     SolidSyslogSdValue_String(value, address);
 }
 
+/* Fetched per seal and per verify, never held by the policy. */
+static bool SyslogStoreKey(void* context, uint8_t* keyOut, size_t capacity, size_t* keyLengthOut)
+{
+    (void) context;
+
+    return DeviceCertStore_StoreKey(keyOut, capacity, keyLengthOut);
+}
+
 /* Bounds the connect spin so it yields instead of busy-waiting. */
 static void SyslogSleep(int milliseconds)
 {
@@ -181,6 +189,8 @@ void Syslog_Start(void)
     };
     s_sd[2] = SolidSyslogOriginSd_Create(&originConfig);
 
+    struct SolidSyslogMbedTlsHmacSha256PolicyConfig hmacConfig = {.GetKey = SyslogStoreKey};
+
     /* One file per block on the volume the device already mounts, oldest discarded
      * when the ceiling is reached — a device that cannot reach its collector should
      * keep the newest evidence, not stop logging. */
@@ -188,7 +198,7 @@ void Syslog_Start(void)
         .BlockDevice = SolidSyslogFileBlockDevice_Create(SolidSyslogFatFsFile_Create(), SYSLOG_STORE_PREFIX, 0U),
         .MaxBlocks = SYSLOG_STORE_BLOCKS,
         .DiscardPolicy = SOLIDSYSLOG_DISCARD_POLICY_OLDEST,
-        .SecurityPolicy = SolidSyslogCrc16Policy_Create(),
+        .SecurityPolicy = SolidSyslogMbedTlsHmacSha256Policy_Create(&hmacConfig),
     };
 
     struct SolidSyslogConfig config = {
