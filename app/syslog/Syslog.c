@@ -4,9 +4,9 @@
  * the service task drains and sends. The mutex is what makes those two sides
  * safe on different tasks.
  *
- * The record carries a meta SD-ELEMENT alongside the filled-in header fields.
- * Unlike a header field, an SD PARAM has no NILVALUE: an unset one is omitted
- * entirely rather than written as "-". */
+ * The record carries meta and timeQuality SD-ELEMENTs alongside the filled-in
+ * header fields. Unlike a header field, an SD PARAM has no NILVALUE: an unset one
+ * is omitted entirely rather than written as "-". */
 
 #include "Syslog.h"
 
@@ -15,6 +15,7 @@
 #include "SolidSyslogEndpoint.h"
 #include "SolidSyslogEndpointHost.h"
 #include "SolidSyslogFreeRtosMutex.h"
+#include "SolidSyslogFreeRtosSysUpTime.h"
 #include "SolidSyslogLwipRawAddress.h"
 #include "SolidSyslogLwipRawMarshal.h"
 #include "SolidSyslogLwipRawResolver.h"
@@ -23,6 +24,8 @@
 #include "SolidSyslogNullStore.h"
 #include "SolidSyslogStdAtomicCounter.h"
 #include "SolidSyslogStreamSender.h"
+#include "SolidSyslogTimeQuality.h"
+#include "SolidSyslogTimeQualitySd.h"
 #include "SyslogFields.h"
 
 #include "lwip/tcpip.h"
@@ -48,7 +51,16 @@ static struct SolidSyslog* s_logger = NULL;
 static uint8_t s_ring[SOLIDSYSLOG_CIRCULAR_BUFFER_RING_BYTES(SYSLOG_BUFFER_RECORDS)];
 
 /* The logger reads these on every record, so they outlive Syslog_Start. */
-static struct SolidSyslogStructuredData* s_sd[1];
+static struct SolidSyslogStructuredData* s_sd[2];
+
+/* One reading at boot, then free-running on the tick — accurate enough to stamp a
+ * record, never synchronised to anything. */
+static void SyslogTimeQuality(struct SolidSyslogTimeQuality* timeQuality)
+{
+    timeQuality->TzKnown = true;
+    timeQuality->IsSynced = false;
+    timeQuality->SyncAccuracyMicroseconds = SOLIDSYSLOG_SYNC_ACCURACY_OMIT;
+}
 
 /* Bounds the connect spin so it yields instead of busy-waiting. */
 static void SyslogSleep(int milliseconds)
@@ -98,8 +110,12 @@ void Syslog_Start(void)
 
     /* One counter Increment per record formatted, so a record that never reaches
      * the collector leaves a gap in the sequence rather than no trace at all. */
-    struct SolidSyslogMetaSdConfig metaConfig = {.Counter = SolidSyslogStdAtomicCounter_Create()};
+    struct SolidSyslogMetaSdConfig metaConfig = {
+        .Counter = SolidSyslogStdAtomicCounter_Create(),
+        .GetSysUpTime = SolidSyslogFreeRtosSysUpTime_Get,
+    };
     s_sd[0] = SolidSyslogMetaSd_Create(&metaConfig);
+    s_sd[1] = SolidSyslogTimeQualitySd_Create(SyslogTimeQuality);
 
     struct SolidSyslogConfig config = {
         .Buffer = SolidSyslogCircularBuffer_Create(SolidSyslogFreeRtosMutex_Create(), s_ring, sizeof(s_ring)),
