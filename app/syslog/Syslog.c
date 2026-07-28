@@ -22,6 +22,7 @@
 #include "SolidSyslogNullStore.h"
 #include "SolidSyslogPassthroughBuffer.h"
 #include "SolidSyslogUdpSender.h"
+#include "SyslogFields.h"
 
 #include "lwip/tcpip.h"
 
@@ -84,6 +85,10 @@ void Syslog_Start(void)
          * reported as a fault, the Null object means "I meant this" and is
          * silent. The two behave identically at run time. */
         .Store = SolidSyslogNullStore_Get(),
+        /* PROCID stays unset — a bare-metal image has no process. */
+        .Clock = SyslogFields_Clock,
+        .GetHostname = SyslogFields_Hostname,
+        .GetAppName = SyslogFields_AppName,
     };
 
     s_logger = SolidSyslog_Create(&config);
