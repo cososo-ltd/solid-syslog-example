@@ -141,6 +141,7 @@ endforeach()
 add_executable(baseline
     ${APP_DIR}/main.c
     ${APP_DIR}/sim/SimulatedExistingApp.c
+    ${APP_DIR}/sim/SimulatedBrokerSession.c
     ${APP_DIR}/tasks/LogTask.c
     ${APP_DIR}/tasks/ServiceTask.c
     ${APP_DIR}/measure/Measure.c
@@ -187,8 +188,8 @@ target_include_directories(baseline PRIVATE
     ${FATFS_STAGE_DIR}
 )
 
-# sim/SimulatedExistingApp.c includes <mbedtls/ssl.h> — it MUST see the same user
-# config as the library, or context struct sizes diverge between consumer and library.
+# app/sim includes <mbedtls/ssl.h> — it MUST see the same user config as the
+# library, or context struct sizes diverge between consumer and library.
 target_compile_definitions(baseline PRIVATE MBEDTLS_USER_CONFIG_FILE=${MBEDTLS_USER_CONFIG_HEADER})
 
 # SolidSyslog is the Core library (a real .a); the SolidSyslog::* packs are
