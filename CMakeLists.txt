@@ -131,6 +131,7 @@ add_executable(baseline
     ${APP_DIR}/storage/diskio.c
     ${APP_DIR}/storage/SemihostingDisk.c
     ${APP_DIR}/syslog/Syslog.c
+    ${APP_DIR}/syslog/SyslogFields.c
     ${APP_DIR}/syslog/SyslogErrorHandler.c
     $<TARGET_OBJECTS:baseline_upstream>
 )
