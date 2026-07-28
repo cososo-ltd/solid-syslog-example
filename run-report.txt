@@ -1,4 +1,4 @@
-================ solid-syslog-example :: run (Baseline) ================
+================ solid-syslog-example :: run (Minimal) ================
 
 --- Device (self-measured; app talks to no collector at Baseline) ---
 [device] solid-syslog-example (FreeRTOS + lwIP + mbedTLS + FatFs)
@@ -29,13 +29,8 @@
 --- Collector (syslog-ng) received ---
   (nothing — the Baseline sends no records; SolidSyslog logs from Minimal)
 
---- Baseline self-check (vs measurements/Baseline.csv, tolerance 64 B) ---
-  OK    flash_text: 345752 (expected 345752, Δ0)
-  OK    flash_data: 236 (expected 236, Δ0)
-  OK    static_bss: 164500 (expected 164500, Δ0)
-  OK    heap_used: 39032 (expected 39032, Δ0)
-  OK    stack_log: 56 (expected 56, Δ0)
-  OK    stack_service: 56 (expected 56, Δ0)
+--- Baseline self-check (vs measurements/Minimal.csv, tolerance 64 B) ---
+  (no committed measurements/Minimal.csv yet — rerun with CAPTURE=1 to freeze it)
 
-RESULT: PASS
+RESULT: PASS (self-check skipped — no committed baseline)
 ===================================================================
