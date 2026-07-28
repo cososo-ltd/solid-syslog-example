@@ -39,7 +39,7 @@ set(LWIP_CONTRIB_FREERTOS_DIR "${LWIP_DIR}/contrib/ports/freertos")
 # link target — only the header-configured packs below do.
 # https://docs.cososo.co.uk/solid-syslog/getting-started/#path-a--cmake-consumer
 # Pinned to a commit until there is a release tag to pin to.
-set(SOLIDSYSLOG_PLATFORMS "LwipRaw;Atomics" CACHE STRING "" FORCE)
+set(SOLIDSYSLOG_PLATFORMS "LwipRaw;Atomics;FreeRtos" CACHE STRING "" FORCE)
 
 # Compile-time limits. Every tunable is #ifndef-guarded, so this file only needs
 # the ones this device wants changed.
@@ -171,7 +171,7 @@ target_include_directories(baseline PRIVATE
 # library, or context struct sizes diverge between consumer and library.
 target_compile_definitions(baseline PRIVATE MBEDTLS_USER_CONFIG_FILE=${MBEDTLS_USER_CONFIG_HEADER})
 
-target_link_libraries(baseline PRIVATE mbedtls mbedx509 mbedcrypto SolidSyslog SolidSyslog::LwipRaw)
+target_link_libraries(baseline PRIVATE mbedtls mbedx509 mbedcrypto SolidSyslog SolidSyslog::LwipRaw SolidSyslog::FreeRtos)
 
 target_link_options(baseline PRIVATE
     -mcpu=cortex-m3 -mthumb
