@@ -6,10 +6,10 @@
 [device]   sim app (lwIP up, FatFs mounted, mTLS credentials loaded, mbedTLS linked): ready
 [report] --- SolidSyslog cost above baseline (simulated existing application) ---
 [report] key,current,baseline,used_above_baseline
-[report] flash_text,345832,345832,0
-[report] flash_data,236,236,0
-[report] static_bss,164508,164508,0
-[report] heap_used,39224,39224,0
+[report] flash_text,346216,345832,384
+[report] flash_data,240,236,4
+[report] static_bss,164512,164508,4
+[report] heap_used,39232,39224,8
 [report] stack_log,120,120,0
 [report] stack_service,56,56,0
 [report] --- end ---
@@ -17,7 +17,7 @@
 
   size cross-check:
        text	   data	    bss	    dec	    hex	filename
-     345824	    244	 164508	 510576	  7ca70	/w/build/baseline-cross/baseline.elf
+     346208	    248	 164512	 510968	  7cbf8	/w/build/baseline-cross/baseline.elf
 
 --- Oracle listeners (proved before the device ran) ---
   OK    udp   5514
