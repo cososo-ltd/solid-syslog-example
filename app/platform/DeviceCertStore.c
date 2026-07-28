@@ -14,6 +14,19 @@
 #define CERT_PATH_CLIENT "build/certs/device.crt"
 #define CERT_PATH_CLIENT_KEY "build/certs/device.key"
 
+#define DEVICE_SYMMETRIC_KEY_LENGTH 32U
+
+/* The symmetric keys this device was provisioned with, by name. One slot per key;
+ * a real device reads these from its secure element rather than from files. */
+static struct
+{
+    const char* Name;
+    const char* Path;
+    uint8_t Key[DEVICE_SYMMETRIC_KEY_LENGTH];
+} s_symmetricKeys[] = {
+    {"device-storage", "build/certs/device-storage.key", {0}},
+};
+
 /* One scratch buffer, reused for each file: mbedtls_x509_crt_parse and
  * mbedtls_pk_parse_key copy what they need into their own objects, so nothing
  * here has to outlive the parse. P-256 PEM runs to roughly 750 bytes. */
@@ -120,6 +133,18 @@ bool DeviceCertStore_Load(void)
         return false;
     }
 
+    for (size_t i = 0; i < (sizeof(s_symmetricKeys) / sizeof(s_symmetricKeys[0])); i++)
+    {
+        size_t read = 0;
+        if (!SemihostingIo_ReadFile(s_symmetricKeys[i].Path, s_scratch, sizeof(s_scratch), &read)
+            || (read != DEVICE_SYMMETRIC_KEY_LENGTH))
+        {
+            (void) printf("[sim] cert store: %s missing or wrong length\n", s_symmetricKeys[i].Path);
+            return false;
+        }
+        (void) memcpy(s_symmetricKeys[i].Key, s_scratch, DEVICE_SYMMETRIC_KEY_LENGTH);
+    }
+
     s_loaded = true;
     return true;
 }
@@ -142,4 +167,23 @@ struct mbedtls_pk_context* DeviceCertStore_ClientKey(void)
 struct mbedtls_ctr_drbg_context* DeviceCertStore_Rng(void)
 {
     return s_loaded ? &s_rng : NULL;
+}
+
+bool DeviceCertStore_SymmetricKey(const char* name, uint8_t* out, size_t capacity, size_t* length)
+{
+    if (!s_loaded || (capacity < DEVICE_SYMMETRIC_KEY_LENGTH))
+    {
+        return false;
+    }
+
+    for (size_t i = 0; i < (sizeof(s_symmetricKeys) / sizeof(s_symmetricKeys[0])); i++)
+    {
+        if (strcmp(s_symmetricKeys[i].Name, name) == 0)
+        {
+            (void) memcpy(out, s_symmetricKeys[i].Key, DEVICE_SYMMETRIC_KEY_LENGTH);
+            *length = DEVICE_SYMMETRIC_KEY_LENGTH;
+            return true;
+        }
+    }
+    return false;
 }

@@ -161,6 +161,10 @@ __attribute__((used)) static void KeepPlatformLinked(void)
         (uintptr_t) &mbedtls_ctr_drbg_seed,
         (uintptr_t) &mbedtls_ctr_drbg_random,
         (uintptr_t) &psa_crypto_init,
+        /* The provisioned symmetric key lookup. Nothing in the simulated device
+         * reads a key, so without this the accessor is stripped and the cost
+         * reappears on whoever first asks for one. */
+        (uintptr_t) &DeviceCertStore_SymmetricKey,
     };
 
     uintptr_t sink = 0;
