@@ -39,12 +39,11 @@
 #define configTIMER_TASK_STACK_DEPTH (configMINIMAL_STACK_SIZE * 2)
 #define configCHECK_FOR_STACK_OVERFLOW 2
 #define configUSE_MALLOC_FAILED_HOOK 1
-/* Static allocation is required by SolidSyslogFreeRtosMutex
- * (xSemaphoreCreateMutexStatic places the StaticSemaphore_t inside the
- * caller-supplied storage). The idle / timer task static-memory hooks it
- * pulls in are satisfied by configKERNEL_PROVIDED_STATIC_MEMORY = 1 — no
- * boilerplate in main.c. Dynamic allocation stays on for the lwIP tcpip /
- * RX tasks and the interactive / service tasks created via xTaskCreate. */
+/* Every task, stack and semaphore this application creates is static, and the
+ * idle / timer static-memory hooks are satisfied by
+ * configKERNEL_PROVIDED_STATIC_MEMORY = 1 — no boilerplate in main.c. Dynamic
+ * allocation stays on only for lwIP's tcpip thread and mailboxes, created inside
+ * its FreeRTOS port, which offers no static variants. */
 #define configSUPPORT_STATIC_ALLOCATION 1
 #define configSUPPORT_DYNAMIC_ALLOCATION 1
 #define configKERNEL_PROVIDED_STATIC_MEMORY 1

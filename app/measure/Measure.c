@@ -62,13 +62,21 @@ bool Measure_Report(void)
     Measure_Current(&current);
 
     MeasureValues baseline;
-    bool haveBaseline = Baseline_Load(&baseline);
+    bool present[MEASURE_KEY_COUNT];
+    bool haveBaseline = Baseline_Load(&baseline, present);
 
     (void) printf("[report] --- SolidSyslog cost above baseline (simulated existing application) ---\n");
     (void) printf("[report] key,current,baseline,used_above_baseline\n");
     for (int i = 0; i < MEASURE_KEY_COUNT; i++)
     {
         int32_t currentValue = current.value[i];
+        if (haveBaseline && !present[i])
+        {
+            /* The frozen baseline predates this key. Reporting current-minus-zero
+             * would look like a delta and be read as one. */
+            (void) printf("[report] %s,%ld,-,-\n", MEASURE_KEYS[i], (long) currentValue);
+            continue;
+        }
         int32_t baselineValue = haveBaseline ? baseline.value[i] : 0;
         int32_t usedAbove = currentValue - baselineValue;
         (void) printf(
