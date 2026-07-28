@@ -26,12 +26,14 @@
 #include "SolidSyslogLwipRawTcpStream.h"
 #include "SolidSyslogMetaSd.h"
 #include "SolidSyslogOriginSd.h"
+#include "SolidSyslogSdValue.h"
 #include "SolidSyslogStdAtomicCounter.h"
 #include "SolidSyslogStreamSender.h"
 #include "SolidSyslogTimeQuality.h"
 #include "SolidSyslogTimeQualitySd.h"
 #include "SyslogFields.h"
 
+#include "lwip/ip4_addr.h"
 #include "lwip/tcpip.h"
 
 #include "FreeRTOS.h"
@@ -75,6 +77,31 @@ static void SyslogTimeQuality(struct SolidSyslogTimeQuality* timeQuality)
     timeQuality->TzKnown = true;
     timeQuality->IsSynced = false;
     timeQuality->SyncAccuracyMicroseconds = SOLIDSYSLOG_SYNC_ACCURACY_OMIT;
+}
+
+/* The device's own view of its address, which a relay or NAT between it and the
+ * collector would otherwise replace. */
+static size_t SyslogOriginIpCount(void* context)
+{
+    (void) context;
+
+    char address[IP4ADDR_STRLEN_MAX] = {0};
+
+    /* Before the interface has an address there is nothing true to say, and an SD
+     * PARAM has no nil value — so emit none. */
+    SyslogFields_IpAddress(address, sizeof(address));
+    return (address[0] != '\0') ? 1U : 0U;
+}
+
+static void SyslogOriginIpAt(struct SolidSyslogSdValue* value, void* context, size_t index)
+{
+    (void) context;
+    (void) index;
+
+    char address[IP4ADDR_STRLEN_MAX] = {0};
+
+    SyslogFields_IpAddress(address, sizeof(address));
+    SolidSyslogSdValue_String(value, address);
 }
 
 /* Bounds the connect spin so it yields instead of busy-waiting. */
@@ -132,12 +159,12 @@ void Syslog_Start(void)
     s_sd[0] = SolidSyslogMetaSd_Create(&metaConfig);
     s_sd[1] = SolidSyslogTimeQualitySd_Create(SyslogTimeQuality);
 
-    /* No ip: the address the collector sees is the one that reached it, until a
-     * relay makes that untrue. */
     struct SolidSyslogOriginSdConfig originConfig = {
         .Software = SYSLOG_SOFTWARE,
         .SwVersion = SYSLOG_SW_VERSION,
         .EnterpriseId = SYSLOG_ENTERPRISE_ID,
+        .GetIpCount = SyslogOriginIpCount,
+        .GetIpAt = SyslogOriginIpAt,
     };
     s_sd[2] = SolidSyslogOriginSd_Create(&originConfig);
 
