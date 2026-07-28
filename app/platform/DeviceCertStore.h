@@ -1,7 +1,7 @@
-/* The device's TLS credentials: the trust anchor it verifies a collector
- * against, and the identity it presents for mutual TLS. This device already
- * speaks mTLS to other systems, so it holds these whether or not SolidSyslog
- * ever asks for them.
+/* The device's provisioned secrets: the trust anchor it verifies a collector
+ * against, the identity it presents for mutual TLS, and its symmetric keys. This
+ * device already speaks mTLS to other systems and already holds symmetric key
+ * material, so it has all of these whether or not SolidSyslog ever asks.
  *
  * A real device keeps them in a secure element, TF-M's Internal Trusted Storage,
  * or protected flash, and never has the private key sitting in a file.
@@ -22,6 +22,8 @@
 #include "mbedtls/x509_crt.h"
 
 #include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -44,6 +46,10 @@ extern "C"
 
     /** Seeded DRBG for handshakes. NULL until Load succeeds. */
     struct mbedtls_ctr_drbg_context* DeviceCertStore_Rng(void);
+
+    /** Copies the named provisioned symmetric key out. False if unloaded, the name
+     *  is unknown, or @p capacity is too small — the key is never lent by pointer. */
+    bool DeviceCertStore_SymmetricKey(const char* name, uint8_t* out, size_t capacity, size_t* length);
 
 #ifdef __cplusplus
 }
