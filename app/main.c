@@ -2,8 +2,8 @@
  * with ZERO SolidSyslog.
  *
  * This is the "simulated existing application": a device that already networks,
- * already uses storage, and has TLS on board — the frozen platform SolidSyslog's
- * footprint deltas are measured against. main() is deliberately thin: it starts
+ * already uses storage, and already holds a TLS session — the frozen platform
+ * SolidSyslog's footprint deltas are measured against. main() is deliberately thin: it starts
  * the console, creates the two idle application seams (a log source and a service
  * worker), and hands off to a harness task that brings up the simulated existing
  * application, measures the cost above the frozen baseline, and exits.
@@ -68,7 +68,7 @@ static void HarnessTask(void* parameters)
     (void) printf("[device] starting simulated existing application...\n");
     bool simReady = SimulatedExistingApp_Start();
     (void) printf(
-        "[device]   sim app (lwIP up, FatFs mounted, mTLS credentials loaded, mbedTLS linked): %s\n",
+        "[device]   sim app (lwIP up, FatFs mounted, broker session held over mTLS): %s\n",
         simReady ? "ready" : "FAILED"
     );
 

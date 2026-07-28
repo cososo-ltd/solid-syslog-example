@@ -3,15 +3,16 @@
 --- Device (self-measured; app talks to no collector at Baseline) ---
 [device] solid-syslog-example (FreeRTOS + lwIP + mbedTLS + FatFs)
 [device] starting simulated existing application...
-[device]   sim app (lwIP up, FatFs mounted, mTLS credentials loaded, mbedTLS linked): ready
+[sim] broker session to 10.0.2.2:8883: TLSv1.3, TLS1-3-CHACHA20-POLY1305-SHA256
+[device]   sim app (lwIP up, FatFs mounted, broker session held over mTLS): ready
 [device]   first record logged: yes
 [report] --- SolidSyslog cost above baseline (simulated existing application) ---
 [report] key,current,baseline,used_above_baseline
-[report] flash_text,361736,345832,15904
+[report] flash_text,362968,345832,17136
 [report] flash_data,656,236,420
-[report] static_bss,133152,164508,-31356
+[report] static_bss,157280,164508,-7228
 [report] heap_used,4440,39224,-34784
-[report] mbedtls_peak,22208,-,-
+[report] mbedtls_peak,37224,-,-
 [report] stack_log,832,120,712
 [report] stack_service,3852,56,3796
 [report] --- end ---
@@ -19,7 +20,7 @@
 
   size cross-check:
        text	   data	    bss	    dec	    hex	filename
-     361728	    664	 133152	 495544	  78fb8	/w/build/baseline-cross/baseline.elf
+     362960	    664	 157280	 520904	  7f2c8	/w/build/baseline-cross/baseline.elf
 
 --- Listeners (proved before the device ran) ---
   OK    udp    5514
@@ -31,8 +32,8 @@
   OK    broker 8883 — refused a client with no certificate
 
 --- Collector (syslog-ng) received ---
-  wire   <134>1 2026-07-28T19:08:14.100000Z 10.0.2.15 solid-syslog-example - BOOT [meta sequenceId="1" sysUpTime="210"][timeQuality tzKnown="1" isSynced="0"][origin software="solid-syslog-example" swVersion="0.1.0" enterpriseId="32473" ip="10.0.2.15"][logPipeline@32473 transport="mtls" atRest="aes-256-gcm"] ﻿device started
-  parsed PRIORITY=134 TIMESTAMP=2026-07-28T19:08:14+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA=[meta sequenceId="1" sysUpTime="210"][timeQuality tzKnown="1" isSynced="0"][origin software="solid-syslog-example" swVersion="0.1.0" enterpriseId="32473" ip="10.0.2.15"][logPipeline@32473 transport="mtls" atRest="aes-256-gcm"] MSG=device started
+  wire   <134>1 2026-07-28T19:29:47.320000Z 10.0.2.15 solid-syslog-example - BOOT [meta sequenceId="1" sysUpTime="232"][timeQuality tzKnown="1" isSynced="0"][origin software="solid-syslog-example" swVersion="0.1.0" enterpriseId="32473" ip="10.0.2.15"][logPipeline@32473 transport="mtls" atRest="aes-256-gcm"] ﻿device started
+  parsed PRIORITY=134 TIMESTAMP=2026-07-28T19:29:47+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA=[meta sequenceId="1" sysUpTime="232"][timeQuality tzKnown="1" isSynced="0"][origin software="solid-syslog-example" swVersion="0.1.0" enterpriseId="32473" ip="10.0.2.15"][logPipeline@32473 transport="mtls" atRest="aes-256-gcm"] MSG=device started
 
 --- Baseline self-check (vs measurements/Secure.csv, tolerance 64 B) ---
   (no committed measurements/Secure.csv yet — rerun with CAPTURE=1 to freeze it)

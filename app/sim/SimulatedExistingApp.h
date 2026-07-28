@@ -15,12 +15,15 @@ extern "C"
      *     the baseline's, never a SolidSyslog delta;
      *   - mounts FatFs (formatting a fresh image on first use) so the filesystem
      *     is likewise baseline;
-     *   - links — but never runs — the mbedTLS client surface plus the lwIP raw
-     *     UDP/TCP and FatFs file APIs SolidSyslog will call from Minimal onward, so their
-     *     flash is counted below the line.
+     *   - opens the mutual-TLS session to the device's broker and holds it, so
+     *     what a TLS session costs is likewise baseline (see
+     *     SimulatedBrokerSession.h);
+     *   - links — but never runs — the rest of the platform surface SolidSyslog
+     *     will call from Minimal onward, so its flash is counted below the line.
      *
-     * Nothing here emits, sends, stores, or handshakes. Runs on a task (netif
-     * init and mount both block). Returns true once lwIP is up and FatFs mounted.
+     * Nothing here logs, or sends anything a collector will see. Runs on a task
+     * (netif init, mount and handshake all block). Returns true once all three
+     * are up.
      *
      * Must be called after tcpip_init() and after the scheduler has started. */
     bool SimulatedExistingApp_Start(void);

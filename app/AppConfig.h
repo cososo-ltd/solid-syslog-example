@@ -42,9 +42,12 @@
  * the report prints absolutes for us to commit as the baseline. */
 #define BASELINE_FILE_PATH "measurements/Baseline.csv"
 
-/* The static buffer mbedTLS sub-allocates from. Sized from the high-water mark the
- * device reports, so a step that asks more of mbedTLS grows this and is charged for
- * it — the baseline holds no spare capacity on a later step's behalf. */
-#define SIMULATED_APP_MBEDTLS_HEAP_BYTES (32 * 1024)
+/* The static buffer mbedTLS sub-allocates from. Sized at the high-water mark the
+ * device reports times 1.5, rounded up to the next KiB — buffer_alloc hands out
+ * contiguous space, so a buffer only a little over the peak fails on
+ * fragmentation rather than on capacity. One rule, applied again at every step
+ * that asks more of mbedTLS, so the baseline holds no spare capacity on a later
+ * step's behalf and each step is charged what it actually added. */
+#define SIMULATED_APP_MBEDTLS_HEAP_BYTES (55 * 1024)
 
 #endif /* APP_CONFIG_H */

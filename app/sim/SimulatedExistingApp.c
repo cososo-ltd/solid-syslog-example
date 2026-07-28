@@ -1,18 +1,19 @@
 /* The simulated existing application — see SimulatedExistingApp.h.
  *
- * This is the "device you already have": networked, with storage, with a TLS
- * library on board. lwIP and FatFs are brought up (their runtime cost is
- * baseline); mbedTLS is linked but holds no session (SolidSyslog opens the
- * secure channel from Secure). The lwIP raw UDP/TCP API, the FatFs file API, and the
- * mbedTLS client surface that SolidSyslog will call are all rooted into the
- * image here — linked, never run — so their flash is counted below the line and
- * a later tag's delta is only the SolidSyslog code that drives them. */
+ * This is the "device you already have": networked, with storage, and holding a
+ * mutual-TLS session to its broker. lwIP, FatFs and that session are all brought
+ * up here, so their runtime cost is baseline. What is left of the platform
+ * surface SolidSyslog will call — datagrams, files, the teardown path a
+ * held-open session never runs — is rooted into the image below without being
+ * run, so its flash is counted below the line too and a later tag's delta is
+ * only the SolidSyslog code that drives it. */
 
 #include "SimulatedExistingApp.h"
 
 #include "AppConfig.h"
 #include "DeviceCertStore.h"
 #include "EthernetIf.h"
+#include "SimulatedBrokerSession.h"
 
 #include "lwip/ip4_addr.h"
 #include "lwip/netif.h"
@@ -22,12 +23,8 @@
 
 #include "ff.h"
 
-#include "mbedtls/ctr_drbg.h"
 #include "mbedtls/memory_buffer_alloc.h"
-#include "mbedtls/pk.h"
-#include "mbedtls/platform.h"
 #include "mbedtls/ssl.h"
-#include "mbedtls/x509_crt.h"
 #include "psa/crypto.h"
 
 #include "FreeRTOS.h"
@@ -37,11 +34,9 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <string.h>
 
-/* Everything mbedTLS allocates comes out of this, and nothing else uses it. Sized
- * from the high-water mark the device reports, so it grows when a step asks more
- * of mbedTLS rather than carrying spare capacity in advance. */
+/* Everything mbedTLS allocates comes out of this, and nothing else uses it.
+ * Sized in AppConfig.h, from what this measures. */
 static uint8_t s_mbedtlsHeap[SIMULATED_APP_MBEDTLS_HEAP_BYTES];
 
 size_t SimulatedExistingApp_MbedTlsPeak(void)
@@ -89,28 +84,28 @@ psa_status_t mbedtls_psa_external_get_random(
  * everything it calls — so referencing these top-level entry points drags their
  * whole static call closures into the image under --gc-sections. The addresses
  * are XOR'd into a volatile sink reached from main(), which keeps this reachable
- * (belt-and-braces over the `used` attribute). Nothing is called. */
+ * (belt-and-braces over the `used` attribute). Nothing here is called.
+ *
+ * Only what the device does not itself run belongs in this list. The broker
+ * session calls the mbedTLS client surface and lwIP's TCP path for real, so
+ * those root themselves and naming them here would say something untrue. */
 static volatile uintptr_t s_keepAliveSink;
 
 __attribute__((used)) static void KeepPlatformLinked(void)
 {
     static const uintptr_t surface[] = {
-        /* lwIP raw UDP + TCP — the SolidSyslog UdpSender (Minimal) / StreamSender (Secure). */
+        /* lwIP raw UDP — the SolidSyslog UdpSender (Minimal). The device's own
+         * traffic is TCP, so nothing else reaches these. */
         (uintptr_t) &udp_new,
         (uintptr_t) &udp_bind,
         (uintptr_t) &udp_connect,
         (uintptr_t) &udp_sendto,
         (uintptr_t) &udp_recv,
         (uintptr_t) &udp_remove,
-        (uintptr_t) &tcp_new,
+        /* lwIP raw TCP, the parts a session that is never closed does not use. */
         (uintptr_t) &tcp_bind,
-        (uintptr_t) &tcp_connect,
-        (uintptr_t) &tcp_write,
-        (uintptr_t) &tcp_output,
-        (uintptr_t) &tcp_recv,
         (uintptr_t) &tcp_sent,
         (uintptr_t) &tcp_close,
-        (uintptr_t) &tcp_abort,
         /* FatFs file API — the SolidSyslog BlockStore (Secure). */
         (uintptr_t) &f_open,
         (uintptr_t) &f_close,
@@ -121,34 +116,13 @@ __attribute__((used)) static void KeepPlatformLinked(void)
         (uintptr_t) &f_truncate,
         (uintptr_t) &f_unlink,
         (uintptr_t) &f_stat,
-        /* mbedTLS client + x509 + pk + DRBG + PSA — the SolidSyslog TLS transport
-         * (Secure/Hardened). Lifecycle and client-auth entry points are here too:
-         * a device already running mTLS calls those, not only the transfer ones.
-         * No CRL and no session resumption — this device checks neither. */
-        (uintptr_t) &mbedtls_ssl_init,
-        (uintptr_t) &mbedtls_ssl_free,
-        (uintptr_t) &mbedtls_ssl_config_init,
-        (uintptr_t) &mbedtls_ssl_config_free,
-        (uintptr_t) &mbedtls_ssl_setup,
-        (uintptr_t) &mbedtls_ssl_session_reset,
-        (uintptr_t) &mbedtls_ssl_handshake,
-        (uintptr_t) &mbedtls_ssl_read,
-        (uintptr_t) &mbedtls_ssl_write,
+        /* The mbedTLS teardown path. A device that reconnects to its broker runs
+         * it; this one holds one session for its whole life and never does, so
+         * without this the cost would land on whoever closes first. */
         (uintptr_t) &mbedtls_ssl_close_notify,
-        (uintptr_t) &mbedtls_ssl_config_defaults,
-        (uintptr_t) &mbedtls_ssl_conf_authmode,
-        (uintptr_t) &mbedtls_ssl_conf_ca_chain,
-        (uintptr_t) &mbedtls_ssl_conf_own_cert,
-        (uintptr_t) &mbedtls_ssl_conf_rng,
-        (uintptr_t) &mbedtls_ssl_set_bio,
-        (uintptr_t) &mbedtls_ssl_set_hostname,
-        (uintptr_t) &mbedtls_ssl_get_verify_result,
-        (uintptr_t) &mbedtls_x509_crt_parse,
-        (uintptr_t) &mbedtls_pk_parse_key,
-        (uintptr_t) &mbedtls_ctr_drbg_init,
-        (uintptr_t) &mbedtls_ctr_drbg_seed,
-        (uintptr_t) &mbedtls_ctr_drbg_random,
-        (uintptr_t) &psa_crypto_init,
+        (uintptr_t) &mbedtls_ssl_session_reset,
+        (uintptr_t) &mbedtls_ssl_free,
+        (uintptr_t) &mbedtls_ssl_config_free,
         /* The provisioned symmetric key lookup. Nothing in the simulated device
          * reads a key, so without this the accessor is stripped and the cost
          * reappears on whoever first asks for one. */
@@ -260,7 +234,7 @@ bool SimulatedExistingApp_StartCrypto(void)
 
 bool SimulatedExistingApp_Start(void)
 {
-    /* mbedTLS + the lwIP raw / FatFs file APIs: linked, never run. */
+    /* The rest of the platform surface: linked, never run. */
     KeepPlatformLinked();
 
     /* lwIP: bring the netif up on the tcpip thread and wait for it to complete. */
@@ -271,5 +245,12 @@ bool SimulatedExistingApp_Start(void)
     }
 
     /* FatFs: mount (format a fresh image on first use). */
-    return SimulatedExistingApp_MountFatFs();
+    if (!SimulatedExistingApp_MountFatFs())
+    {
+        return false;
+    }
+
+    /* The broker session, once there is a network to open it on. It stays open
+     * from here to the end of the run. */
+    return SimulatedBrokerSession_Open();
 }
