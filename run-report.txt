@@ -7,7 +7,7 @@
 [device]   first record logged: yes
 [report] --- SolidSyslog cost above baseline (simulated existing application) ---
 [report] key,current,baseline,used_above_baseline
-[report] flash_text,350696,345832,4864
+[report] flash_text,351096,345832,5264
 [report] flash_data,368,236,132
 [report] static_bss,164748,164508,240
 [report] heap_used,39200,39224,-24
@@ -18,7 +18,7 @@
 
   size cross-check:
        text	   data	    bss	    dec	    hex	filename
-     350688	    376	 164748	 515812	  7dee4	/w/build/baseline-cross/baseline.elf
+     351088	    376	 164748	 516212	  7e074	/w/build/baseline-cross/baseline.elf
 
 --- Oracle listeners (proved before the device ran) ---
   OK    udp   5514
@@ -28,8 +28,8 @@
   OK    mtls  6515 — refused a client with no certificate
 
 --- Collector (syslog-ng) received ---
-  wire   <134>1 - - - - BOOT - ﻿device started
-  parsed PRIORITY=134 TIMESTAMP=2026-07-28T06:00:59+00:00 HOSTNAME=localhost APP_NAME= PROCID= MSGID=BOOT STRUCTURED_DATA= MSG=device started
+  wire   <134>1 2026-07-28T06:01:58.100000Z 10.0.2.15 solid-syslog-example - BOOT - ﻿device started
+  parsed PRIORITY=134 TIMESTAMP=2026-07-28T06:01:58+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA= MSG=device started
 
 --- Baseline self-check (vs measurements/Minimal.csv, tolerance 64 B) ---
   (no committed measurements/Minimal.csv yet — rerun with CAPTURE=1 to freeze it)
