@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# The test PKI for ./run.sh: one CA, a collector server certificate, and a device
-# client certificate for mTLS.
+# The test secrets for ./run.sh: one CA, a collector server certificate, a device
+# client certificate for mTLS, and the device's at-rest log-store key.
 #
 # Regenerated on every run and never committed. Nothing here is a secret worth
 # keeping, and a fresh PKI each run is what stops the device quietly passing
@@ -48,6 +48,12 @@ openssl req -new -key device.key \
 openssl x509 -req -in device.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
     -days "$DAYS" -sha256 -out device.crt \
     -extfile <(printf 'extendedKeyUsage=clientAuth\n') 2>/dev/null
+
+# --- the device's at-rest log-store key --------------------------------------
+# Symmetric, and nothing to do with the PKI above: the store authenticates its own
+# records, it does not sign them for anyone else. A real device holds this in the
+# same secure element as the client key.
+openssl rand -out store.key 32
 
 rm -f collector.csr device.csr ca.srl
 chmod 644 ./*.crt ./*.key
