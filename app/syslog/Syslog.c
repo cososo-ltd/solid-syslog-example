@@ -2,11 +2,7 @@
  *
  * The smallest wiring that delivers: a UDP sender over lwIP, with a passthrough
  * buffer in front of it. Passthrough means Log sends inline on the calling task
- * — no queue, no background drain, nothing to service.
- *
- * Timestamp, hostname, app-name and procid are left unset. RFC 5424 defines a
- * NILVALUE for each, so a record carrying "-" for them is valid and a collector
- * accepts it. */
+ * — no queue, no background drain, nothing to service. */
 
 #include "Syslog.h"
 
@@ -20,6 +16,7 @@
 #include "SolidSyslogNullStore.h"
 #include "SolidSyslogPassthroughBuffer.h"
 #include "SolidSyslogUdpSender.h"
+#include "SyslogFields.h"
 
 #include "lwip/tcpip.h"
 
@@ -79,6 +76,10 @@ void Syslog_Start(void)
         /* No store-and-forward here. The Null object rather than NULL is how
          * that is said out loud — NULL is reported as a fault. */
         .Store = SolidSyslogNullStore_Get(),
+        /* PROCID stays unset — a bare-metal image has no process. */
+        .Clock = SyslogFields_Clock,
+        .GetHostname = SyslogFields_Hostname,
+        .GetAppName = SyslogFields_AppName,
     };
 
     s_logger = SolidSyslog_Create(&config);
