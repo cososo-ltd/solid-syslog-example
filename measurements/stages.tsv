@@ -10,3 +10,4 @@
 # Slugs, not numbers: a stage inserted mid-history would renumber every file
 # after it, and this history has already had one inserted.
 Baseline	Baseline	a device that already networks, stores, and holds an mTLS session — before any syslog
+linked	Linked	the core library and lwIP raw-mode networking, linked but not yet called
