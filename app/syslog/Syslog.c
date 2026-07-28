@@ -1,6 +1,6 @@
 /* See Syslog.h.
  *
- * A UDP sender over lwIP behind a circular buffer: Log enqueues and returns, and
+ * A TCP stream over lwIP behind a circular buffer: Log enqueues and returns, and
  * the service task drains and sends. The mutex is what makes those two sides
  * safe on different tasks.
  *
@@ -16,16 +16,19 @@
 #include "SolidSyslogEndpointHost.h"
 #include "SolidSyslogFreeRtosMutex.h"
 #include "SolidSyslogLwipRawAddress.h"
-#include "SolidSyslogLwipRawDatagram.h"
 #include "SolidSyslogLwipRawMarshal.h"
 #include "SolidSyslogLwipRawResolver.h"
+#include "SolidSyslogLwipRawTcpStream.h"
 #include "SolidSyslogMetaSd.h"
 #include "SolidSyslogNullStore.h"
 #include "SolidSyslogStdAtomicCounter.h"
-#include "SolidSyslogUdpSender.h"
+#include "SolidSyslogStreamSender.h"
 #include "SyslogFields.h"
 
 #include "lwip/tcpip.h"
+
+#include "FreeRTOS.h"
+#include "task.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -35,7 +38,7 @@
  * the resolver numeric-only — no DNS, so no LWIP_DNS and no DNS resolver
  * component to compile. */
 #define SYSLOG_COLLECTOR_HOST "10.0.2.2"
-#define SYSLOG_COLLECTOR_PORT ((uint16_t) 5514U)
+#define SYSLOG_COLLECTOR_PORT ((uint16_t) 5601U)
 
 /* Depth enough to absorb a burst while the sender is busy — a full TLS handshake
  * from Secure — without sizing for a backlog the store is there to hold. */
@@ -47,7 +50,13 @@ static uint8_t s_ring[SOLIDSYSLOG_CIRCULAR_BUFFER_RING_BYTES(SYSLOG_BUFFER_RECOR
 /* The logger reads these on every record, so they outlive Syslog_Start. */
 static struct SolidSyslogStructuredData* s_sd[1];
 
-/* Every lwIP Raw call the datagram makes has to happen on the thread that owns
+/* Bounds the connect spin so it yields instead of busy-waiting. */
+static void SyslogSleep(int milliseconds)
+{
+    vTaskDelay(pdMS_TO_TICKS(milliseconds));
+}
+
+/* Every lwIP Raw call the stream makes has to happen on the thread that owns
  * the lwIP core. lwipopts.h sets LWIP_TCPIP_CORE_LOCKING, so taking the core
  * lock in the caller's own task is simpler and cheaper than posting to the tcpip
  * mailbox — and unconditionally synchronous, which the marshal contract
@@ -74,17 +83,18 @@ void Syslog_Start(void)
 {
     SolidSyslogLwipRaw_SetMarshal(LwipCoreLockMarshal);
 
-    /* One UDP sender: a numeric resolver to parse the literal, a datagram for
-     * the socket, and an address slot for the resolver to write into. No
-     * EndpointVersion — this collector never moves, so the sender resolves once
-     * and pins it. */
-    struct SolidSyslogUdpSenderConfig senderConfig = {
+    struct SolidSyslogLwipRawTcpStreamConfig tcpConfig = {.Sleep = SyslogSleep};
+
+    /* A numeric resolver to parse the literal and an address slot for it to write
+     * into. No EndpointVersion — this collector never moves, so the sender
+     * resolves once and pins it. */
+    struct SolidSyslogStreamSenderConfig senderConfig = {
         .Resolver = SolidSyslogLwipRawResolver_Create(),
-        .Datagram = SolidSyslogLwipRawDatagram_Create(),
+        .Stream = SolidSyslogLwipRawTcpStream_Create(&tcpConfig),
         .Address = SolidSyslogLwipRawAddress_Create(),
         .Endpoint = CollectorEndpoint,
     };
-    struct SolidSyslogSender* sender = SolidSyslogUdpSender_Create(&senderConfig);
+    struct SolidSyslogSender* sender = SolidSyslogStreamSender_Create(&senderConfig);
 
     /* One counter Increment per record formatted, so a record that never reaches
      * the collector leaves a gap in the sequence rather than no trace at all. */
