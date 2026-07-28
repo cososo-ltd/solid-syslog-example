@@ -3,8 +3,15 @@
 #include "ServiceTask.h"
 
 #include "AppConfig.h"
+#include "Syslog.h"
+
+#include "SolidSyslog.h"
 
 #include "semphr.h"
+
+/* Poll interval. A missed wake costs latency, never a record: every pass
+ * re-derives its state from the live buffer and store. */
+#define SERVICE_POLL_MS 20U
 
 static TaskHandle_t s_handle = NULL;
 static SemaphoreHandle_t s_reachedIdle = NULL;
@@ -13,13 +20,12 @@ static void ServiceTask_Entry(void* parameters)
 {
     (void) parameters;
 
-    /* Idle at Baseline and at Minimal, which sends inline on the log task. From
-     * Secure the SolidSyslog Service drains and sends here. */
     (void) xSemaphoreGive(s_reachedIdle);
 
     for (;;)
     {
-        vTaskDelay(portMAX_DELAY);
+        (void) SolidSyslog_Service(Syslog_Handle());
+        vTaskDelay(pdMS_TO_TICKS(SERVICE_POLL_MS));
     }
 }
 
