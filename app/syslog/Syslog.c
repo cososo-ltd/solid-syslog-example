@@ -1,14 +1,8 @@
 /* See Syslog.h.
  *
- * The smallest wiring that delivers: a UDP sender over lwIP, and a passthrough
- * buffer in front of it. Passthrough means Log sends inline on the calling
- * task — no queue, no background drain, nothing to service. That is the
- * cheapest configuration SolidSyslog offers and the one this tag measures.
- *
- * The header fields are deliberately left unset. RFC 5424 defines a NILVALUE
- * for every one of them, so a record carrying "-" for timestamp, hostname,
- * app-name and procid is valid and the collector accepts it. Filling them in is
- * a later step, with a cost of its own. */
+ * A UDP sender over lwIP behind a circular buffer: Log enqueues and returns, and
+ * the service task drains and sends. The mutex is what makes those two sides
+ * safe on different tasks. */
 
 #include "Syslog.h"
 
@@ -19,8 +13,9 @@
 #include "SolidSyslogLwipRawDatagram.h"
 #include "SolidSyslogLwipRawMarshal.h"
 #include "SolidSyslogLwipRawResolver.h"
+#include "SolidSyslogCircularBuffer.h"
+#include "SolidSyslogFreeRtosMutex.h"
 #include "SolidSyslogNullStore.h"
-#include "SolidSyslogPassthroughBuffer.h"
 #include "SolidSyslogUdpSender.h"
 #include "SyslogFields.h"
 
@@ -36,7 +31,12 @@
 #define SYSLOG_COLLECTOR_HOST "10.0.2.2"
 #define SYSLOG_COLLECTOR_PORT ((uint16_t) 5514U)
 
+/* Depth enough to absorb a burst while the sender is busy — a full TLS handshake
+ * from Secure — without sizing for a backlog the store is there to hold. */
+#define SYSLOG_BUFFER_RECORDS 8U
+
 static struct SolidSyslog* s_logger = NULL;
+static uint8_t s_ring[SOLIDSYSLOG_CIRCULAR_BUFFER_RING_BYTES(SYSLOG_BUFFER_RECORDS)];
 
 /* Every lwIP Raw call the datagram makes has to happen on the thread that owns
  * the lwIP core. lwipopts.h sets LWIP_TCPIP_CORE_LOCKING, so taking the core
@@ -78,7 +78,7 @@ void Syslog_Start(void)
     struct SolidSyslogSender* sender = SolidSyslogUdpSender_Create(&senderConfig);
 
     struct SolidSyslogConfig config = {
-        .Buffer = SolidSyslogPassthroughBuffer_Create(sender),
+        .Buffer = SolidSyslogCircularBuffer_Create(SolidSyslogFreeRtosMutex_Create(), s_ring, sizeof(s_ring)),
         .Sender = sender,
         /* This device does no store-and-forward. Passing the Null object rather
          * than NULL is how that is said out loud: NULL means "I forgot" and is
