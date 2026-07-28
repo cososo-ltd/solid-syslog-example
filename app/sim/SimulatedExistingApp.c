@@ -199,18 +199,14 @@ static void SimulatedExistingApp_BringUpNetif(void* context)
  * finished — not a fixed delay — propagating a bring-up failure. */
 static bool SimulatedExistingApp_NetifUp(void)
 {
-    s_netifReady = xSemaphoreCreateBinary();
-    if (s_netifReady == NULL)
-    {
-        return false;
-    }
+    static StaticSemaphore_t netifReadyBuffer;
+
+    s_netifReady = xSemaphoreCreateBinaryStatic(&netifReadyBuffer);
     bool ready = false;
     if (tcpip_callback(SimulatedExistingApp_BringUpNetif, NULL) == ERR_OK)
     {
         ready = (xSemaphoreTake(s_netifReady, pdMS_TO_TICKS(NETIF_BRINGUP_TIMEOUT_MS)) == pdTRUE) && s_netifUp;
     }
-    vSemaphoreDelete(s_netifReady);
-    s_netifReady = NULL;
     return ready;
 }
 
