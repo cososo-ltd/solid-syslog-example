@@ -13,3 +13,4 @@ Baseline	Baseline	a device that already networks, stores, and holds an mTLS sess
 linked	Linked	the core library and lwIP raw-mode networking, linked but not yet called
 error-handler	Error handler	a fault inside the logger reaches the console instead of being silent
 logger	Logger created	the logger object, reporting exactly what is still missing from it
+udp	First record	a valid RFC 5424 record on the wire, over UDP
