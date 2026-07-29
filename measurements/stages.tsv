@@ -25,3 +25,4 @@ origin	Origin	the device named in the record itself, not inferred from the sourc
 cap-rise	Larger cap	headroom for the grown record, so full-width counters cannot push it into truncation
 buffer-halve	Smaller ring	most of the cap rise given back, now the store rather than the ring holds a backlog
 origin-ip	Origin address	the device's own address in the record, which a relay or NAT between it and the collector cannot rewrite
+tls	TLS	a collector the device authenticates, and records no longer readable on the wire
