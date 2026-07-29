@@ -24,10 +24,12 @@
 #include "SolidSyslogLwipRawResolver.h"
 #include "SolidSyslogLwipRawTcpStream.h"
 #include "SolidSyslogMetaSd.h"
+#include "SolidSyslogOriginSd.h"
 #include "SolidSyslogStdAtomicCounter.h"
 #include "SolidSyslogStreamSender.h"
 #include "SolidSyslogTimeQuality.h"
 #include "SolidSyslogTimeQualitySd.h"
+#include "SyslogEnterprise.h"
 #include "SyslogFields.h"
 
 #include "lwip/tcpip.h"
@@ -53,11 +55,14 @@
 #define SYSLOG_STORE_PREFIX "syslog"
 #define SYSLOG_STORE_BLOCKS 4U
 
+#define SYSLOG_SOFTWARE "solid-syslog-example"
+#define SYSLOG_SW_VERSION "0.1.0"
+
 static struct SolidSyslog* s_logger = NULL;
 static uint8_t s_ring[SOLIDSYSLOG_CIRCULAR_BUFFER_RING_BYTES(SYSLOG_BUFFER_RECORDS)];
 
 /* The logger reads these on every record, so they outlive Syslog_Start. */
-static struct SolidSyslogStructuredData* s_sd[2];
+static struct SolidSyslogStructuredData* s_sd[3];
 
 /* One reading at boot, then free-running on the tick — enough to stamp a record,
  * not synchronisation. */
@@ -121,6 +126,15 @@ void Syslog_Start(void)
     };
     s_sd[0] = SolidSyslogMetaSd_Create(&metaConfig);
     s_sd[1] = SolidSyslogTimeQualitySd_Create(SyslogTimeQuality);
+
+    /* No ip: the address the collector sees is the one that reached it, until a
+     * relay makes that untrue. */
+    struct SolidSyslogOriginSdConfig originConfig = {
+        .Software = SYSLOG_SOFTWARE,
+        .SwVersion = SYSLOG_SW_VERSION,
+        .EnterpriseId = SYSLOG_ENTERPRISE_ID,
+    };
+    s_sd[2] = SolidSyslogOriginSd_Create(&originConfig);
 
     /* Oldest discarded when the ceiling is reached: a device that cannot reach its
      * collector should keep the newest evidence, not stop logging. */
