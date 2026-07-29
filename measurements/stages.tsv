@@ -23,3 +23,4 @@ time-quality	Time quality	a timestamp the collector knows how far to trust, and 
 file-store	File store	records that survive a failed send, spooled to disk with a checksum at rest
 origin	Origin	the device named in the record itself, not inferred from the source address
 cap-rise	Larger cap	headroom for the grown record, so full-width counters cannot push it into truncation
+buffer-halve	Smaller ring	most of the cap rise given back, now the store rather than the ring holds a backlog
