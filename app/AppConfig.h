@@ -30,6 +30,6 @@
  * headroom, not spare capacity: buffer_alloc hands out contiguous space, so a
  * buffer only a little over the peak fails on fragmentation rather than on
  * capacity. Applied again wherever more is asked of mbedTLS. */
-#define SIMULATED_APP_MBEDTLS_HEAP_BYTES (53 * 1024)
+#define SIMULATED_APP_MBEDTLS_HEAP_BYTES (55 * 1024)
 
 #endif /* APP_CONFIG_H */
