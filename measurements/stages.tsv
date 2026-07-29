@@ -26,3 +26,4 @@ cap-rise	Larger cap	headroom for the grown record, so full-width counters cannot
 buffer-halve	Smaller ring	most of the cap rise given back, now the store rather than the ring holds a backlog
 origin-ip	Origin address	the device's own address in the record, which a relay or NAT between it and the collector cannot rewrite
 tls	TLS	a collector the device authenticates, and records no longer readable on the wire
+hmac	HMAC at rest	stored records that cannot be edited undetected, not merely checked for corruption
