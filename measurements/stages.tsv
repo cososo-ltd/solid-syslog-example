@@ -22,3 +22,4 @@ tcp	TCP	records the network retransmits instead of dropping, and a send that fai
 time-quality	Time quality	a timestamp the collector knows how far to trust, and an uptime that tells a reboot from a counter wrap
 file-store	File store	records that survive a failed send, spooled to disk with a checksum at rest
 origin	Origin	the device named in the record itself, not inferred from the source address
+cap-rise	Larger cap	headroom for the grown record, so full-width counters cannot push it into truncation
