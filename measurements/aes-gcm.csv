@@ -1,0 +1,13 @@
+# aes-gcm figures (bytes) — captured by scripts/run.sh (CAPTURE=1).
+# The device reads measurements/Baseline.csv as its frozen baseline and reports current-minus-Baseline.
+flash_text,363432
+flash_data,656
+static_bss,148284
+heap_used,4440
+mbedtls_peak,37152
+mbedtls_free,19168
+lwip_mem_free,7576
+lwip_pbufs_free,13
+stack_log,832
+stack_service,3852
+stack_harness,2848
