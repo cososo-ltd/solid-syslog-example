@@ -35,6 +35,7 @@
 #include "SolidSyslogTimeQualitySd.h"
 #include "SyslogEnterprise.h"
 #include "SyslogFields.h"
+#include "SyslogPipelineSd.h"
 
 #include "lwip/ip4_addr.h"
 #include "lwip/tcpip.h"
@@ -69,7 +70,7 @@ static struct SolidSyslog* s_logger = NULL;
 static uint8_t s_ring[SOLIDSYSLOG_CIRCULAR_BUFFER_RING_BYTES(SYSLOG_BUFFER_RECORDS)];
 
 /* The logger reads these on every record, so they outlive Syslog_Start. */
-static struct SolidSyslogStructuredData* s_sd[3];
+static struct SolidSyslogStructuredData* s_sd[4];
 
 /* One reading at boot, then free-running on the tick — enough to stamp a record,
  * not synchronisation. */
@@ -182,6 +183,7 @@ void Syslog_Start(void)
         .GetIpAt = SyslogOriginIpAt,
     };
     s_sd[2] = SolidSyslogOriginSd_Create(&originConfig);
+    s_sd[3] = SyslogPipelineSd_Get();
 
     struct SolidSyslogMbedTlsHmacSha256PolicyConfig hmacConfig = {.GetKey = SyslogStoreKey};
 
