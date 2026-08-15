@@ -35,9 +35,11 @@ set(LWIP_CONTRIB_FREERTOS_DIR "${LWIP_DIR}/contrib/ports/freertos")
 
 # --- SolidSyslog ---------------------------------------------------------------
 # Naming the platforms is the whole of the selection; anything unnamed is off.
+# A platform over a stable system API, like StdAtomic, is named here but has no
+# link target — only the header-configured packs below do.
 # https://docs.cososo.co.uk/solid-syslog/build-integration/#cmake
 # The pin is a SHA in solid-syslog.pin, and a change to it reconfigures.
-set(SOLIDSYSLOG_PLATFORMS "LwipRaw" CACHE STRING "" FORCE)
+set(SOLIDSYSLOG_PLATFORMS "LwipRaw;StdAtomic" CACHE STRING "" FORCE)
 
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/solid-syslog.pin" SOLIDSYSLOG_PIN LIMIT_COUNT 1)
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS solid-syslog.pin)
