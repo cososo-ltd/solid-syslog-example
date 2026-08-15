@@ -22,7 +22,7 @@ extern "C"
      * high-water mark reflects something real. */
     bool LogTask_WaitIdle(uint32_t timeoutMs);
 
-    /* Emit one record and wait for it to finish. Nothing to emit yet. */
+    /* Emit one record and wait for it to finish. */
     bool LogTask_EmitOnce(uint32_t timeoutMs);
 
 #ifdef __cplusplus
