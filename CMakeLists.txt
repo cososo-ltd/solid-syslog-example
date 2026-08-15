@@ -130,6 +130,7 @@ add_executable(baseline
     ${APP_DIR}/net/EthernetIf.c
     ${APP_DIR}/storage/diskio.c
     ${APP_DIR}/storage/SemihostingDisk.c
+    ${APP_DIR}/syslog/Syslog.c
     ${APP_DIR}/syslog/SyslogErrorHandler.c
     $<TARGET_OBJECTS:baseline_upstream>
 )
@@ -151,7 +152,7 @@ target_include_directories(baseline PRIVATE
     ${APP_DIR}/net/smsc9220
     ${APP_DIR}/platform                      # CmsdkUart.h, SemihostingExit.h, SemihostingIo.h
     ${APP_DIR}/storage                       # SemihostingDisk.h
-    ${APP_DIR}/syslog                        # SyslogErrorHandler.h
+    ${APP_DIR}/syslog                        # Syslog.h, SyslogErrorHandler.h
     ${FREERTOS_KERNEL_PATH}/include
     ${FREERTOS_PORT_DIR}
     ${LWIP_DIR}/src/include
