@@ -12,9 +12,9 @@ extern "C"
 {
 #endif
 
-    /* The log source seam: the one place this device logs from. Its stack figure
-     * only means anything if logging happens here and not on the harness that
-     * asks for it. */
+    /* The log source seam. With a buffer in front of the sender any task could
+     * call Log for the same cost; this stays one task so the stack figure has a
+     * single owner. */
     bool LogTask_Create(void);
     TaskHandle_t LogTask_Handle(void);
 
@@ -22,7 +22,7 @@ extern "C"
      * high-water mark reflects something real. */
     bool LogTask_WaitIdle(uint32_t timeoutMs);
 
-    /* Emit one record and wait for it to finish. */
+    /* Emit one record and wait until it is queued; the service task sends it. */
     bool LogTask_EmitOnce(uint32_t timeoutMs);
 
     /* How many records this task has emitted, for the run to check against what
