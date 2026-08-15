@@ -10,33 +10,41 @@ It builds on a baseline that simulates the sort of device you might be adding th
 measures itself: see [docs/baseline.md](docs/baseline.md) for what the baseline is, how the
 figures are made, and how to run it.
 
-## This stage — Error handler
+## This stage — Logger created
 
-Install the handler before any other call into SolidSyslog.
+Create the logger with both collaborators absent, deliberately, and read what the handler prints.
 
 ```c
-SolidSyslog_SetErrorHandler(OnSyslogError, NULL);
+struct SolidSyslogConfig config = {
+    .Buffer = NULL,
+    .Sender = NULL,
+};
+
+struct SolidSyslog* logger = SolidSyslog_Create(&config);
 ```
 
-Nothing in the library fails loudly. A `_Create` that cannot succeed substitutes a Null object and
-reports it rather than returning `NULL`, so a logger that has silently stopped looks exactly like
-one with nothing to say. The handler is what tells the two apart, which is why it goes in before
-the first `_Create` and not after something looks wrong. It reports many misconfiguration errors,
-and can save significant time while integrating.
+No `_Create` fails or returns `NULL` — a missing collaborator is substituted with its Null object
+and reported — so the only evidence is what the handler says:
 
-This is not only an integration aid. The handler is the seam into the device's own error and health
-reporting, and it stays valuable at run time: later stages raise an edge-triggered warning when the
-collector becomes unreachable and a notice when delivery recovers. Route it wherever the device
-already routes faults — here, the same console as everything else, so a fault lands in the run
-report next to the rest of what the device did.
+```text
+[syslog] CRITICAL SolidSyslog BAD_CONFIG CREATE_NULL_BUFFER (1)
+[syslog] CRITICAL SolidSyslog BAD_CONFIG CREATE_NULL_SENDER (2)
+[syslog] CRITICAL SolidSyslog BAD_CONFIG CREATE_NULL_STORE (3)
+```
 
-Every axis of an event has a name, the one the library's documentation uses: the severity, the
-category a device would switch on, and the detail code within the source that raised it. The handler
-prints all four, so a report can be read against the documentation without a table of the device's
-own. A platform's own code, where the event carries one, is printed after them.
+Three, for the buffer, the sender and the store. Each names the collaborator in its detail, a value
+of the emitting class's own error enum, printed by name and by number.
 
-**When you need it.** Every device, and first. Without it, a misconfigured logger cannot be told
-from a working one.
+The order is deliberate. Wire everything at once and see nothing, and you cannot tell a working
+logger from a silent one. Seeing the faults first, then watching each go quiet as its collaborator
+arrives, confirms each piece of the wiring in turn.
+
+A convention to adopt from the start: `NULL` as a parameter means "not supplied" and is reported,
+while a collaborator you have deliberately done without is passed as its Null object. The library
+distinguishes the two, and the wiring should read the same way.
+
+**When you need it.** As a step rather than a destination. It costs one build to prove the handler
+is connected and the library is reachable, before the network is involved.
 
 ## License
 
