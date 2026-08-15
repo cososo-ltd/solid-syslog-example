@@ -1,4 +1,4 @@
-# solid-syslog-example — run (Baseline)
+# solid-syslog-example — run (linked)
 
 ## Device (self-measured)
 
@@ -13,10 +13,10 @@
 [report] flash_data,316,316,0
 [report] static_bss,110876,110876,0
 [report] heap_used,4440,4440,0
-[report] mbedtls_peak,21340,21332,8
-[report] mbedtls_free,11428,11436,-8
+[report] mbedtls_peak,21232,21332,-100
+[report] mbedtls_free,11536,11436,100
 [report] lwip_mem_free,7576,7576,0
-[report] lwip_pbufs_free,14,14,0
+[report] lwip_pbufs_free,13,14,-1
 [report] stack_log,120,120,0
 [report] stack_service,52,52,0
 [report] stack_harness,2840,2840,0
@@ -49,17 +49,17 @@
 (nothing — this device sends no records yet)
 ```
 
-## Self-check (vs measurements/Baseline.csv)
+## Self-check (vs measurements/linked.csv)
 
 ```text
   OK    flash_text: 349992 (expected 349992, Δ0)
   OK    flash_data: 316 (expected 316, Δ0)
   OK    static_bss: 110876 (expected 110876, Δ0)
   OK    heap_used: 4440 (expected 4440, Δ0)
-  OK    mbedtls_peak: 21340 (expected 21332, Δ8)
-  OK    mbedtls_free: 11428 (expected 11436, Δ8)
+  OK    mbedtls_peak: 21232 (expected 21280, Δ48)
+  OK    mbedtls_free: 11536 (expected 11488, Δ48)
   OK    lwip_mem_free: 7576 (expected 7576, Δ0)
-  OK    lwip_pbufs_free: 14 (expected 14, Δ0)
+  OK    lwip_pbufs_free: 13 (expected 13, Δ0)
   OK    stack_log: 120 (expected 120, Δ0)
   OK    stack_service: 52 (expected 52, Δ0)
   OK    stack_harness: 2840 (expected 2840, Δ0)
