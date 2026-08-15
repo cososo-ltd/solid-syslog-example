@@ -3,8 +3,13 @@
 #include "ServiceTask.h"
 
 #include "AppConfig.h"
+#include "Syslog.h"
+
+#include "SolidSyslog.h"
 
 #include "semphr.h"
+
+#define SERVICE_POLL_MS 20U
 
 static TaskHandle_t s_handle = NULL;
 static StaticTask_t s_taskBuffer;
@@ -20,7 +25,11 @@ static void ServiceTask_Entry(void* parameters)
 
     for (;;)
     {
-        vTaskDelay(portMAX_DELAY);
+        /* Service returns a status, which a device wanting more sophisticated
+         * scheduling can drive from. A loop with a delay is the simplest model
+         * that works. */
+        (void) SolidSyslog_Service(Syslog_Handle());
+        vTaskDelay(pdMS_TO_TICKS(SERVICE_POLL_MS));
     }
 }
 

@@ -66,10 +66,11 @@ static void HarnessTask(void* parameters)
     bool logIdle = LogTask_WaitIdle(2000U);
     bool serviceIdle = ServiceTask_WaitIdle(2000U);
 
-    /* Emitted before the figures are taken: the record goes out inline on the
-     * log task's stack, so its stack figure only means anything afterwards. */
+    /* Log enqueues and returns; the service task sends it, so give that a moment
+     * before the figures are taken. What arrived is the collector's word. */
     bool logged = LogTask_EmitOnce(5000U);
     (void) printf("[device]   first record logged: %s\n", logged ? "yes" : "FAILED");
+    vTaskDelay(pdMS_TO_TICKS(500U));
 
     (void) Measure_Report();
 
