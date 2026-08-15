@@ -10,22 +10,31 @@ It builds on a baseline that simulates the sort of device you might be adding th
 measures itself: see [docs/baseline.md](docs/baseline.md) for what the baseline is, how the
 figures are made, and how to run it.
 
-## This stage — Linked
+## This stage — Error handler
 
-SolidSyslog is linked into the application without any of it being called. The stage is broken out
-for clarity: it separates getting the build to accept the library from getting the device to use
-it, so anything that goes wrong here is a build problem and nothing else.
+Install the handler before any other call into SolidSyslog.
 
-Three lines carry it. `FetchContent` nests the library under this build. `SOLIDSYSLOG_PLATFORMS`
-names the platforms, and a named list is authoritative: lwIP alone,
-because nothing at this stage reaches any other pack. Then one link line, for the core library and
-that pack.
+```c
+SolidSyslog_SetErrorHandler(OnSyslogError, NULL);
+```
 
-`--gc-sections` discards what nothing calls, so a platform pack that is linked but unused does not
-reach the image.
+Nothing in the library fails loudly. A `_Create` that cannot succeed substitutes a Null object and
+reports it rather than returning `NULL`, so a logger that has silently stopped looks exactly like
+one with nothing to say. The handler is what tells the two apart, which is why it goes in before
+the first `_Create` and not after something looks wrong. It reports many misconfiguration errors,
+and can save significant time while integrating.
 
-For now you need only the core and a network platform. The pin is the SHA in `solid-syslog.pin`,
-which the build reads, and a change to that file reconfigures it.
+This is not only an integration aid. The handler is the seam into the device's own error and health
+reporting, and it stays valuable at run time: later stages raise an edge-triggered warning when the
+collector becomes unreachable and a notice when delivery recovers. Route it wherever the device
+already routes faults — here, the same console as everything else, so a fault lands in the run
+report next to the rest of what the device did.
+
+The handler names the four lifecycle categories a misconfigured integration raises and prints the
+rest numerically. A device reacting to a fault would switch on the category rather than the text.
+
+**When you need it.** Every device, and first. It is the only thing standing between a
+misconfigured logger and a silent one.
 
 ## License
 
