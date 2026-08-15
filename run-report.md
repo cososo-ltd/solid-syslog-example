@@ -1,4 +1,4 @@
-# solid-syslog-example — run (sequence-id)
+# solid-syslog-example — run (buffered)
 
 ## Device (self-measured)
 
@@ -10,16 +10,16 @@
 [device]   first record logged: yes
 [report] --- SolidSyslog cost above baseline (simulated existing application) ---
 [report] key,current,baseline,used_above_baseline
-[report] flash_text,355884,349992,5892
-[report] flash_data,472,316,156
-[report] static_bss,112696,110876,1820
+[report] flash_text,356624,349992,6632
+[report] flash_data,488,316,172
+[report] static_bss,118192,110876,7316
 [report] heap_used,4440,4440,0
-[report] mbedtls_peak,21284,21332,-48
-[report] mbedtls_free,11484,11436,48
+[report] mbedtls_peak,21320,21332,-12
+[report] mbedtls_free,11448,11436,12
 [report] lwip_mem_free,7576,7576,0
-[report] lwip_pbufs_free,14,14,0
-[report] stack_log,1024,120,904
-[report] stack_service,52,52,0
+[report] lwip_pbufs_free,13,14,-1
+[report] stack_log,792,120,672
+[report] stack_service,1004,52,952
 [report] stack_harness,2848,2840,8
 [report] --- end ---
 [device] ready
@@ -29,7 +29,7 @@
 
 ```text
    text	   data	    bss	    dec	    hex	filename
- 355876	    480	 112696	 469052	  7283c	/w/build/baseline-cross/baseline.elf
+ 356616	    496	 118192	 475304	  740a8	/w/build/baseline-cross/baseline.elf
 ```
 
 ## Listeners (proved before the device ran)
@@ -47,23 +47,23 @@
 ## Collector (syslog-ng) received
 
 ```text
-wire   <134>1 2026-08-15T15:35:35.850000Z 10.0.2.15 solid-syslog-example - BOOT [meta sequenceId="1"] ﻿device started
-parsed PRIORITY=134 TIMESTAMP=2026-08-15T15:35:35+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA=[meta sequenceId="1"] MSG=device started
+wire   <134>1 2026-08-15T14:28:28.430000Z 10.0.2.15 solid-syslog-example - BOOT [meta sequenceId="1"] ﻿device started
+parsed PRIORITY=134 TIMESTAMP=2026-08-15T14:28:28+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA=[meta sequenceId="1"] MSG=device started
 ```
 
-## Self-check (vs measurements/sequence-id.csv)
+## Self-check (vs measurements/buffered.csv)
 
 ```text
-  OK    flash_text: 355884 (expected 355884, Δ0)
-  OK    flash_data: 472 (expected 472, Δ0)
-  OK    static_bss: 112696 (expected 112696, Δ0)
+  OK    flash_text: 356624 (expected 356624, Δ0)
+  OK    flash_data: 488 (expected 488, Δ0)
+  OK    static_bss: 118192 (expected 118192, Δ0)
   OK    heap_used: 4440 (expected 4440, Δ0)
-  OK    mbedtls_peak: 21284 (expected 21200, Δ84)
-  OK    mbedtls_free: 11484 (expected 11568, Δ84)
+  OK    mbedtls_peak: 21320 (expected 21352, Δ32)
+  OK    mbedtls_free: 11448 (expected 11416, Δ32)
   OK    lwip_mem_free: 7576 (expected 7576, Δ0)
-  OK    lwip_pbufs_free: 14 (expected 13, Δ1)
-  OK    stack_log: 1024 (expected 1024, Δ0)
-  OK    stack_service: 52 (expected 52, Δ0)
+  OK    lwip_pbufs_free: 13 (expected 13, Δ0)
+  OK    stack_log: 792 (expected 792, Δ0)
+  OK    stack_service: 1004 (expected 1004, Δ0)
   OK    stack_harness: 2848 (expected 2848, Δ0)
 ```
 
