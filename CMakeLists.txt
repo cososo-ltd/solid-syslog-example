@@ -35,9 +35,11 @@ set(LWIP_CONTRIB_FREERTOS_DIR "${LWIP_DIR}/contrib/ports/freertos")
 
 # --- SolidSyslog ---------------------------------------------------------------
 # Naming the platforms is the whole of the selection; anything unnamed is off.
+# A platform over a stable system API, like StdAtomic, is named here but has no
+# link target — only the header-configured packs below do.
 # https://docs.cososo.co.uk/solid-syslog/getting-started/#path-a--cmake-consumer
 # Pinned to a commit until there is a release tag to pin to.
-set(SOLIDSYSLOG_PLATFORMS "LwipRaw" CACHE STRING "" FORCE)
+set(SOLIDSYSLOG_PLATFORMS "LwipRaw;StdAtomic" CACHE STRING "" FORCE)
 
 include(FetchContent)
 FetchContent_Declare(SolidSyslog
