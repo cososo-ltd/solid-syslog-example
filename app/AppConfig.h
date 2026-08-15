@@ -10,10 +10,12 @@
 /* CMSDK UART0 on the mps2-an385, surfaced by QEMU over -serial stdio. */
 #define DEVICE_UART0_BASE ((uintptr_t) 0x40004000U)
 
-/* Both seams are idle, so both get the FreeRTOS floor — twice what an idle seam
- * measures is well below it. Whatever deepens one grows it there. The reported
- * figure is high-water usage, which does not depend on the allocation. */
-#define LOG_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE)
+/* The log seam formats the record on its own stack, so it holds
+ * SOLIDSYSLOG_MAX_MESSAGE_SIZE and the send beneath it and no longer fits the
+ * FreeRTOS floor. The service seam is still idle and keeps it. Both are sized
+ * generously here and tightened against measured high-water marks once the
+ * pipeline is complete. */
+#define LOG_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE * 4U)
 #define SERVICE_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE)
 #define LOG_TASK_PRIORITY (tskIDLE_PRIORITY + 1U)
 #define SERVICE_TASK_PRIORITY (tskIDLE_PRIORITY + 1U)
