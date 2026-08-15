@@ -41,7 +41,7 @@ static void LogTask_Entry(void* parameters)
                 .Msg = "device started",
             };
 
-            /* Sends inline on this stack and returns once it is done. */
+            /* Enqueues and returns; the service task sends it. */
             SolidSyslog_Log(Syslog_Handle(), &message);
 
             s_emitted++;
