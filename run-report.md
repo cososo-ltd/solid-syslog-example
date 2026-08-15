@@ -1,4 +1,4 @@
-# solid-syslog-example — run (linked)
+# solid-syslog-example — run (error-handler)
 
 ## Device (self-measured)
 
@@ -9,12 +9,12 @@
 [device]   sim app (lwIP up, FatFs mounted, broker session held over mTLS): ready
 [report] --- SolidSyslog cost above baseline (simulated existing application) ---
 [report] key,current,baseline,used_above_baseline
-[report] flash_text,349992,349992,0
-[report] flash_data,316,316,0
-[report] static_bss,110876,110876,0
+[report] flash_text,350392,349992,400
+[report] flash_data,320,316,4
+[report] static_bss,110880,110876,4
 [report] heap_used,4440,4440,0
-[report] mbedtls_peak,21232,21332,-100
-[report] mbedtls_free,11536,11436,100
+[report] mbedtls_peak,21336,21332,4
+[report] mbedtls_free,11432,11436,-4
 [report] lwip_mem_free,7576,7576,0
 [report] lwip_pbufs_free,13,14,-1
 [report] stack_log,120,120,0
@@ -28,7 +28,7 @@
 
 ```text
    text	   data	    bss	    dec	    hex	filename
- 349984	    324	 110876	 461184	  70980	/w/build/baseline-cross/baseline.elf
+ 350384	    328	 110880	 461592	  70b18	/w/build/baseline-cross/baseline.elf
 ```
 
 ## Listeners (proved before the device ran)
@@ -49,15 +49,15 @@
 (nothing — this device sends no records yet)
 ```
 
-## Self-check (vs measurements/linked.csv)
+## Self-check (vs measurements/error-handler.csv)
 
 ```text
-  OK    flash_text: 349992 (expected 349992, Δ0)
-  OK    flash_data: 316 (expected 316, Δ0)
-  OK    static_bss: 110876 (expected 110876, Δ0)
+  OK    flash_text: 350392 (expected 350392, Δ0)
+  OK    flash_data: 320 (expected 320, Δ0)
+  OK    static_bss: 110880 (expected 110880, Δ0)
   OK    heap_used: 4440 (expected 4440, Δ0)
-  OK    mbedtls_peak: 21232 (expected 21280, Δ48)
-  OK    mbedtls_free: 11536 (expected 11488, Δ48)
+  OK    mbedtls_peak: 21336 (expected 21296, Δ40)
+  OK    mbedtls_free: 11432 (expected 11472, Δ40)
   OK    lwip_mem_free: 7576 (expected 7576, Δ0)
   OK    lwip_pbufs_free: 13 (expected 13, Δ0)
   OK    stack_log: 120 (expected 120, Δ0)
