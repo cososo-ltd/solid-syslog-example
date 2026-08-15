@@ -16,3 +16,4 @@ logger	Logger created	the logger object, reporting exactly what is still missing
 udp	First record	a valid RFC 5424 record on the wire, over UDP
 header-fields	Header fields	a timestamped record naming the device, instead of nil values
 sequence-id	Sequence numbers	every record numbered, so a gap in the sequence is visible
+buffered	Buffered	logging that returns immediately, with the send moved off the logging task
