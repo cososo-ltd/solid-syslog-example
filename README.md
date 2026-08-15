@@ -10,42 +10,45 @@ It builds on a baseline that simulates the sort of device you might be adding th
 measures itself: see [docs/baseline.md](docs/baseline.md) for what the baseline is, how the
 figures are made, and how to run it.
 
-## This stage — Buffered
+## This stage — TCP
 
-A `SolidSyslogCircularBuffer` between `SolidSyslog_Log` and the sender, drained by a service task
-calling `SolidSyslog_Service`. `SolidSyslog_Log` formats, enqueues and returns; the service task
-does the I/O.
+UDP to TCP, by putting a `SolidSyslogStreamSender` over an lwIP TCP stream. The network retransmits
+rather than dropping, and a send fails when the collector is gone instead of appearing to succeed.
+Records are framed by octet count per RFC 6587, which is what a receiver expects on a stream
+transport.
 
 ```c
-static uint8_t s_ring[SOLIDSYSLOG_CIRCULAR_BUFFER_RING_BYTES(SYSLOG_BUFFER_RECORDS)];
+struct SolidSyslogLwipRawTcpStreamConfig tcpConfig = {.Sleep = SyslogSleep};
 
-.Buffer = SolidSyslogCircularBuffer_Create(SolidSyslogFreeRtosMutex_Create(), s_ring, sizeof(s_ring), NULL, NULL),
+struct SolidSyslogStreamSenderConfig senderConfig = {
+    .Resolver = SolidSyslogLwipRawResolver_Create(),
+    .Stream   = SolidSyslogLwipRawTcpStream_Create(&tcpConfig),
+    .Address  = SolidSyslogLwipRawAddress_Create(),
+    .Endpoint = CollectorEndpoint,
+};
+struct SolidSyslogSender* sender = SolidSyslogStreamSender_Create(&senderConfig);
 ```
 
-This separates logging an event from sending it. `SolidSyslog_Log` becomes safe to call from any
-number of tasks, and cheap enough to call from the place the event actually happens rather than
-from somewhere convenient later. Nothing that logs waits on the network.
+Taken with the sequence number, this completes loss detection: the transport detects loss where it
+happens, and the sequence reveals afterwards anything the transport could not. It is also what makes
+the delivery-failed and delivery-restored events from the error-handler stage meaningful.
 
-**Both seams now carry a send,** and the depth follows it. The log task formats a record on its
-stack; the service task drains the record the logger holds in its instance and sends it. Sized at
-the RTOS floor, the service task did not merely trip its overflow hook — it locked the CPU up,
-because a frame that large clears the guard band entirely rather than growing into it. Both seams
-now hold their onward call, the log seam a record as well, and both are tightened against measured
-high-water marks at the end.
+The store is still the Null object, so a record whose send fails is reported but not kept. The
+device learns that delivery is failing without yet being able to do anything about it; retaining
+the record is the store stage's job.
 
-The last two arguments are the discard policy, asked when a record arrives at a full ring. `NULL`
-applies the default, which drops the oldest records to make room, and the ring reports once when a
-run of losses starts. A later stage makes the policy the device's own choice.
+TCP before TLS is deliberate. It is the smaller step — a stream, a connect and a framing rule, and
+no certificates — and it is what a later store-and-forward stage will spool onto.
 
-The mutex is what makes the enqueue and drain sides safe on different tasks, and it comes from the
-RTOS — which is what brings the `FreeRtos` platform into the build. A single-task device injects
-`SolidSyslogNullMutex_Get()` instead and pays nothing.
+The stream takes a `Sleep` callback because a connect is not instantaneous and the library does not
+choose a blocking primitive for the device; one `vTaskDelay` is all it needs.
 
-`SolidSyslog_Service` returns a status a device wanting more sophisticated scheduling can drive
-from. A loop with a delay is the simplest model that works.
+**When you need it.** If the device must know that delivery is failing — to raise an alarm, to fall
+back, to start storing. Over UDP it never finds out.
 
-**When you need it.** Once logging and sending are decoupled, the buffer has to absorb however many
-events can be logged before it is next serviced. It also makes logging from multiple tasks safe.
+> RFC 6587 is Historic, and the IESG recommends TLS over plain TCP for new deployments. Plain TCP
+> is here for collectors you do not control, and as the step a later storage stage will spool onto,
+> before cryptography arrives.
 
 ## License
 
