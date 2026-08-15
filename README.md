@@ -10,41 +10,56 @@ It builds on a baseline that simulates the sort of device you might be adding th
 measures itself: see [docs/baseline.md](docs/baseline.md) for what the baseline is, how the
 figures are made, and how to run it.
 
-## This stage — Logger created
+## This stage — First record
 
-Create the logger with both collaborators absent, deliberately, and read what the handler prints.
+The simplest configuration that sends a syslog message. A `SolidSyslogUdpSender` over lwIP's raw
+API, with a `SolidSyslogPassthroughBuffer` in front of it, so `SolidSyslog_Log` formats the record
+and hands it straight to the sender on the calling task — no queue, no background drain, nothing
+to service.
 
 ```c
-struct SolidSyslogConfig config = {
-    .Buffer = NULL,
-    .Sender = NULL,
+struct SolidSyslogUdpSenderConfig senderConfig = {
+    .Resolver = SolidSyslogLwipRawResolver_Create(),
+    .Datagram = SolidSyslogLwipRawDatagram_Create(NULL),
+    .Address  = SolidSyslogLwipRawAddress_Create(),
+    .Endpoint = CollectorEndpoint,
 };
+struct SolidSyslogSender* sender = SolidSyslogUdpSender_Create(&senderConfig);
 
-struct SolidSyslog* logger = SolidSyslog_Create(&config);
+struct SolidSyslogConfig config = {
+    .Buffer = SolidSyslogPassthroughBuffer_Create(sender),
+    .Sender = sender,
+    .Store  = SolidSyslogNullStore_Get(),
+};
 ```
 
-No `_Create` fails or returns `NULL` — a missing collaborator is substituted with its Null object
-and reported — so the only evidence is what the handler says:
+What arrives is a valid RFC 5424 record any collector will parse:
 
 ```text
-[syslog] CRITICAL SolidSyslog BAD_CONFIG CREATE_NULL_BUFFER (1)
-[syslog] CRITICAL SolidSyslog BAD_CONFIG CREATE_NULL_SENDER (2)
-[syslog] CRITICAL SolidSyslog BAD_CONFIG CREATE_NULL_STORE (3)
+<134>1 - - - - BOOT - device started
 ```
 
-Three, for the buffer, the sender and the store. Each names the collaborator in its detail, a value
-of the emitting class's own error enum, printed by name and by number.
+Timestamp, hostname, app-name and process-id are the RFC's nil value. The record is valid without
+them; filling them in is the next stage. The three `BAD_CONFIG` reports from the previous stage are
+gone.
 
-The order is deliberate. Wire everything at once and see nothing, and you cannot tell a working
-logger from a silent one. Seeing the faults first, then watching each go quiet as its collaborator
-arrives, confirms each piece of the wiring in turn.
+**The record is built on the stack of whichever task calls `SolidSyslog_Log`.** Its size follows
+`SOLIDSYSLOG_MAX_MESSAGE_SIZE`, so the logging task needs room for the record and the send beneath
+it — here the task was at the RTOS floor and had to grow. It is sized generously for now and
+tightened against measured high-water marks at the end.
 
-A convention to adopt from the start: `NULL` as a parameter means "not supplied" and is reported,
-while a collaborator you have deliberately done without is passed as its Null object. The library
-distinguishes the two, and the wiring should read the same way.
+Three details are worth getting right. The datagram's config states the largest IPv4 payload the
+path carries, which lwIP cannot discover for itself; `NULL` leaves it at the library's tunable of
+480 octets, the figure RFC 5426 guarantees, and this device's records stay under it. Every lwIP raw
+call has to happen on the thread that owns the lwIP core; `lwipopts.h` sets
+`LWIP_TCPIP_CORE_LOCKING`, so taking the core lock in the caller's own task is simpler than posting
+to the tcpip mailbox and is unconditionally synchronous, which the marshal contract requires. And
+the collector address is a numeric literal, which keeps the resolver numeric-only — no DNS, so no
+`LWIP_DNS` and no DNS resolver component compiled in.
 
-**When you need it.** As a step rather than a destination. It costs one build to prove the handler
-is connected and the library is reachable, before the network is involved.
+**When you need it.** Every device needs this much. The question is whether UDP is enough: it drops
+records silently, and anyone on the path can read them. If either matters, treat UDP as the step
+before the TCP and TLS stages.
 
 ## License
 
