@@ -26,3 +26,4 @@ tls	TLS	a collector the device authenticates, and records no longer readable on 
 hmac	HMAC at rest	stored records that cannot be edited undetected, not merely checked for corruption
 pipeline-sd	Private SD-ELEMENT	a record that states the protection its own log pipeline was under
 mtls	Mutual TLS	a collector that knows which device sent the record, not just that one did
+aes-gcm	AES-GCM at rest	spooled records unreadable to anyone holding the disk, not just unforgeable
