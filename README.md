@@ -10,38 +10,58 @@ It builds on a baseline that simulates the sort of device you might be adding th
 measures itself: see [docs/baseline.md](docs/baseline.md) for what the baseline is, how the
 figures are made, and how to run it.
 
-## This stage — Time quality
+## This stage — File store
 
-Add `SolidSyslogTimeQualitySd`, and give `MetaSd` an uptime source alongside its counter.
+Spool to a `SolidSyslogBlockStore` over a `SolidSyslogFileBlockDevice` over the library's FatFs
+port, replacing the Null store. The service task drains the ring into storage and sends from there,
+so a failed send costs a retry rather than the record: the audit trail survives an outage instead of
+ending at it.
 
 ```c
-struct SolidSyslogMetaSdConfig metaConfig = {
-    .Counter      = SolidSyslogStdAtomicCounter_Create(),
-    .GetSysUpTime = SolidSyslogFreeRtos_GetSysUpTime,   /* new */
+#define SYSLOG_STORE_PREFIX "syslog"
+#define SYSLOG_STORE_BLOCKS 4U
+
+struct SolidSyslogBlockStoreConfig storeConfig = {
+    .BlockDevice    = SolidSyslogFileBlockDevice_Create(SolidSyslogFatFsFile_Create(), SYSLOG_STORE_PREFIX, 0U),
+    .MaxBlocks      = SYSLOG_STORE_BLOCKS,
+    .SecurityPolicy = SolidSyslogCrc16Policy_Create(),
 };
-sd[1] = SolidSyslogTimeQualitySd_Create(SyslogTimeQuality);
 ```
 
-```text
-... BOOT [meta sequenceId="1" sysUpTime="385"][timeQuality tzKnown="1" isSynced="0"] device started
-```
+The store opens its files when it is created, so the logger is now created once the volume is
+mounted: `Syslog_Start` moves from before the scheduler to the task that mounted it, and the two
+application tasks follow. Created before the mount, the FatFs file reports the failed open with its
+native code, the store reports `STORE_FROZEN`, and the device delivers without storage from then on.
 
-Time quality states how far the clock can be trusted, which matters when comparing events from
-different devices.
+Three decisions come with it: how much to store, which is capacity on the medium rather than RAM;
+what happens when it fills — discard oldest, discard newest, or halt; and whether to be warned
+before that point, via the capacity-threshold callback.
 
-This device reads the host clock once at boot and then free-runs on the FreeRTOS tick, so `isSynced`
-is `0` and the callback writes no `syncAccuracy`. `tzKnown` is `1`; the device works in UTC
-throughout.
+This device stores four blocks, one file per block, `syslog00.log` upward on the volume it already
+mounts. The discard policy is a function the store asks at the moment it has to decide; left `NULL`
+here, as the ring's was, it discards the oldest, and a later stage makes it the device's choice.
 
-`sysUpTime` accompanies the sequence number. After a reboot the sequence restarts at one, and an
-uptime near zero distinguishes that from a counter wrap.
+The store reports through the handler from the error-handler stage. Records lost to the policy are
+reported once when a run of losses starts. A stored record that fails its check on the way out is
+discarded and reported, and the records behind it are delivered. A medium that fails is different
+in kind: the store reports it once and does not use the device again, and delivery continues
+without storage.
 
-The element lands before the store because store-and-forward breaks the assumption that a record
-reaches the collector shortly after it was raised. A record can arrive hours later, so the device
-states what its clock is worth first.
+The CRC-16 detects corruption, not tampering. It catches a truncated write or bit-rot; anyone who
+can edit a stored record can recompute it. It establishes that a record came back the way it went
+in, which is the prerequisite for spooling at all. Making stored records tamper-evident, and then
+unreadable, are later stages.
 
-**When you need it.** If events from this device will be ordered against events from others, or if a
-record's timestamp will be relied on after a delay.
+Storing happens on the service task, so a task that calls `SolidSyslog_Log` still knows nothing
+about what happens after it returns and its stack does not move. The RAM is pool allocation and
+handles rather than buffers — nothing holds a block in memory, so the store costs its handles
+rather than its capacity.
+
+`SolidSyslog::FatFs` is a header-configured upstream, so it is both named in
+`SOLIDSYSLOG_PLATFORMS` and linked.
+
+**When you need it.** If losing the records raised during an outage is not acceptable, or if they
+must survive a reboot.
 
 ## License
 
