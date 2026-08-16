@@ -171,6 +171,9 @@ target_include_directories(baseline PRIVATE
 # library, or context struct sizes diverge between consumer and library.
 target_compile_definitions(baseline PRIVATE MBEDTLS_USER_CONFIG_FILE=${MBEDTLS_USER_CONFIG_HEADER})
 
+# The version the product already carries, so a release bumps it in one place.
+target_compile_definitions(baseline PRIVATE "SYSLOG_SW_VERSION=\"${PROJECT_VERSION}\"")
+
 target_link_libraries(baseline PRIVATE mbedtls mbedx509 mbedcrypto SolidSyslog SolidSyslog::LwipRaw SolidSyslog::FreeRtos SolidSyslog::FatFs)
 
 target_link_options(baseline PRIVATE
