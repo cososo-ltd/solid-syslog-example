@@ -41,6 +41,12 @@ set(LWIP_CONTRIB_FREERTOS_DIR "${LWIP_DIR}/contrib/ports/freertos")
 # Pinned to a commit until there is a release tag to pin to.
 set(SOLIDSYSLOG_PLATFORMS "LwipRaw;StdAtomic;FreeRtos;FatFs;MbedTls" CACHE STRING "" FORCE)
 
+# Compile-time overrides. The library carries these on an INTERFACE target, so
+# Core, the platform packs and this application all compile against the same
+# values — they change struct sizes, and a build where only some saw them would
+# disagree about how big those structs are.
+set(SOLIDSYSLOG_USER_TUNABLES_FILE "${APP_DIR}/config/solid_syslog_tunables.h")
+
 include(FetchContent)
 FetchContent_Declare(SolidSyslog
     GIT_REPOSITORY https://github.com/cososo-ltd/solid-syslog.git
