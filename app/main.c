@@ -61,6 +61,18 @@ static void HarnessTask(void* parameters)
         simReady ? "ready" : "FAILED"
     );
 
+    /* The store opens its files when it is created, so the logger is created
+     * once the volume is mounted rather than before the scheduler. Nothing is
+     * sent here - the sender resolves and opens lazily on its first record. The
+     * two application tasks follow it: the service task has nothing to drive
+     * until the logger exists. */
+    Syslog_Start();
+    if (!LogTask_Create() || !ServiceTask_Create())
+    {
+        (void) printf("[device] FATAL: application task create failed\n");
+        SemihostingExit(1);
+    }
+
     /* Make sure both idle seams have been scheduled so their stack high-water
      * marks are meaningful (idle, but real). */
     bool logIdle = LogTask_WaitIdle(2000U);
@@ -115,16 +127,6 @@ int main(void)
         SemihostingExit(1);
     }
 
-    /* After tcpip_init, not before: the marshal Syslog_Start installs takes the
-     * lwIP core lock, and tcpip_init is what creates it. Nothing is sent here -
-     * the sender resolves and opens lazily on its first record. */
-    Syslog_Start();
-
-    if (!LogTask_Create() || !ServiceTask_Create())
-    {
-        (void) printf("[device] FATAL: application task create failed\n");
-        SemihostingExit(1);
-    }
     static StaticTask_t harnessTaskBuffer;
     static StackType_t harnessStack[HARNESS_TASK_STACK_WORDS];
 
