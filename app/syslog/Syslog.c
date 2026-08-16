@@ -14,7 +14,6 @@
 #include "SolidSyslogBlockStore.h"
 #include "SolidSyslogCircularBuffer.h"
 #include "SolidSyslogConfig.h"
-#include "SolidSyslogCrc16Policy.h"
 #include "SolidSyslogEndpoint.h"
 #include "SolidSyslogEndpointHost.h"
 #include "SolidSyslogFatFsFile.h"
@@ -26,6 +25,7 @@
 #include "SolidSyslogLwipRawResolver.h"
 #include "SolidSyslogLwipRawTcpStream.h"
 #include "SolidSyslogMbedTlsHandleCredentials.h"
+#include "SolidSyslogMbedTlsHmacSha256Policy.h"
 #include "SolidSyslogMbedTlsStream.h"
 #include "SolidSyslogMetaSd.h"
 #include "SolidSyslogOriginSd.h"
@@ -44,6 +44,7 @@
 #include "queue.h"
 #include "task.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -61,6 +62,7 @@
 /* One "<prefix>NN.log" per block, on the volume the device already mounts. */
 #define SYSLOG_STORE_PREFIX "syslog"
 #define SYSLOG_STORE_BLOCKS 4U
+#define SYSLOG_STORE_KEY_NAME "log-store"
 
 #define SYSLOG_SOFTWARE "solid-syslog-example"
 
@@ -100,6 +102,15 @@ static void SyslogOriginIpAt(struct SolidSyslogSdValue* value, void* context, si
 
     SyslogFields_IpAddress(address, sizeof(address));
     SolidSyslogSdValue_String(value, address);
+}
+
+/* Fetched per seal and per verify rather than held, so the key never sits on the
+ * policy instance. */
+static bool SyslogStoreKey(void* context, uint8_t* keyOut, size_t capacity, size_t* keyLengthOut)
+{
+    (void) context;
+
+    return DeviceCertStore_SymmetricKey(SYSLOG_STORE_KEY_NAME, keyOut, capacity, keyLengthOut);
 }
 
 /* Bounds the connect spin so it yields instead of busy-waiting. */
@@ -217,11 +228,13 @@ void Syslog_Start(void)
     };
     s_sd[2] = SolidSyslogOriginSd_Create(&originConfig);
 
+    struct SolidSyslogMbedTlsHmacSha256PolicyConfig hmacConfig = {.GetKey = SyslogStoreKey};
+
     struct SolidSyslogBlockStoreConfig storeConfig = {
         .BlockDevice = SolidSyslogFileBlockDevice_Create(SolidSyslogFatFsFile_Create(), SYSLOG_STORE_PREFIX, 0U),
         .MaxBlocks = SYSLOG_STORE_BLOCKS,
         .DiscardPolicy = SOLIDSYSLOG_DISCARD_POLICY_OLDEST,
-        .SecurityPolicy = SolidSyslogCrc16Policy_Create(),
+        .SecurityPolicy = SolidSyslogMbedTlsHmacSha256Policy_Create(&hmacConfig),
     };
 
     struct SolidSyslogConfig config = {

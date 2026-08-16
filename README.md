@@ -10,33 +10,29 @@ It builds on a baseline that simulates the sort of device you might be adding th
 measures itself: see [docs/baseline.md](docs/baseline.md) for what the baseline is, how the
 figures are made, and how to run it.
 
-## This stage — Pin rotation
+## This stage — HMAC at rest
 
-A pinned collector's certificate is renewed without any device stopping. A renewal changes the
-fingerprint, so the device takes the renewed certificate's pin beside the current one before the
-collector switches, and retires the old one afterwards.
+Replace the CRC-16 with a keyed HMAC. The checksum established that a record came back the way it
+went in; the HMAC establishes that nobody has changed it since. An edit made without the key fails
+verification, so stored records become tamper-evident rather than merely intact.
 
 ```c
-static const char* s_collectorPins[2];   /* either authorises the collector */
+struct SolidSyslogMbedTlsHmacSha256PolicyConfig hmacConfig = {.GetKey = SyslogStoreKey};
 
-.PeerFingerprintCount = 2U,              /* on the credentials */
-.Version              = SyslogStreamVersion,   /* on the TLS stream */
-
-bool Syslog_ProvisionNextCollectorPin(const char* pin);   /* any task */
-bool Syslog_RetireCollectorPin(void);                     /* any task */
-void Syslog_ApplyPinChanges(void);                        /* service task, each pass */
+.SecurityPolicy = SolidSyslogMbedTlsHmacSha256Policy_Create(&hmacConfig),
 ```
 
-Both slots hold the current pin until a renewal is under way. The pins and the stream version are
-read on the service task as it connects, so a change is queued and the service task applies it
-between passes. Both calls return false when the change is not queued - a full queue, or a NULL
-pin, which would read as a retirement - so a refused change is seen rather than lost. The version
-moves with every change; the sender checks it before every record and reconnects when it has
-moved, so new pins apply without a restart.
+The key is fetched per seal and per verify rather than held, so it never sits on the policy
+instance. Key custody, rotation and provisioning are yours; the library consumes a key you supply
+and never stores one.
 
-**When you need it.** Wherever the collector is pinned. Without it, every device pinned to a
-collector stops on the day that collector's certificate is replaced, and on an OT network that is
-every device on the site at once.
+Holding a named symmetric key and handing it out is the device's own mechanism — a device already
+doing mTLS has provisioned secrets and somewhere to keep them, so the key slot, the loader and the
+accessor all sit below the line. What SolidSyslog is charged for is the policy and the callback that
+reaches for the key.
+
+**When you need it.** If an attacker could reach the medium — removable, unattended, or stealable —
+and stored records must be provably unaltered.
 
 ## License
 
