@@ -9,10 +9,14 @@
 
 #include "Syslog.h"
 
+#include "SolidSyslogBlockStore.h"
 #include "SolidSyslogCircularBuffer.h"
 #include "SolidSyslogConfig.h"
+#include "SolidSyslogCrc16Policy.h"
 #include "SolidSyslogEndpoint.h"
 #include "SolidSyslogEndpointHost.h"
+#include "SolidSyslogFatFsFile.h"
+#include "SolidSyslogFileBlockDevice.h"
 #include "SolidSyslogFreeRtosMutex.h"
 #include "SolidSyslogFreeRtosSysUpTime.h"
 #include "SolidSyslogLwipRawAddress.h"
@@ -20,7 +24,6 @@
 #include "SolidSyslogLwipRawResolver.h"
 #include "SolidSyslogLwipRawTcpStream.h"
 #include "SolidSyslogMetaSd.h"
-#include "SolidSyslogNullStore.h"
 #include "SolidSyslogStdAtomicCounter.h"
 #include "SolidSyslogStreamSender.h"
 #include "SolidSyslogTimeQuality.h"
@@ -45,6 +48,10 @@
 /* Depth enough to absorb a burst while the sender is busy, without sizing for a
  * backlog the store is there to hold. */
 #define SYSLOG_BUFFER_RECORDS 8U
+
+/* One "<prefix>NN.log" per block, on the volume the device already mounts. */
+#define SYSLOG_STORE_PREFIX "syslog"
+#define SYSLOG_STORE_BLOCKS 4U
 
 static struct SolidSyslog* s_logger = NULL;
 static uint8_t s_ring[SOLIDSYSLOG_CIRCULAR_BUFFER_RING_BYTES(SYSLOG_BUFFER_RECORDS)];
@@ -115,12 +122,17 @@ void Syslog_Start(void)
     s_sd[0] = SolidSyslogMetaSd_Create(&metaConfig);
     s_sd[1] = SolidSyslogTimeQualitySd_Create(SyslogTimeQuality);
 
+    struct SolidSyslogBlockStoreConfig storeConfig = {
+        .BlockDevice = SolidSyslogFileBlockDevice_Create(SolidSyslogFatFsFile_Create(), SYSLOG_STORE_PREFIX, 0U),
+        .MaxBlocks = SYSLOG_STORE_BLOCKS,
+        .DiscardPolicy = SOLIDSYSLOG_DISCARD_POLICY_OLDEST,
+        .SecurityPolicy = SolidSyslogCrc16Policy_Create(),
+    };
+
     struct SolidSyslogConfig config = {
         .Buffer = SolidSyslogCircularBuffer_Create(SolidSyslogFreeRtosMutex_Create(), s_ring, sizeof(s_ring)),
         .Sender = sender,
-        /* No store-and-forward here. The Null object rather than NULL is how
-         * that is said out loud — NULL is reported as a fault. */
-        .Store = SolidSyslogNullStore_Get(),
+        .Store = SolidSyslogBlockStore_Create(&storeConfig),
         /* PROCID stays unset — a bare-metal image has no process. */
         .Clock = SyslogFields_Clock,
         .GetHostname = SyslogFields_Hostname,
