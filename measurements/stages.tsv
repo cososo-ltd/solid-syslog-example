@@ -23,3 +23,4 @@ origin-ip	Origin address	the device's own address in the record, which a relay o
 tls	TLS	a collector the device authenticates, and records no longer readable on the wire
 pin-rotation	Pin rotation	a collector certificate renewed without any device stopping
 hmac	HMAC at rest	stored records that cannot be edited undetected, not merely checked for corruption
+pipeline-sd	Private SD-ELEMENT	a record that states the protection its own log pipeline was under
