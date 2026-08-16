@@ -24,3 +24,4 @@ origin	Origin	the device named in the record itself, not inferred from the sourc
 origin-ip	Origin address	the device's own address in the record, which a relay or NAT between it and the collector cannot rewrite
 tls	TLS	a collector the device authenticates, and records no longer readable on the wire
 hmac	HMAC at rest	stored records that cannot be edited undetected, not merely checked for corruption
+pipeline-sd	Private SD-ELEMENT	a record that states the protection its own log pipeline was under
