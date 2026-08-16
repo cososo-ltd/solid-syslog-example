@@ -10,47 +10,49 @@ It builds on a baseline that simulates the sort of device you might be adding th
 measures itself: see [docs/baseline.md](docs/baseline.md) for what the baseline is, how the
 figures are made, and how to run it.
 
-## This stage — File store
+## This stage — Origin
 
-Spool to a `SolidSyslogBlockStore` over a `SolidSyslogFileBlockDevice` over the library's FatFs
-port, replacing the Null store. The service task drains the ring into storage and sends from there,
-so a failed send costs a retry rather than the record: the audit trail survives an outage instead of
-ending at it.
+Name the device in the record with `SolidSyslogOriginSd` — the software, its version, and the
+enterprise number.
 
-```c
-#define SYSLOG_STORE_PREFIX "syslog"
-#define SYSLOG_STORE_BLOCKS 4U
+```cmake
+project(solid_syslog_example_baseline VERSION 0.2.0 LANGUAGES C ASM)
 
-struct SolidSyslogBlockStoreConfig storeConfig = {
-    .BlockDevice    = SolidSyslogFileBlockDevice_Create(SolidSyslogFatFsFile_Create(), SYSLOG_STORE_PREFIX, 0U),
-    .MaxBlocks      = SYSLOG_STORE_BLOCKS,
-    .DiscardPolicy  = SOLIDSYSLOG_DISCARD_POLICY_OLDEST,
-    .SecurityPolicy = SolidSyslogCrc16Policy_Create(),
-};
+target_compile_definitions(baseline PRIVATE "SYSLOG_SW_VERSION=\"${PROJECT_VERSION}\"")
 ```
 
-Three decisions come with it: how much to store, which is capacity on the medium rather than RAM;
-what happens when it fills — discard oldest, discard newest, or halt; and whether to be warned
-before that point, via the capacity-threshold callback.
+```c
+#define SYSLOG_SOFTWARE "solid-syslog-example"
 
-This device stores four blocks, one file per block, `syslog00.log` upward on the volume it already
-mounts, and discards the oldest when full.
+struct SolidSyslogOriginSdConfig originConfig = {
+    .Software     = SYSLOG_SOFTWARE,
+    .SwVersion    = SYSLOG_SW_VERSION,
+    .EnterpriseId = SYSLOG_ENTERPRISE_ID,
+};
+sd[2] = SolidSyslogOriginSd_Create(&originConfig);
+```
 
-The CRC-16 detects corruption, not tampering. It catches a truncated write or bit-rot; anyone who
-can edit a stored record can recompute it. It establishes that a record came back the way it went
-in, which is the prerequisite for spooling at all. Making stored records tamper-evident, and then
-unreadable, are later stages.
+```text
+... [origin software="solid-syslog-example" swVersion="0.2.0" enterpriseId="32473"] device started
+```
 
-Storing happens on the service task, so a task that calls `SolidSyslog_Log` still knows nothing
-about what happens after it returns and its stack does not move. The RAM is pool allocation and
-handles rather than buffers — nothing holds a block in memory, so the store costs its handles
-rather than its capacity.
+This lands after the store rather than before it. While records went straight out, the answer to
+"who sent this" was implied by the connection they arrived on. Once records can replay hours later
+that is no longer so, and the record has to carry it.
 
-`SolidSyslog::FatFs` is a header-configured upstream, so it is both named in
-`SOLIDSYSLOG_PLATFORMS` and linked.
+The `ip` PARAM is left out here. The address the collector sees is still the address that reached
+it; the next stage takes that assumption away.
 
-**When you need it.** If losing the records raised during an outage is not acceptable, or if they
-must survive a reboot.
+`SYSLOG_ENTERPRISE_ID` is defined in its own header rather than beside the element that carries it,
+because the number identifies the vendor rather than the logger — anything else this product puts
+its own name on wants the same one. `SYSLOG_SW_VERSION` is the version the product already
+carries in `project()`, passed in by CMake, for the same reason.
+
+> Enterprise number 32473 is reserved for documentation and testing by RFC 5612. A shipping product
+> uses its own, registered with IANA.
+
+**When you need it.** If records will be correlated across devices, replayed after a delay, or
+relayed through anything.
 
 ## License
 
