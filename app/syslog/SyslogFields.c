@@ -39,20 +39,27 @@ void SyslogFields_Clock(struct SolidSyslogTimestamp* timestamp)
     }
 }
 
+void SyslogFields_IpAddress(char* out, size_t size)
+{
+    out[0] = '\0';
+
+    /* netif state belongs to the lwIP core, so read and format under its lock.
+     * ip4addr_ntoa_r, not ip4addr_ntoa: the latter shares one static buffer. */
+    LOCK_TCPIP_CORE();
+    if ((netif_default != NULL) && !ip4_addr_isany_val(*netif_ip4_addr(netif_default)))
+    {
+        (void) ip4addr_ntoa_r(netif_ip4_addr(netif_default), out, (int) size);
+    }
+    UNLOCK_TCPIP_CORE();
+}
+
 void SyslogFields_Hostname(struct SolidSyslogHeaderField* field, void* context)
 {
     (void) context;
 
     char address[IP4ADDR_STRLEN_MAX] = {0};
 
-    /* netif state belongs to the lwIP core, so read and format under its lock.
-     * ip4addr_ntoa_r, not ip4addr_ntoa: the latter shares one static buffer. */
-    LOCK_TCPIP_CORE();
-    if (netif_default != NULL)
-    {
-        (void) ip4addr_ntoa_r(netif_ip4_addr(netif_default), address, (int) sizeof(address));
-    }
-    UNLOCK_TCPIP_CORE();
+    SyslogFields_IpAddress(address, sizeof(address));
 
     if (address[0] != '\0')
     {
