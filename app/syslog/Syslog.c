@@ -54,9 +54,9 @@
 #define SYSLOG_COLLECTOR_HOST "10.0.2.2"
 #define SYSLOG_COLLECTOR_PORT ((uint16_t) 6515U)
 
-/* Depth enough to absorb a burst while the sender is busy, without sizing for a
- * backlog the store is there to hold. */
-#define SYSLOG_BUFFER_RECORDS 8U
+/* Enough to absorb a burst logged while the service task is sending. The store
+ * holds a backlog, so the ring does not have to. */
+#define SYSLOG_BUFFER_RECORDS 4U
 
 /* One "<prefix>NN.log" per block, on the volume the device already mounts. */
 #define SYSLOG_STORE_PREFIX "syslog"

@@ -27,3 +27,4 @@ hmac	HMAC at rest	stored records that cannot be edited undetected, not merely ch
 pipeline-sd	Private SD-ELEMENT	a record that states the protection its own log pipeline was under
 mtls	Mutual TLS	a collector that knows which device sent the record, not just that one did
 aes-gcm	AES-GCM at rest	spooled records unreadable to anyone holding the disk, not just unforgeable
+right-size	Right-sized	the pools, the ring and the task stacks fitted to what this device uses
