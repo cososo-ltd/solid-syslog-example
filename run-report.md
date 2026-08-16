@@ -14,8 +14,8 @@
 [report] flash_data,656,316,340
 [report] static_bss,146584,110876,35708
 [report] heap_used,4440,4440,0
-[report] mbedtls_peak,37248,21332,15916
-[report] mbedtls_free,19072,11436,7636
+[report] mbedtls_peak,37156,21332,15824
+[report] mbedtls_free,19164,11436,7728
 [report] lwip_mem_free,7576,7576,0
 [report] lwip_pbufs_free,13,14,-1
 [report] stack_log,720,120,600
@@ -47,8 +47,8 @@
 ## Collector (syslog-ng) received
 
 ```text
-wire   <134>1 2026-08-16T16:16:14.430000Z 10.0.2.15 solid-syslog-example - BOOT [meta sequenceId="1" sysUpTime="243"][timeQuality tzKnown="1" isSynced="0"][origin software="solid-syslog-example" swVersion="0.1.0" enterpriseId="32473" ip="10.0.2.15"][logPipeline@32473 transport="mtls" atRest="aes-256-gcm"] ﻿device started
-parsed PRIORITY=134 TIMESTAMP=2026-08-16T16:16:14+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA=[meta sequenceId="1" sysUpTime="243"][timeQuality tzKnown="1" isSynced="0"][origin software="solid-syslog-example" swVersion="0.1.0" enterpriseId="32473" ip="10.0.2.15"][logPipeline@32473 transport="mtls" atRest="aes-256-gcm"] MSG=device started
+wire   <134>1 2026-08-16T17:28:13.500000Z 10.0.2.15 solid-syslog-example - BOOT [meta sequenceId="1" sysUpTime="250"][timeQuality tzKnown="1" isSynced="0"][origin software="solid-syslog-example" swVersion="0.1.0" enterpriseId="32473" ip="10.0.2.15"][logPipeline@32473 transport="mtls" atRest="aes-256-gcm"] ﻿device started
+parsed PRIORITY=134 TIMESTAMP=2026-08-16T17:28:13+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA=[meta sequenceId="1" sysUpTime="250"][timeQuality tzKnown="1" isSynced="0"][origin software="solid-syslog-example" swVersion="0.1.0" enterpriseId="32473" ip="10.0.2.15"][logPipeline@32473 transport="mtls" atRest="aes-256-gcm"] MSG=device started
 ```
 
 ## Self-check (vs measurements/right-size.csv)
@@ -58,8 +58,8 @@ parsed PRIORITY=134 TIMESTAMP=2026-08-16T16:16:14+00:00 HOSTNAME=10.0.2.15 APP_N
   OK    flash_data: 656 (expected 656, Δ0)
   OK    static_bss: 146584 (expected 146584, Δ0)
   OK    heap_used: 4440 (expected 4440, Δ0)
-  OK    mbedtls_peak: 37248 (expected 37184, Δ64)
-  OK    mbedtls_free: 19072 (expected 19136, Δ64)
+  OK    mbedtls_peak: 37156 (expected 37184, Δ28)
+  OK    mbedtls_free: 19164 (expected 19136, Δ28)
   OK    lwip_mem_free: 7576 (expected 7576, Δ0)
   OK    lwip_pbufs_free: 13 (expected 13, Δ0)
   OK    stack_log: 720 (expected 720, Δ0)
