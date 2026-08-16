@@ -19,3 +19,4 @@ sequence-id	Sequence numbers	every record numbered, so a gap in the sequence is 
 buffered	Buffered	logging that returns immediately, with the send moved off the logging task
 tcp	TCP	records the network retransmits instead of dropping, and a send that fails when the collector is gone
 time-quality	Time quality	a timestamp the collector knows how far to trust, and an uptime that tells a reboot from a counter wrap
+file-store	File store	records that survive a failed send, spooled to disk with a checksum at rest
