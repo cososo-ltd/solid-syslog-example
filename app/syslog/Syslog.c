@@ -52,7 +52,7 @@
  * the resolver numeric-only — no DNS, so no LWIP_DNS and no DNS resolver
  * component to compile. */
 #define SYSLOG_COLLECTOR_HOST "10.0.2.2"
-#define SYSLOG_COLLECTOR_PORT ((uint16_t) 6514U)
+#define SYSLOG_COLLECTOR_PORT ((uint16_t) 6515U)
 
 /* Depth enough to absorb a burst while the sender is busy, without sizing for a
  * backlog the store is there to hold. */
@@ -148,6 +148,11 @@ void Syslog_Start(void)
 
     struct SolidSyslogLwipRawTcpStreamConfig tcpConfig = {.Sleep = SyslogSleep};
 
+    /* Both must be set: either one NULL disables mTLS silently, which is why the
+     * pipeline element reports what the device holds rather than what was meant. */
+    struct mbedtls_x509_crt* clientChain = DeviceCertStore_ClientChain();
+    struct mbedtls_pk_context* clientKey = DeviceCertStore_ClientKey();
+
     /* ServerName must match the name in the collector's certificate. */
     struct SolidSyslogMbedTlsStreamConfig tlsConfig = {
         .Transport = SolidSyslogLwipRawTcpStream_Create(&tcpConfig),
@@ -155,6 +160,8 @@ void Syslog_Start(void)
         .Rng = DeviceCertStore_Rng(),
         .CaChain = DeviceCertStore_CaChain(),
         .ServerName = SYSLOG_COLLECTOR_HOST,
+        .ClientCertChain = clientChain,
+        .ClientKey = clientKey,
     };
 
     /* No EndpointVersion — this collector never moves, so the sender resolves
@@ -184,7 +191,7 @@ void Syslog_Start(void)
         .GetIpAt = SyslogOriginIpAt,
     };
     s_sd[2] = SolidSyslogOriginSd_Create(&originConfig);
-    s_sd[3] = SyslogPipelineSd_Get();
+    s_sd[3] = SyslogPipelineSd_Init((clientChain != NULL) && (clientKey != NULL));
 
     struct SolidSyslogMbedTlsHmacSha256PolicyConfig hmacConfig = {.GetKey = SyslogStoreKey};
 
