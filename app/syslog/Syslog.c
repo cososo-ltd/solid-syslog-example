@@ -1,13 +1,15 @@
 /* See Syslog.h.
  *
- * A TCP stream over lwIP behind a circular buffer: Log enqueues and returns, and
- * the service task drains and sends. The mutex is what makes those two sides
+ * A TLS stream over lwIP TCP behind a circular buffer: Log enqueues and returns,
+ * and the service task drains and sends. The mutex is what makes those two sides
  * safe on different tasks.
  *
  * Unlike a header field, an SD PARAM has no NILVALUE: an unset one is omitted
  * entirely rather than written as "-". */
 
 #include "Syslog.h"
+
+#include "DeviceCertStore.h"
 
 #include "SolidSyslogBlockStore.h"
 #include "SolidSyslogCircularBuffer.h"
@@ -23,6 +25,7 @@
 #include "SolidSyslogLwipRawMarshal.h"
 #include "SolidSyslogLwipRawResolver.h"
 #include "SolidSyslogLwipRawTcpStream.h"
+#include "SolidSyslogMbedTlsStream.h"
 #include "SolidSyslogMetaSd.h"
 #include "SolidSyslogOriginSd.h"
 #include "SolidSyslogSdValue.h"
@@ -47,7 +50,7 @@
  * the resolver numeric-only — no DNS, so no LWIP_DNS and no DNS resolver
  * component to compile. */
 #define SYSLOG_COLLECTOR_HOST "10.0.2.2"
-#define SYSLOG_COLLECTOR_PORT ((uint16_t) 5601U)
+#define SYSLOG_COLLECTOR_PORT ((uint16_t) 6514U)
 
 /* Depth enough to absorb a burst while the sender is busy, without sizing for a
  * backlog the store is there to hold. */
@@ -133,11 +136,20 @@ void Syslog_Start(void)
 
     struct SolidSyslogLwipRawTcpStreamConfig tcpConfig = {.Sleep = SyslogSleep};
 
+    /* ServerName must match the name in the collector's certificate. */
+    struct SolidSyslogMbedTlsStreamConfig tlsConfig = {
+        .Transport = SolidSyslogLwipRawTcpStream_Create(&tcpConfig),
+        .Sleep = SyslogSleep,
+        .Rng = DeviceCertStore_Rng(),
+        .CaChain = DeviceCertStore_CaChain(),
+        .ServerName = SYSLOG_COLLECTOR_HOST,
+    };
+
     /* No EndpointVersion — this collector never moves, so the sender resolves
      * once and pins it. */
     struct SolidSyslogStreamSenderConfig senderConfig = {
         .Resolver = SolidSyslogLwipRawResolver_Create(),
-        .Stream = SolidSyslogLwipRawTcpStream_Create(&tcpConfig),
+        .Stream = SolidSyslogMbedTlsStream_Create(&tlsConfig),
         .Address = SolidSyslogLwipRawAddress_Create(),
         .Endpoint = CollectorEndpoint,
     };
