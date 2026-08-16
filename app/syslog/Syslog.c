@@ -24,7 +24,7 @@
 #include "SolidSyslogLwipRawMarshal.h"
 #include "SolidSyslogLwipRawResolver.h"
 #include "SolidSyslogLwipRawTcpStream.h"
-#include "SolidSyslogMbedTlsHmacSha256Policy.h"
+#include "SolidSyslogMbedTlsAesGcmPolicy.h"
 #include "SolidSyslogMbedTlsStream.h"
 #include "SolidSyslogMetaSd.h"
 #include "SolidSyslogOriginSd.h"
@@ -152,12 +152,13 @@ void Syslog_Start(void)
      * pipeline element reports what the device holds rather than what was meant. */
     struct mbedtls_x509_crt* clientChain = DeviceCertStore_ClientChain();
     struct mbedtls_pk_context* clientKey = DeviceCertStore_ClientKey();
+    struct mbedtls_ctr_drbg_context* rng = DeviceCertStore_Rng();
 
     /* ServerName must match the name in the collector's certificate. */
     struct SolidSyslogMbedTlsStreamConfig tlsConfig = {
         .Transport = SolidSyslogLwipRawTcpStream_Create(&tcpConfig),
         .Sleep = SyslogSleep,
-        .Rng = DeviceCertStore_Rng(),
+        .Rng = rng,
         .CaChain = DeviceCertStore_CaChain(),
         .ServerName = SYSLOG_COLLECTOR_HOST,
         .ClientCertChain = clientChain,
@@ -191,15 +192,19 @@ void Syslog_Start(void)
         .GetIpAt = SyslogOriginIpAt,
     };
     s_sd[2] = SolidSyslogOriginSd_Create(&originConfig);
-    s_sd[3] = SyslogPipelineSd_Init((clientChain != NULL) && (clientKey != NULL));
+    s_sd[3] = SyslogPipelineSd_Init(
+        ((clientChain != NULL) && (clientKey != NULL)) ? "mtls" : "tls", (rng != NULL) ? "aes-256-gcm" : "none"
+    );
 
-    struct SolidSyslogMbedTlsHmacSha256PolicyConfig hmacConfig = {.GetKey = SyslogStoreKey};
+    /* The nonce comes from the device's DRBG: GCM needs a fresh one per record and
+     * mbedTLS has no context-free RNG to reach for. */
+    struct SolidSyslogMbedTlsAesGcmPolicyConfig gcmConfig = {.GetKey = SyslogStoreKey, .Rng = rng};
 
     struct SolidSyslogBlockStoreConfig storeConfig = {
         .BlockDevice = SolidSyslogFileBlockDevice_Create(SolidSyslogFatFsFile_Create(), SYSLOG_STORE_PREFIX, 0U),
         .MaxBlocks = SYSLOG_STORE_BLOCKS,
         .DiscardPolicy = SOLIDSYSLOG_DISCARD_POLICY_OLDEST,
-        .SecurityPolicy = SolidSyslogMbedTlsHmacSha256Policy_Create(&hmacConfig),
+        .SecurityPolicy = SolidSyslogMbedTlsAesGcmPolicy_Create(&gcmConfig),
     };
 
     struct SolidSyslogConfig config = {

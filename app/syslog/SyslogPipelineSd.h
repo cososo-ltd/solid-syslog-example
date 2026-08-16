@@ -4,12 +4,11 @@
 #ifndef APP_SYSLOG_PIPELINE_SD_H
 #define APP_SYSLOG_PIPELINE_SD_H
 
-#include <stdbool.h>
-
 struct SolidSyslogStructuredData;
 
-/** The shared instance, for SolidSyslogConfig.Sd. Never NULL. @p mutualTls is
- *  what the device holds, not what it meant to configure. */
-struct SolidSyslogStructuredData* SyslogPipelineSd_Init(bool mutualTls);
+/** Records the protection in force and returns the shared instance, for
+ *  SolidSyslogConfig.Sd. Never NULL. Both values must reflect what the device
+ *  holds, not what it was meant to be configured with. */
+struct SolidSyslogStructuredData* SyslogPipelineSd_Init(const char* transport, const char* atRest);
 
 #endif /* APP_SYSLOG_PIPELINE_SD_H */

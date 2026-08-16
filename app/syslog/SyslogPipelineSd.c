@@ -8,7 +8,9 @@
 #include "SolidSyslogSdValue.h"
 #include "SolidSyslogStructuredDataDefinition.h"
 
+/* The weakest honest answer, until Init says otherwise. */
 static const char* s_transport = "tls";
+static const char* s_atRest = "none";
 
 /* A non-zero enterprise number is what makes the SD-ID private: _Begin emits
  * "name@number" for one, a bare IANA "name" for 0. */
@@ -18,7 +20,7 @@ static void SyslogPipelineSd_Format(struct SolidSyslogStructuredData* base, stru
 
     SolidSyslogSdElement_Begin(element, "logPipeline", SYSLOG_ENTERPRISE_NUMBER);
     SolidSyslogSdValue_String(SolidSyslogSdElement_Param(element, "transport"), s_transport);
-    SolidSyslogSdValue_String(SolidSyslogSdElement_Param(element, "atRest"), "hmac-sha256");
+    SolidSyslogSdValue_String(SolidSyslogSdElement_Param(element, "atRest"), s_atRest);
     SolidSyslogSdElement_End(element);
 }
 
@@ -26,8 +28,9 @@ static void SyslogPipelineSd_Format(struct SolidSyslogStructuredData* base, stru
  * one is a vtable the application owns. */
 static struct SolidSyslogStructuredData s_pipelineSd = {SyslogPipelineSd_Format};
 
-struct SolidSyslogStructuredData* SyslogPipelineSd_Init(bool mutualTls)
+struct SolidSyslogStructuredData* SyslogPipelineSd_Init(const char* transport, const char* atRest)
 {
-    s_transport = mutualTls ? "mtls" : "tls";
+    s_transport = transport;
+    s_atRest = atRest;
     return &s_pipelineSd;
 }
