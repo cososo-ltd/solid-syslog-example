@@ -39,7 +39,7 @@ set(LWIP_CONTRIB_FREERTOS_DIR "${LWIP_DIR}/contrib/ports/freertos")
 # link target — only the header-configured packs below do.
 # https://docs.cososo.co.uk/solid-syslog/build-integration/#cmake
 # The pin is a SHA in solid-syslog.pin, and a change to it reconfigures.
-set(SOLIDSYSLOG_PLATFORMS "LwipRaw;StdAtomic;FreeRtos" CACHE STRING "" FORCE)
+set(SOLIDSYSLOG_PLATFORMS "LwipRaw;StdAtomic;FreeRtos;FatFs" CACHE STRING "" FORCE)
 
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/solid-syslog.pin" SOLIDSYSLOG_PIN LIMIT_COUNT 1)
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS solid-syslog.pin)
@@ -171,7 +171,7 @@ target_include_directories(baseline PRIVATE
 # library, or context struct sizes diverge between consumer and library.
 target_compile_definitions(baseline PRIVATE MBEDTLS_USER_CONFIG_FILE=${MBEDTLS_USER_CONFIG_HEADER})
 
-target_link_libraries(baseline PRIVATE mbedtls mbedx509 mbedcrypto SolidSyslog SolidSyslog::LwipRaw SolidSyslog::FreeRtos)
+target_link_libraries(baseline PRIVATE mbedtls mbedx509 mbedcrypto SolidSyslog SolidSyslog::LwipRaw SolidSyslog::FreeRtos SolidSyslog::FatFs)
 
 target_link_options(baseline PRIVATE
     -mcpu=cortex-m3 -mthumb
