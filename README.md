@@ -10,29 +10,45 @@ It builds on a baseline that simulates the sort of device you might be adding th
 measures itself: see [docs/baseline.md](docs/baseline.md) for what the baseline is, how the
 figures are made, and how to run it.
 
-## This stage — HMAC at rest
+## This stage — Private SD-ELEMENT
 
-Replace the CRC-16 with a keyed HMAC. The checksum established that a record came back the way it
-went in; the HMAC establishes that nobody has changed it since. An edit made without the key fails
-verification, so stored records become tamper-evident rather than merely intact.
+Write a private enterprise SD-ELEMENT. RFC 5424 reserves this form for definitions of your own, and
+`SyslogPipelineSd.c` is a complete example of one: it implements the library's structured-data
+extension point in its own translation unit.
 
 ```c
-struct SolidSyslogMbedTlsHmacSha256PolicyConfig hmacConfig = {.GetKey = SyslogStoreKey};
+static void SyslogPipelineSd_Format(struct SolidSyslogStructuredData* base, struct SolidSyslogSdElement* element)
+{
+    (void) base;
 
-.SecurityPolicy = SolidSyslogMbedTlsHmacSha256Policy_Create(&hmacConfig),
+    SolidSyslogSdElement_Begin(element, "logPipeline", SYSLOG_ENTERPRISE_NUMBER);
+    SolidSyslogSdValue_String(SolidSyslogSdElement_Param(element, "transport"), "tls");
+    SolidSyslogSdValue_String(SolidSyslogSdElement_Param(element, "atRest"), "hmac-sha256");
+    SolidSyslogSdElement_End(element);
+}
+
+static struct SolidSyslogStructuredData s_pipelineSd = {SyslogPipelineSd_Format};
 ```
 
-The key is fetched per seal and per verify rather than held, so it never sits on the policy
-instance. Key custody, rotation and provisioning are yours; the library consumes a key you supply
-and never stores one.
+```text
+... [logPipeline@32473 transport="tls" atRest="hmac-sha256"] device started
+```
 
-Holding a named symmetric key and handing it out is the device's own mechanism — a device already
-doing mTLS has provisioned secrets and somewhere to keep them, so the key slot, the loader and the
-accessor all sit below the line. What SolidSyslog is charged for is the policy and the callback that
-reaches for the key.
+The vtable has one entry, `Format`, and the library never allocates the object. A stateless source
+therefore needs no `_Create` and no pool slot; it is a static this application owns and points the
+config at. A source with per-instance state puts that state alongside the vtable in the same struct
+and reads it back from the `base` parameter.
 
-**When you need it.** If an attacker could reach the medium — removable, unattended, or stealable —
-and stored records must be provably unaltered.
+A non-zero enterprise number is what produces a private SD-ID: `_Begin` emits `name@number` for one
+and a bare IANA `name` for zero. `SyslogEnterprise.h` now defines the number and derives the string
+that `origin`'s `enterpriseId` carries, so the two forms cannot drift.
+
+What the element reports is the state of the logging path. A collector can confirm that a record
+arrived over TLS and was sealed at rest, and can alert on a device whose pipeline has weakened.
+The remaining stages change both values as the protection changes.
+
+**When you need it.** If a collector has to verify the protection a record travelled and rested
+under rather than assume it.
 
 ## License
 
