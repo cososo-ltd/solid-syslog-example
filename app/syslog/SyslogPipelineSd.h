@@ -4,9 +4,12 @@
 #ifndef APP_SYSLOG_PIPELINE_SD_H
 #define APP_SYSLOG_PIPELINE_SD_H
 
+#include <stdbool.h>
+
 struct SolidSyslogStructuredData;
 
-/** The shared instance, for SolidSyslogConfig.Sd. Stateless, so never NULL. */
-struct SolidSyslogStructuredData* SyslogPipelineSd_Get(void);
+/** The shared instance, for SolidSyslogConfig.Sd. Never NULL. @p mutualTls is
+ *  what the device holds, not what it meant to configure. */
+struct SolidSyslogStructuredData* SyslogPipelineSd_Init(bool mutualTls);
 
 #endif /* APP_SYSLOG_PIPELINE_SD_H */
