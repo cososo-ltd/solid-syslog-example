@@ -10,49 +10,33 @@ It builds on a baseline that simulates the sort of device you might be adding th
 measures itself: see [docs/baseline.md](docs/baseline.md) for what the baseline is, how the
 figures are made, and how to run it.
 
-## This stage — TLS
+## This stage — Pin rotation
 
-Wrap the byte stream in TLS over the TCP stream from the previous stage, and accept the collector by
-the fingerprint of its certificate. Records can be read only by that collector and cannot be altered
-in transit. The fingerprint was provisioned at commissioning, so no CA is involved and the site needs
-no PKI. The collector is authenticated to the device; the device is not yet authenticated to the
-collector.
+A pinned collector's certificate is renewed without any device stopping. A renewal changes the
+fingerprint, so the device takes the renewed certificate's pin beside the current one before the
+collector switches, and retires the old one afterwards.
 
 ```c
-struct SolidSyslogMbedTlsHandleCredentialsConfig credentialsConfig = {
-    .Rng                  = DeviceCertStore_Rng(),
-    .PeerFingerprints     = s_collectorPins,
-    .PeerFingerprintCount = 1U,
-};
+static const char* s_collectorPins[2];   /* either authorises the collector */
 
-struct SolidSyslogMbedTlsStreamConfig tlsConfig = {
-    .Transport   = SolidSyslogLwipRawTcpStream_Create(&tcpConfig),
-    .Sleep       = SyslogSleep,
-    .Rng         = DeviceCertStore_Rng(),
-    .Credentials = SolidSyslogMbedTlsHandleCredentials_Create(&credentialsConfig),
-    .Profile     = CollectorProfile,
-};
+.PeerFingerprintCount = 2U,              /* on the credentials */
+.Version              = SyslogStreamVersion,   /* on the TLS stream */
 
-.Stream = SolidSyslogMbedTlsStream_Create(&tlsConfig),
+bool Syslog_ProvisionNextCollectorPin(const char* pin);   /* any task */
+bool Syslog_RetireCollectorPin(void);                     /* any task */
+void Syslog_ApplyPinChanges(void);                        /* service task, each pass */
 ```
 
-The credentials carry the trust decision. `CollectorProfile` is asked at every connection and sets
-`ServerName`, which is checked against the certificate as well: the pin says which certificate, the
-name which peer it was issued to. A pinned certificate is still checked against its validity dates,
-so its lifetime is the operator's to choose.
+Both slots hold the current pin until a renewal is under way. The pins and the stream version are
+read on the service task as it connects, so a change is queued and the service task applies it
+between passes. Both calls return false when the change is not queued - a full queue, or a NULL
+pin, which would read as a retirement - so a refused change is seen rather than lost. The version
+moves with every change; the sender checks it before every record and reconnects when it has
+moved, so new pins apply without a restart.
 
-A second concurrent session has to be paid for upstream. The mbedTLS allocator and the task that
-carries the handshake both need sizing for it; both fail loudly when they are not, and neither can
-be sized from the run that fails.
-
-**When you need it.** If the log path crosses a network you do not control, or if someone reading
-records in transit would learn something they should not. Also if the device needs to know it is
-talking to the real collector rather than to whatever answered on that address. A fingerprint gives
-that without a PKI, which many OT sites do not run.
-
-> If your device does not already run TLS, the library and its trust material will dominate
-> everything on this page. This device already holds a TLS session for its own broker, so what this
-> stage adds is the adapter and a second session.
+**When you need it.** Wherever the collector is pinned. Without it, every device pinned to a
+collector stops on the day that collector's certificate is replaced, and on an OT network that is
+every device on the site at once.
 
 ## License
 

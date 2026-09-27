@@ -41,6 +41,7 @@
 #include "lwip/tcpip.h"
 
 #include "FreeRTOS.h"
+#include "queue.h"
 #include "task.h"
 
 #include <stddef.h>
@@ -121,8 +122,29 @@ static void LwipCoreLockMarshal(SolidSyslogLwipRawCallback callback, void* conte
 }
 
 /* The collector's certificate, by fingerprint. Provisioned at commissioning, so
- * no CA is involved and the site needs no PKI. */
-static const char* s_collectorPins[1];
+ * no CA is involved and the site needs no PKI. Two slots, so a renewed
+ * certificate's pin can sit beside the current one before the collector switches:
+ * either authorises it. Both hold the current pin until a renewal is under way. */
+static const char* s_collectorPins[2];
+
+/* Moved whenever the pins change. The sender checks it before every record and
+ * reconnects when it has moved, so new pins apply without a restart. */
+static uint32_t s_streamVersion = 1U;
+
+/* A pin change can be asked for from any task, but the pins and the version are
+ * read on the service task as it connects, so changes queue here and the service
+ * task applies them between passes. */
+#define SYSLOG_PIN_CHANGES 2U
+static StaticQueue_t s_pinChangeQueue;
+static uint8_t s_pinChangeStorage[SYSLOG_PIN_CHANGES * sizeof(const char*)];
+static QueueHandle_t s_pinChanges;
+
+static uint32_t SyslogStreamVersion(void* context)
+{
+    (void) context;
+
+    return s_streamVersion;
+}
 
 /* Asked at every connection. The pin says which certificate; the name says which
  * peer it was issued to. */
@@ -149,11 +171,13 @@ void Syslog_Start(void)
 
     struct SolidSyslogLwipRawTcpStreamConfig tcpConfig = {.Sleep = SyslogSleep};
 
+    s_pinChanges = xQueueCreateStatic(SYSLOG_PIN_CHANGES, sizeof(const char*), s_pinChangeStorage, &s_pinChangeQueue);
     s_collectorPins[0] = DeviceCertStore_CollectorPin();
+    s_collectorPins[1] = s_collectorPins[0];
     struct SolidSyslogMbedTlsHandleCredentialsConfig credentialsConfig = {
         .Rng = DeviceCertStore_Rng(),
         .PeerFingerprints = s_collectorPins,
-        .PeerFingerprintCount = 1U,
+        .PeerFingerprintCount = 2U,
     };
 
     struct SolidSyslogMbedTlsStreamConfig tlsConfig = {
@@ -162,6 +186,7 @@ void Syslog_Start(void)
         .Rng = DeviceCertStore_Rng(),
         .Credentials = SolidSyslogMbedTlsHandleCredentials_Create(&credentialsConfig),
         .Profile = CollectorProfile,
+        .Version = SyslogStreamVersion,
     };
 
     /* No EndpointVersion - this collector never moves, so the sender resolves
@@ -217,4 +242,34 @@ void Syslog_Start(void)
 struct SolidSyslog* Syslog_Handle(void)
 {
     return s_logger;
+}
+
+/* Never queues NULL, which would read as a retirement. */
+bool Syslog_ProvisionNextCollectorPin(const char* pin)
+{
+    return (pin != NULL) && (xQueueSend(s_pinChanges, &pin, 0U) == pdTRUE);
+}
+
+/* A NULL change means retire: the next pin becomes the only one. */
+bool Syslog_RetireCollectorPin(void)
+{
+    const char* retire = NULL;
+    return xQueueSend(s_pinChanges, &retire, 0U) == pdTRUE;
+}
+
+void Syslog_ApplyPinChanges(void)
+{
+    const char* pin = NULL;
+    while (xQueueReceive(s_pinChanges, &pin, 0U) == pdTRUE)
+    {
+        if (pin != NULL)
+        {
+            s_collectorPins[1] = pin;
+        }
+        else
+        {
+            s_collectorPins[0] = s_collectorPins[1];
+        }
+        s_streamVersion++;
+    }
 }

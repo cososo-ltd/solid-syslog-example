@@ -8,6 +8,7 @@
 #include "Measure.h"
 #include "SemihostingExit.h"
 #include "ServiceTask.h"
+#include "SimulatedCollector.h"
 #include "SimulatedExistingApp.h"
 #include "Syslog.h"
 #include "SyslogErrorHandler.h"
@@ -73,9 +74,33 @@ static void HarnessTask(void* parameters)
     /* Long enough for the TLS negotiation, not just the send. */
     vTaskDelay(pdMS_TO_TICKS(3000U));
 
+    /* A renewal of the collector's certificate, crossed without stopping: the
+     * renewed certificate's pin arrives first, the collector then restarts with
+     * that certificate, and the old pin is retired once nothing presents it. */
+    (void) printf("[device] provisioning the renewed certificate's pin...\n");
+    bool provisioned = Syslog_ProvisionNextCollectorPin(SimulatedCollector_NextPin());
+    bool loggedBefore = LogTask_EmitOnce(5000U);
+    vTaskDelay(pdMS_TO_TICKS(3000U));
+
+    (void) printf("[device] collector renewing its certificate...\n");
+    bool renewed = SimulatedCollector_Renew(20U);
+    (void) printf("[device]   collector renewed: %s\n", renewed ? "yes" : "FAILED");
+    bool loggedAcross = LogTask_EmitOnce(5000U);
+    vTaskDelay(pdMS_TO_TICKS(3000U));
+
+    (void) printf("[device] retiring the previous pin...\n");
+    bool retired = Syslog_RetireCollectorPin();
+    bool loggedAfter = LogTask_EmitOnce(5000U);
+    vTaskDelay(pdMS_TO_TICKS(3000U));
+    (void) printf(
+        "[device]   records logged before / across / after the renewal: %s\n",
+        (loggedBefore && loggedAcross && loggedAfter) ? "yes" : "FAILED"
+    );
+
     (void) Measure_Report();
 
-    bool ready = simReady && logIdle && serviceIdle && logged;
+    bool ready = simReady && logIdle && serviceIdle && logged && provisioned && loggedBefore && renewed &&
+                 loggedAcross && retired && loggedAfter;
     (void) printf("[device] %s\n", ready ? "ready" : "FAILED");
     SemihostingExit(ready ? 0 : 1);
 }
