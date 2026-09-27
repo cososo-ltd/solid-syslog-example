@@ -10,47 +10,43 @@ It builds on a baseline that simulates the sort of device you might be adding th
 measures itself: see [docs/baseline.md](docs/baseline.md) for what the baseline is, how the
 figures are made, and how to run it.
 
-## This stage — Discard policy
+## This stage — Right-sized
 
-Decide what a full queue does with the record that does not fit, and keep the decision changeable
-while the device runs.
+Fit the compile-time sizes to what this device uses, now that every collaborator is in place.
+
+The message cap comes first, because the ring, the record slot the logger keeps for the record it is
+dealing with, the store's record buffer and the formatter frame on the logging task's stack all
+follow it.
 
 ```c
-static enum SolidSyslogDiscardPolicy SyslogDiscardPolicy(void* context)
-{
-    (void) context;
-    return s_discardPolicy;
-}
+/* app/config/solid_syslog_tunables.h */
+#define SOLIDSYSLOG_MAX_MESSAGE_SIZE 400U
 
-.Buffer = SolidSyslogCircularBuffer_Create(SolidSyslogFreeRtosMutex_Create(), s_ring, sizeof(s_ring), SyslogDiscardPolicy, NULL),
-
-/* on the store */
-.GetDiscardPolicy = SyslogDiscardPolicy,
-
-/* on the logger */
-.GetDiscardPolicy = SyslogDiscardPolicy,
-.OnHalt           = SyslogHalted,
+#define SOLIDSYSLOG_ADDRESS_POOL_SIZE 1U
+#define SOLIDSYSLOG_TCP_STREAM_POOL_SIZE 1U
+#define SOLIDSYSLOG_STREAM_SENDER_POOL_SIZE 1U
 ```
 
-Three places can be full: the ring, on the task that logs; the store, on the service task; and the
-logger itself, which holds a record for the sender between passes. Each asks the policy at the
-moment it has to decide, from the task it runs on. Give all three the same function, as here, so
-the pipeline applies one policy; the library does not check that they agree.
+The worst case measured here is 379 octets: the four SD-ELEMENTs with both counters at full 32-bit
+width and both addresses at fifteen characters, plus a short message. 400 allows for longer messages
+on this device. Anything longer is truncated rather than dropped.
 
-The answers are the library's `SolidSyslogDiscardPolicy`. Oldest, the default the earlier stages
-left in place, drops the oldest records to make room, so the newest survive. Newest refuses the
-record being written. Halt refuses it too, and the logger then stops moving records: it calls
-`OnHalt` once, on the service task, after the refusal has been reported, and moves nothing more
-until the policy answers otherwise or the device restarts. Records lost under any of the three are
-reported once when a run of losses starts, by the queue that lost them.
+The pool defaults suit a device running several transports at once. This one runs a single sender
+over a single stream to a single destination.
 
-This device stays on Oldest, and `Syslog_SetDiscardPolicy` changes it from any task. `OnHalt` is
-the device's own reaction; here it is a line on the console, and on a device whose records must
-not be lost it is where the device stops.
+The overrides reach the library through `SOLIDSYSLOG_USER_TUNABLES_FILE`, which the library carries
+on an INTERFACE target, so Core, the platform packs and this application all compile against the
+same values. They change struct sizes, and a build where only some translation units saw them would
+disagree about how big those structs are.
 
-**When you need it.** If what happens to records on a full queue is a decision for the site or the
-commissioning engineer rather than the firmware, or if a device must stop rather than lose a
-record. A device content to keep the newest records can leave every policy argument `NULL`.
+The ring drops from eight records to four. The store holds a backlog, so the ring only has to absorb
+what can be logged while the service task is sending.
+
+The task stacks go last, at twice their measured high-water marks rounded up to a whole
+`configMINIMAL_STACK_SIZE`.
+
+**When you need it.** Once the pipeline is complete. Sizing earlier means sizing against a device
+that is still missing collaborators.
 
 ## License
 
