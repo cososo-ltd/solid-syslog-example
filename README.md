@@ -10,42 +10,31 @@ It builds on a baseline that simulates the sort of device you might be adding th
 measures itself: see [docs/baseline.md](docs/baseline.md) for what the baseline is, how the
 figures are made, and how to run it.
 
-## This stage — AES-GCM at rest
+## This stage — CA chain
 
-Replace the HMAC policy with authenticated encryption. Tamper-evidence establishes that a stored
-record was not altered; it does nothing to stop anyone reading it. AES-256-GCM encrypts the body,
-authenticates the record header as associated data, and puts the nonce and tag in the trailer.
-
-```c
-struct SolidSyslogMbedTlsAesGcmPolicyConfig gcmConfig = {.GetKey = SyslogStoreKey, .Rng = rng};
-
-.SecurityPolicy = SolidSyslogMbedTlsAesGcmPolicy_Create(&gcmConfig),
-```
-
-GCM needs a fresh nonce per record and mbedTLS has no context-free RNG, so the policy takes the
-device's DRBG as well as the key. That is the only wiring difference from the HMAC policy.
-
-The store key does not change. Its name states what it protects rather than which algorithm protects
-it, so escalating the policy needs no new key provisioned.
-
-These are separate decisions and the second does not follow from the first. A device that only needs
-to prove records were not altered can stop at the HMAC.
-
-The pipeline element now derives both of its values from what the device holds, and each falls back
-to the weakest honest answer when the credential behind it is missing:
+For a site that runs its own PKI: the collector's certificate must now chain to the site CA as well
+as match its pin. Either failing stops delivery.
 
 ```c
-s_sd[3] = SyslogPipelineSd_Init(
-    ((clientChain != NULL) && (clientKey != NULL)) ? "mtls" : "tls", (rng != NULL) ? "aes-256-gcm" : "none"
-);
+struct SolidSyslogMbedTlsHandleCredentialsConfig credentialsConfig = {
+    .CaChain = caChain,
+    /* ... the client credential, the Rng and the collector's pins, as before ... */
+};
 ```
+
+A pin never waives the chain, and a matching pin with a chain that does not verify is reported as
+`PEER_CERTIFICATE_UNTRUSTED`, distinct from `PEER_FINGERPRINT_MISMATCHED`. The pipeline element says
+which the device requires, so a collector can tell a device on the pin alone from one on both:
 
 ```text
-... [logPipeline@32473 transport="mtls" atRest="aes-256-gcm"] device started
+... [logPipeline@32473 transport="mtls" collectorAuth="fingerprint+chain" atRest="aes-256-gcm"] ...
 ```
 
-**When you need it.** If a disk that leaves the device would give something away — records naming
-users, addresses, process values, or anything else you would not publish.
+**When you need it.** When the site runs a PKI and wants its devices under its own certificate
+policy. It adds a way for delivery to stop that the pin alone does not have: when the site CA or an
+intermediate expires or is replaced, every device holding it stops at once, and the store holds what
+it can until the new CA is provisioned, discarding the oldest when it fills. Without a PKI, the pin
+is enough.
 
 ## License
 

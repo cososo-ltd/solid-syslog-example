@@ -10,6 +10,7 @@
 
 /* The weakest honest answer, until Init says otherwise. */
 static const char* s_transport = "tls";
+static const char* s_collectorAuth = "fingerprint";
 static const char* s_atRest = "none";
 
 /* A non-zero enterprise number is what makes the SD-ID private: _Begin emits
@@ -20,6 +21,7 @@ static void SyslogPipelineSd_Format(struct SolidSyslogStructuredData* base, stru
 
     SolidSyslogSdElement_Begin(element, "logPipeline", SYSLOG_ENTERPRISE_NUMBER);
     SolidSyslogSdValue_String(SolidSyslogSdElement_Param(element, "transport"), s_transport);
+    SolidSyslogSdValue_String(SolidSyslogSdElement_Param(element, "collectorAuth"), s_collectorAuth);
     SolidSyslogSdValue_String(SolidSyslogSdElement_Param(element, "atRest"), s_atRest);
     SolidSyslogSdElement_End(element);
 }
@@ -28,9 +30,10 @@ static void SyslogPipelineSd_Format(struct SolidSyslogStructuredData* base, stru
  * one is a vtable the application owns. */
 static struct SolidSyslogStructuredData s_pipelineSd = {SyslogPipelineSd_Format};
 
-struct SolidSyslogStructuredData* SyslogPipelineSd_Init(const char* transport, const char* atRest)
+struct SolidSyslogStructuredData* SyslogPipelineSd_Init(const char* transport, const char* collectorAuth, const char* atRest)
 {
     s_transport = transport;
+    s_collectorAuth = collectorAuth;
     s_atRest = atRest;
     return &s_pipelineSd;
 }

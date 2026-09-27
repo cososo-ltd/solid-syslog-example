@@ -133,8 +133,8 @@ static void LwipCoreLockMarshal(SolidSyslogLwipRawCallback callback, void* conte
     UNLOCK_TCPIP_CORE();
 }
 
-/* The collector's certificate, by fingerprint. Provisioned at commissioning, so
- * no CA is involved and the site needs no PKI. Two slots, so a renewed
+/* The collector's certificate, by fingerprint, provisioned at commissioning; the
+ * site CA below is required as well. Two slots, so a renewed
  * certificate's pin can sit beside the current one before the collector switches:
  * either authorises it. Both hold the current pin until a renewal is under way. */
 static const char* s_collectorPins[2];
@@ -187,12 +187,15 @@ void Syslog_Start(void)
      * pipeline element reports what the device holds rather than what was meant. */
     struct mbedtls_x509_crt* clientChain = DeviceCertStore_ClientChain();
     struct mbedtls_pk_context* clientKey = DeviceCertStore_ClientKey();
+    /* The site's CA, required on top of the pin: either failing stops delivery. */
+    struct mbedtls_x509_crt* caChain = DeviceCertStore_CaChain();
     struct mbedtls_ctr_drbg_context* rng = DeviceCertStore_Rng();
 
     s_pinChanges = xQueueCreateStatic(SYSLOG_PIN_CHANGES, sizeof(const char*), s_pinChangeStorage, &s_pinChangeQueue);
     s_collectorPins[0] = DeviceCertStore_CollectorPin();
     s_collectorPins[1] = s_collectorPins[0];
     struct SolidSyslogMbedTlsHandleCredentialsConfig credentialsConfig = {
+        .CaChain = caChain,
         .ClientCertChain = clientChain,
         .ClientKey = clientKey,
         .Rng = rng,
@@ -237,7 +240,9 @@ void Syslog_Start(void)
     };
     s_sd[2] = SolidSyslogOriginSd_Create(&originConfig);
     s_sd[3] = SyslogPipelineSd_Init(
-        ((clientChain != NULL) && (clientKey != NULL)) ? "mtls" : "tls", (rng != NULL) ? "aes-256-gcm" : "none"
+        ((clientChain != NULL) && (clientKey != NULL)) ? "mtls" : "tls",
+        (caChain != NULL) ? "fingerprint+chain" : "fingerprint",
+        (rng != NULL) ? "aes-256-gcm" : "none"
     );
 
     /* The nonce comes from the device's DRBG: GCM needs a fresh one per record and
