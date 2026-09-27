@@ -10,35 +10,49 @@ It builds on a baseline that simulates the sort of device you might be adding th
 measures itself: see [docs/baseline.md](docs/baseline.md) for what the baseline is, how the
 figures are made, and how to run it.
 
-## This stage — Origin address
+## This stage — TLS
 
-Add the `ip` PARAM to the origin element, sourced from the same interface address the HOSTNAME field
-reports.
+Wrap the byte stream in TLS over the TCP stream from the previous stage, and accept the collector by
+the fingerprint of its certificate. Records can be read only by that collector and cannot be altered
+in transit. The fingerprint was provisioned at commissioning, so no CA is involved and the site needs
+no PKI. The collector is authenticated to the device; the device is not yet authenticated to the
+collector.
 
 ```c
-struct SolidSyslogOriginSdConfig originConfig = {
-    /* ... as the previous stage ... */
-    .GetIpCount = SyslogOriginIpCount,
-    .GetIpAt    = SyslogOriginIpAt,
+struct SolidSyslogMbedTlsHandleCredentialsConfig credentialsConfig = {
+    .Rng                  = DeviceCertStore_Rng(),
+    .PeerFingerprints     = s_collectorPins,
+    .PeerFingerprintCount = 1U,
 };
+
+struct SolidSyslogMbedTlsStreamConfig tlsConfig = {
+    .Transport   = SolidSyslogLwipRawTcpStream_Create(&tcpConfig),
+    .Sleep       = SyslogSleep,
+    .Rng         = DeviceCertStore_Rng(),
+    .Credentials = SolidSyslogMbedTlsHandleCredentials_Create(&credentialsConfig),
+    .Profile     = CollectorProfile,
+};
+
+.Stream = SolidSyslogMbedTlsStream_Create(&tlsConfig),
 ```
 
-```text
-... [origin software="solid-syslog-example" swVersion="0.2.0" enterpriseId="32473" ip="10.0.2.15"] device started
-```
+The credentials carry the trust decision. `CollectorProfile` is asked at every connection and sets
+`ServerName`, which is checked against the certificate as well: the pin says which certificate, the
+name which peer it was issued to. A pinned certificate is still checked against its validity dates,
+so its lifetime is the operator's to choose.
 
-A relay or NAT between the device and the collector rewrites the address the collector observes.
-`ip` is what the device says about itself, and that survives the hop.
+A second concurrent session has to be paid for upstream. The mbedTLS allocator and the task that
+carries the handshake both need sizing for it; both fail loudly when they are not, and neither can
+be sized from the run that fails.
 
-The PARAM is repeatable, so the library asks for a count and then one value per index rather than
-taking a single string. This device has one address and returns one, and returns none before the
-interface has an address — a count of zero omits the PARAM rather than emitting an empty one.
+**When you need it.** If the log path crosses a network you do not control, or if someone reading
+records in transit would learn something they should not. Also if the device needs to know it is
+talking to the real collector rather than to whatever answered on that address. A fingerprint gives
+that without a PKI, which many OT sites do not run.
 
-`SyslogFields_IpAddress` becomes the single place that reads the address, and HOSTNAME formats the
-same string through it. Two fields that must agree now cannot disagree.
-
-**When you need it.** If anything sits between the device and the collector — a relay, a gateway, or
-NAT — and the source address the collector sees can no longer be trusted to identify the device.
+> If your device does not already run TLS, the library and its trust material will dominate
+> everything on this page. This device already holds a TLS session for its own broker, so what this
+> stage adds is the adapter and a second session.
 
 ## License
 

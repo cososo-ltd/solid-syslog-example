@@ -70,7 +70,8 @@ static void HarnessTask(void* parameters)
      * before the figures are taken. What arrived is the collector's word. */
     bool logged = LogTask_EmitOnce(5000U);
     (void) printf("[device]   first record logged: %s\n", logged ? "yes" : "FAILED");
-    vTaskDelay(pdMS_TO_TICKS(500U));
+    /* Long enough for the TLS negotiation, not just the send. */
+    vTaskDelay(pdMS_TO_TICKS(3000U));
 
     (void) Measure_Report();
 

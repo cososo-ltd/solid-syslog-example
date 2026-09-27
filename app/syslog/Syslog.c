@@ -1,13 +1,15 @@
 /* See Syslog.h.
  *
- * A TCP stream over lwIP behind a circular buffer: Log enqueues and returns, and
- * the service task drains and sends. The mutex is what makes those two sides
+ * A TLS stream over lwIP TCP behind a circular buffer: Log enqueues and returns,
+ * and the service task drains and sends. The mutex is what makes those two sides
  * safe on different tasks.
  *
  * Unlike a header field, an SD PARAM has no NILVALUE: an unset one is omitted
  * entirely rather than written as "-". */
 
 #include "Syslog.h"
+
+#include "DeviceCertStore.h"
 
 #include "SolidSyslogBlockStore.h"
 #include "SolidSyslogCircularBuffer.h"
@@ -23,6 +25,8 @@
 #include "SolidSyslogLwipRawMarshal.h"
 #include "SolidSyslogLwipRawResolver.h"
 #include "SolidSyslogLwipRawTcpStream.h"
+#include "SolidSyslogMbedTlsHandleCredentials.h"
+#include "SolidSyslogMbedTlsStream.h"
 #include "SolidSyslogMetaSd.h"
 #include "SolidSyslogOriginSd.h"
 #include "SolidSyslogSdValue.h"
@@ -47,7 +51,7 @@
  * the resolver numeric-only - no DNS, so no LWIP_DNS and no DNS resolver
  * component to compile. */
 #define SYSLOG_COLLECTOR_HOST "10.0.2.2"
-#define SYSLOG_COLLECTOR_PORT ((uint16_t) 5601U)
+#define SYSLOG_COLLECTOR_PORT ((uint16_t) 6514U)
 
 /* Depth enough to absorb a burst while the sender is busy, without sizing for a
  * backlog the store is there to hold. */
@@ -116,6 +120,19 @@ static void LwipCoreLockMarshal(SolidSyslogLwipRawCallback callback, void* conte
     UNLOCK_TCPIP_CORE();
 }
 
+/* The collector's certificate, by fingerprint. Provisioned at commissioning, so
+ * no CA is involved and the site needs no PKI. */
+static const char* s_collectorPins[1];
+
+/* Asked at every connection. The pin says which certificate; the name says which
+ * peer it was issued to. */
+static void CollectorProfile(struct SolidSyslogMbedTlsProfile* profile, void* context)
+{
+    (void) context;
+
+    profile->ServerName = SYSLOG_COLLECTOR_HOST;
+}
+
 /* Pulled by the sender when it connects, not on every send. Host is a bounded
  * sink rather than a raw buffer, so a destination cannot overrun the field. */
 static void CollectorEndpoint(struct SolidSyslogEndpoint* endpoint, void* context)
@@ -132,11 +149,26 @@ void Syslog_Start(void)
 
     struct SolidSyslogLwipRawTcpStreamConfig tcpConfig = {.Sleep = SyslogSleep};
 
+    s_collectorPins[0] = DeviceCertStore_CollectorPin();
+    struct SolidSyslogMbedTlsHandleCredentialsConfig credentialsConfig = {
+        .Rng = DeviceCertStore_Rng(),
+        .PeerFingerprints = s_collectorPins,
+        .PeerFingerprintCount = 1U,
+    };
+
+    struct SolidSyslogMbedTlsStreamConfig tlsConfig = {
+        .Transport = SolidSyslogLwipRawTcpStream_Create(&tcpConfig),
+        .Sleep = SyslogSleep,
+        .Rng = DeviceCertStore_Rng(),
+        .Credentials = SolidSyslogMbedTlsHandleCredentials_Create(&credentialsConfig),
+        .Profile = CollectorProfile,
+    };
+
     /* No EndpointVersion - this collector never moves, so the sender resolves
      * once and pins it. */
     struct SolidSyslogStreamSenderConfig senderConfig = {
         .Resolver = SolidSyslogLwipRawResolver_Create(),
-        .Stream = SolidSyslogLwipRawTcpStream_Create(&tcpConfig),
+        .Stream = SolidSyslogMbedTlsStream_Create(&tlsConfig),
         .Address = SolidSyslogLwipRawAddress_Create(),
         .Endpoint = CollectorEndpoint,
     };
