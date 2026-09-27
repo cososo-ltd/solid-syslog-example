@@ -10,31 +10,42 @@ It builds on a baseline that simulates the sort of device you might be adding th
 measures itself: see [docs/baseline.md](docs/baseline.md) for what the baseline is, how the
 figures are made, and how to run it.
 
-## This stage — CA chain
+## This stage — Right-sized
 
-For a site that runs its own PKI: the collector's certificate must now chain to the site CA as well
-as match its pin. Either failing stops delivery.
+Fit the compile-time sizes to what this device uses, now that every collaborator is in place.
+
+The message cap comes first, because the ring, the store's record buffer and the formatter frame on
+both task stacks all follow it.
 
 ```c
-struct SolidSyslogMbedTlsHandleCredentialsConfig credentialsConfig = {
-    .CaChain = caChain,
-    /* ... the client credential, the Rng and the collector's pins, as before ... */
-};
+/* app/config/solid_syslog_tunables.h */
+#define SOLIDSYSLOG_MAX_MESSAGE_SIZE 400U
+
+#define SOLIDSYSLOG_ADDRESS_POOL_SIZE 1U
+#define SOLIDSYSLOG_TCP_STREAM_POOL_SIZE 1U
+#define SOLIDSYSLOG_STREAM_SENDER_POOL_SIZE 1U
 ```
 
-A pin never waives the chain, and a matching pin with a chain that does not verify is reported as
-`PEER_CERTIFICATE_UNTRUSTED`, distinct from `PEER_FINGERPRINT_MISMATCHED`. The pipeline element says
-which the device requires, so a collector can tell a device on the pin alone from one on both:
+The worst case measured here is 379 octets: the four SD-ELEMENTs with both counters at full 32-bit
+width and both addresses at fifteen characters, plus a short message. 400 allows for longer messages
+on this device. Anything longer is truncated rather than dropped.
 
-```text
-... [logPipeline@32473 transport="mtls" collectorAuth="fingerprint+chain" atRest="aes-256-gcm"] ...
-```
+The pool defaults suit a device running several transports at once. This one runs a single sender
+over a single stream to a single destination.
 
-**When you need it.** When the site runs a PKI and wants its devices under its own certificate
-policy. It adds a way for delivery to stop that the pin alone does not have: when the site CA or an
-intermediate expires or is replaced, every device holding it stops at once, and the store holds what
-it can until the new CA is provisioned, discarding the oldest when it fills. Without a PKI, the pin
-is enough.
+The overrides reach the library through `SOLIDSYSLOG_USER_TUNABLES_FILE`, which the library carries
+on an INTERFACE target, so Core, the platform packs and this application all compile against the
+same values. They change struct sizes, and a build where only some translation units saw them would
+disagree about how big those structs are.
+
+The ring drops from eight records to four. The store holds a backlog, so the ring only has to absorb
+what can be logged while the service task is sending.
+
+The task stacks go last, at twice their measured high-water marks rounded up to a whole
+`configMINIMAL_STACK_SIZE`.
+
+**When you need it.** Once the pipeline is complete. Sizing earlier means sizing against a device
+that is still missing collaborators.
 
 ## License
 

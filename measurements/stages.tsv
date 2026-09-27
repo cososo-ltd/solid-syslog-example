@@ -27,3 +27,4 @@ pipeline-sd	Private SD-ELEMENT	a record that states the protection its own log p
 mtls	Mutual TLS	a collector that knows which device sent the record, not just that one did
 aes-gcm	AES-GCM at rest	spooled records unreadable to anyone holding the disk, not just unforgeable
 chain	CA chain	a collector that must also chain to the site CA, for sites that run a PKI
+right-size	Right-sized	the pools, the ring and the task stacks fitted to what this device uses
