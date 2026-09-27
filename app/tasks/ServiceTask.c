@@ -28,6 +28,7 @@ static void ServiceTask_Entry(void* parameters)
         /* Service returns a status, which a device wanting more sophisticated
          * scheduling can drive from. A loop with a delay is the simplest model
          * that works. */
+        Syslog_ApplyPinChanges();
         (void) SolidSyslog_Service(Syslog_Handle());
         vTaskDelay(pdMS_TO_TICKS(SERVICE_POLL_MS));
     }
