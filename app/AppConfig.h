@@ -15,7 +15,7 @@
  * beneath, and neither fits the FreeRTOS floor. Sized generously here and
  * tightened against measured high-water marks once the pipeline is complete. */
 #define LOG_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE * 4U)
-#define SERVICE_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE * 4U)
+#define SERVICE_TASK_STACK_WORDS (configMINIMAL_STACK_SIZE * 16U)
 #define LOG_TASK_PRIORITY (tskIDLE_PRIORITY + 1U)
 #define SERVICE_TASK_PRIORITY (tskIDLE_PRIORITY + 1U)
 
@@ -31,6 +31,6 @@
  * headroom, not spare capacity: buffer_alloc hands out contiguous space, so a
  * buffer only a little over the peak fails on fragmentation rather than on
  * capacity. Applied again wherever more is asked of mbedTLS. */
-#define SIMULATED_APP_MBEDTLS_HEAP_BYTES (32 * 1024)
+#define SIMULATED_APP_MBEDTLS_HEAP_BYTES (53 * 1024)
 
 #endif /* APP_CONFIG_H */
