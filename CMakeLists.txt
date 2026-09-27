@@ -33,6 +33,22 @@ endif()
 set(FREERTOS_PORT_DIR "${FREERTOS_KERNEL_PATH}/portable/GCC/ARM_CM3")
 set(LWIP_CONTRIB_FREERTOS_DIR "${LWIP_DIR}/contrib/ports/freertos")
 
+# --- SolidSyslog ---------------------------------------------------------------
+# Naming the platforms is the whole of the selection; anything unnamed is off.
+# https://docs.cososo.co.uk/solid-syslog/build-integration/#cmake
+# The pin is a SHA in solid-syslog.pin, and a change to it reconfigures.
+set(SOLIDSYSLOG_PLATFORMS "LwipRaw" CACHE STRING "" FORCE)
+
+file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/solid-syslog.pin" SOLIDSYSLOG_PIN LIMIT_COUNT 1)
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS solid-syslog.pin)
+
+include(FetchContent)
+FetchContent_Declare(SolidSyslog
+    GIT_REPOSITORY https://github.com/cososo-ltd/solid-syslog.git
+    GIT_TAG        ${SOLIDSYSLOG_PIN}
+)
+FetchContent_MakeAvailable(SolidSyslog)
+
 # --- stage FatFs so ff.h's `#include "ffconf.h"` resolves to our integrator config
 # GCC's "" lookup checks the including file's own directory first, so colocating
 # the upstream ff.c/ff.h/diskio.h with our ffconf.h is how our config wins.
@@ -149,7 +165,7 @@ target_include_directories(baseline PRIVATE
 # library, or context struct sizes diverge between consumer and library.
 target_compile_definitions(baseline PRIVATE MBEDTLS_USER_CONFIG_FILE=${MBEDTLS_USER_CONFIG_HEADER})
 
-target_link_libraries(baseline PRIVATE mbedtls mbedx509 mbedcrypto)
+target_link_libraries(baseline PRIVATE mbedtls mbedx509 mbedcrypto SolidSyslog SolidSyslog::LwipRaw)
 
 target_link_options(baseline PRIVATE
     -mcpu=cortex-m3 -mthumb
