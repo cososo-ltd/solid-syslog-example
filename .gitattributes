@@ -1,0 +1,2 @@
+# LF everywhere, so a Windows checkout never breaks a shell script.
+* text=auto eol=lf

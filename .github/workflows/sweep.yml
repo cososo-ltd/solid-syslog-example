@@ -1,0 +1,48 @@
+name: Sweep
+
+# Measures every stage of a release branch in one run, against one toolchain and
+# one PKI, and keeps every stage's run report. See scripts/sweep.sh.
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch or commit to sweep (release/<version> or wip/<version>)
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          path: tools
+          persist-credentials: false
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          ref: ${{ inputs.ref }}
+          path: stack
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Sweep
+        working-directory: stack
+        run: bash ../tools/scripts/sweep.sh HEAD ../sweep-out
+
+      - name: Publish figures to job summary
+        if: always()
+        run: |
+          if [ -f sweep-out/figures.md ]; then
+            cat sweep-out/figures.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: sweep
+          path: sweep-out/
+          if-no-files-found: ignore
