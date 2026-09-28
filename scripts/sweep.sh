@@ -65,8 +65,16 @@ discard() {
     compose "$1" run --rm --no-deps run bash -c 'rm -rf /w/build /w/baseline-disk.img' >/dev/null 2>&1 || true
     git worktree remove --force "$1" >/dev/null 2>&1 || true
 }
-cleanup() { for wt in "$WORK"/wt-*; do [ -d "$wt" ] && discard "$wt"; done; rm -rf "$WORK"; git worktree prune; }
-trap cleanup EXIT
+# Best effort: the containers write as root, so on Linux some of what they leave
+# cannot be removed here. Whatever cleanup manages, the sweep's own result stands.
+cleanup() {
+    for wt in "$WORK"/wt-*; do
+        [ -d "$wt" ] && discard "$wt"
+    done
+    rm -rf "$WORK" 2> /dev/null
+    git worktree prune
+}
+trap 'rc=$?; cleanup || true; exit "$rc"' EXIT
 
 mkdir -p "$WORK/pki"
 cat > "$WORK/override.yml" <<EOF
@@ -74,7 +82,7 @@ services:
   certs:
     volumes:
       - $(hostpath "$WORK/pki"):/pki
-    command: bash -c "if [ -f /pki/ca.crt ]; then mkdir -p /w/build/certs && cp -a /pki/. /w/build/certs/; else bash scripts/gen-certs.sh /pki && cp -a /pki/. /w/build/certs/; fi"
+    command: bash -c "mkdir -p /w/build/certs && { [ -f /pki/ca.crt ] || bash scripts/gen-certs.sh /pki; } && cp -a /pki/. /w/build/certs/"
 EOF
 
 # ---- run each stage ----------------------------------------------------------
