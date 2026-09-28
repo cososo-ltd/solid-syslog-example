@@ -87,9 +87,15 @@ def table(args):
 
 
 def git(*args, env=None, stdin=None):
-    return subprocess.run(
-        ["git", *args], check=True, capture_output=True, text=True, env=env, input=stdin
+    # Bytes both ways, and UTF-8 whatever the user's config says: text mode on Windows
+    # would write a message's newlines as CRLF, and a legacy i18n encoding would mislabel
+    # or mis-decode the message.
+    out = subprocess.run(
+        ["git", "-c", "i18n.commitEncoding=UTF-8", "-c", "i18n.logOutputEncoding=UTF-8", *args],
+        check=True, capture_output=True, env=env,
+        input=None if stdin is None else stdin.encode("utf-8"),
     ).stdout
+    return out.decode("utf-8").replace("\r\n", "\n")
 
 
 def rewrite_block(message, k, figures):
