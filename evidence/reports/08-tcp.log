@@ -1,0 +1,410 @@
+ Network solid-syslog-sweep_default  Creating
+ Network solid-syslog-sweep_default  Created
+ Volume "solid-syslog-sweep_oracle-output"  Creating
+ Volume "solid-syslog-sweep_oracle-output"  Created
+ Container solid-syslog-sweep-certs-1  Creating
+ Container solid-syslog-sweep-certs-1  Created
+ Container solid-syslog-sweep-syslog-ng-1  Creating
+ Container solid-syslog-sweep-syslog-ng-1  Created
+ Container solid-syslog-sweep-broker-1  Creating
+ Container solid-syslog-sweep-broker-1  Created
+ Container solid-syslog-sweep-certs-1  Starting
+ Container solid-syslog-sweep-certs-1  Started
+ Container solid-syslog-sweep-certs-1  Waiting
+ Container solid-syslog-sweep-certs-1  Exited
+ Container solid-syslog-sweep-syslog-ng-1  Starting
+ Container solid-syslog-sweep-syslog-ng-1  Started
+ Container solid-syslog-sweep-certs-1  Waiting
+ Container solid-syslog-sweep-certs-1  Exited
+ Container solid-syslog-sweep-broker-1  Starting
+ Container solid-syslog-sweep-broker-1  Started
+=== build (tcp) ===
+Preset CMake variables:
+
+  CMAKE_BUILD_TYPE="MinSizeRel"
+  CMAKE_EXPORT_COMPILE_COMMANDS="ON"
+  CMAKE_TOOLCHAIN_FILE:FILEPATH="/w/cmake/arm-none-eabi.cmake"
+
+-- The C compiler identification is GNU 12.2.1
+-- The ASM compiler identification is GNU
+-- Found assembler: /usr/bin/arm-none-eabi-gcc
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/arm-none-eabi-gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- The CXX compiler identification is GNU 12.2.1
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/arm-none-eabi-g++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Looking for sendto
+-- Looking for sendto - not found
+-- Looking for sendto
+-- Looking for sendto - not found
+-- Performing Test HAVE_STDATOMIC_H
+-- Performing Test HAVE_STDATOMIC_H - Success
+-- Looking for InterlockedIncrement
+-- Looking for InterlockedIncrement - not found
+-- Looking for GetSystemTimeAsFileTime
+-- Looking for GetSystemTimeAsFileTime - not found
+-- SolidSyslog platforms: StdAtomic;LwipRaw;FreeRtos
+-- SolidSyslog roles:      network=LwipRaw  file=(none)  mutex=FreeRtos  clock=(none)  uptime=FreeRtos  atomics=StdAtomic  tls=(none)
+-- Could NOT find Doxygen (missing: DOXYGEN_EXECUTABLE) 
+-- Doxygen needs to be installed to generate the doxygen documentation
+-- Found Python3: /usr/bin/python3 (found version "3.11.2") found components: Interpreter 
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Performing Test C_COMPILER_SUPPORTS_WFORMAT_SIGNEDNESS
+-- Performing Test C_COMPILER_SUPPORTS_WFORMAT_SIGNEDNESS - Success
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /w/build/baseline-cross
+[  0%] Building C object _mbedtls/3rdparty/p256-m/CMakeFiles/p256m.dir/p256-m_driver_entrypoints.c.obj
+[  0%] Building C object _mbedtls/3rdparty/everest/CMakeFiles/everest.dir/library/everest.c.obj
+[  0%] Building C object CMakeFiles/baseline_upstream.dir/opt/freertos/kernel/tasks.c.obj
+[  0%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslog.c.obj
+[  0%] Building C object _mbedtls/3rdparty/everest/CMakeFiles/everest.dir/library/x25519.c.obj
+[  0%] Building C object _mbedtls/3rdparty/p256-m/CMakeFiles/p256m.dir/p256-m/p256-m.c.obj
+[  0%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogStatic.c.obj
+[  0%] Building C object _mbedtls/3rdparty/everest/CMakeFiles/everest.dir/library/Hacl_Curve25519_joined.c.obj
+[  1%] Linking C static library libp256m.a
+[  2%] Linking C static library libeverest.a
+[  2%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogError.c.obj
+[  4%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogConfigLock.c.obj
+[  4%] Built target p256m
+[  4%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogSwitchingSender.c.obj
+[  4%] Built target everest
+[  4%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogSwitchingSenderStatic.c.obj
+[  5%] Building C object CMakeFiles/baseline_upstream.dir/opt/freertos/kernel/queue.c.obj
+[  5%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogBuffer.c.obj
+[  5%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/aes.c.obj
+[  7%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogFormatter.c.obj
+[  7%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogTimestampFormatter.c.obj
+[  7%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/aesni.c.obj
+[  7%] Building C object CMakeFiles/baseline_upstream.dir/opt/freertos/kernel/list.c.obj
+[  7%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogMessageFormatter.c.obj
+[  7%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogMetaSd.c.obj
+[  8%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/aesce.c.obj
+[  8%] Building C object CMakeFiles/baseline_upstream.dir/opt/freertos/kernel/timers.c.obj
+[ 10%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogMetaSdStatic.c.obj
+[ 10%] Building C object CMakeFiles/baseline_upstream.dir/opt/freertos/kernel/event_groups.c.obj
+[ 10%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogPassthroughBuffer.c.obj
+[ 10%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogPassthroughBufferStatic.c.obj
+[ 10%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogCircularBuffer.c.obj
+[ 10%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/aria.c.obj
+[ 11%] Building C object CMakeFiles/baseline_upstream.dir/opt/freertos/kernel/portable/GCC/ARM_CM3/port.c.obj
+[ 13%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogCircularBufferStatic.c.obj
+[ 13%] Building C object CMakeFiles/baseline_upstream.dir/opt/freertos/kernel/portable/MemMang/heap_1.c.obj
+[ 13%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/init.c.obj
+[ 13%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogPoolAllocator.c.obj
+[ 13%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/def.c.obj
+[ 13%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogMutex.c.obj
+[ 13%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/asn1parse.c.obj
+[ 13%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogNullMutex.c.obj
+[ 14%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/dns.c.obj
+[ 15%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogSender.c.obj
+[ 15%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/inet_chksum.c.obj
+[ 15%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogSenderHealth.c.obj
+[ 15%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/asn1write.c.obj
+[ 15%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogNullSender.c.obj
+[ 15%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ip.c.obj
+[ 15%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogStore.c.obj
+[ 15%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/mem.c.obj
+[ 17%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/memp.c.obj
+[ 18%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogNullSd.c.obj
+[ 20%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/base64.c.obj
+[ 20%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogNullStore.c.obj
+[ 20%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/bignum.c.obj
+[ 20%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogNullBuffer.c.obj
+[ 20%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/netif.c.obj
+[ 20%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogNullBlockDevice.c.obj
+[ 21%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogNullSecurityPolicy.c.obj
+[ 21%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/pbuf.c.obj
+[ 21%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogCrc16.c.obj
+[ 21%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogTlsFingerprint.c.obj
+[ 21%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/bignum_core.c.obj
+[ 21%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogCrc16Policy.c.obj
+[ 23%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogStream.c.obj
+[ 23%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/raw.c.obj
+[ 23%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogNullStream.c.obj
+[ 23%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogStructuredData.c.obj
+[ 23%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogSdValue.c.obj
+[ 24%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/stats.c.obj
+[ 26%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogSdElement.c.obj
+[ 26%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/sys.c.obj
+[ 26%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/bignum_mod.c.obj
+[ 26%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogHeaderField.c.obj
+[ 26%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/altcp.c.obj
+[ 26%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogEndpointHost.c.obj
+[ 26%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/altcp_alloc.c.obj
+[ 27%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/bignum_mod_raw.c.obj
+[ 27%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogTimeQualitySd.c.obj
+[ 28%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/altcp_tcp.c.obj
+[ 28%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/tcp.c.obj
+[ 30%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogOriginSd.c.obj
+[ 30%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogTimeQualitySdStatic.c.obj
+[ 30%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/block_cipher.c.obj
+[ 30%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/camellia.c.obj
+[ 30%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/tcp_in.c.obj
+[ 30%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogOriginSdStatic.c.obj
+[ 30%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogFile.c.obj
+[ 31%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogNullFile.c.obj
+[ 31%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogBlockStore.c.obj
+[ 31%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogBlockStoreStatic.c.obj
+[ 31%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogRecordStore.c.obj
+[ 31%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/ccm.c.obj
+[ 31%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/tcp_out.c.obj
+[ 33%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogRecordStoreStatic.c.obj
+[ 34%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/chacha20.c.obj
+[ 34%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogBlockSequence.c.obj
+[ 36%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/timeouts.c.obj
+[ 36%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/chachapoly.c.obj
+[ 36%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogBlockSequenceStatic.c.obj
+[ 36%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogBlockDevice.c.obj
+[ 36%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/cipher.c.obj
+[ 37%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogFileBlockDevice.c.obj
+[ 37%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/udp.c.obj
+[ 37%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogFileBlockDeviceStatic.c.obj
+[ 37%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/cipher_wrap.c.obj
+[ 37%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogUdpPayload.c.obj
+[ 37%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogResolver.c.obj
+[ 37%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ipv4/acd.c.obj
+[ 39%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogNullResolver.c.obj
+[ 39%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ipv4/autoip.c.obj
+[ 39%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogDatagram.c.obj
+[ 40%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ipv4/etharp.c.obj
+[ 40%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ipv4/dhcp.c.obj
+[ 40%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogNullDatagram.c.obj
+[ 40%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogUdpSender.c.obj
+[ 42%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/constant_time.c.obj
+[ 43%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogUdpSenderStatic.c.obj
+[ 43%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ipv4/icmp.c.obj
+[ 43%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogStreamSender.c.obj
+[ 43%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/cmac.c.obj
+[ 43%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogStreamSenderStatic.c.obj
+[ 43%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/ctr_drbg.c.obj
+[ 43%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ipv4/igmp.c.obj
+[ 43%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogAtomicCounter.c.obj
+[ 44%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ipv4/ip4_frag.c.obj
+[ 46%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/SolidSyslogNullAtomicCounter.c.obj
+[ 46%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/__/__/Platform/StdAtomic/Source/SolidSyslogStdAtomicCounter.c.obj
+[ 46%] Building C object _deps/solidsyslog-build/Core/Source/CMakeFiles/SolidSyslog.dir/__/__/Platform/StdAtomic/Source/SolidSyslogStdAtomicCounterStatic.c.obj
+[ 46%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ipv4/ip4.c.obj
+[ 46%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/des.c.obj
+[ 46%] Linking C static library libSolidSyslog.a
+[ 47%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/dhm.c.obj
+[ 47%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ipv4/ip4_addr.c.obj
+[ 47%] Built target SolidSyslog
+[ 47%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/ecdh.c.obj
+[ 47%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/api/api_lib.c.obj
+[ 49%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/api/api_msg.c.obj
+[ 49%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/ecdsa.c.obj
+[ 49%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/api/err.c.obj
+[ 49%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/api/if_api.c.obj
+[ 49%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/ecjpake.c.obj
+[ 49%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/api/netbuf.c.obj
+[ 50%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/ecp.c.obj
+[ 52%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/api/netdb.c.obj
+[ 52%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/api/netifapi.c.obj
+[ 52%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/ecp_curves.c.obj
+[ 52%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/api/sockets.c.obj
+[ 52%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/api/tcpip.c.obj
+[ 53%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/ecp_curves_new.c.obj
+[ 53%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/netif/ethernet.c.obj
+[ 53%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/contrib/ports/freertos/sys_arch.c.obj
+[ 53%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/entropy.c.obj
+[ 53%] Building C object CMakeFiles/baseline_upstream.dir/app/net/smsc9220/smsc9220_eth_drv.c.obj
+[ 53%] Building C object CMakeFiles/baseline_upstream.dir/fatfs/ff.c.obj
+[ 55%] Building C object CMakeFiles/baseline_upstream.dir/app/storage/ffsystem.c.obj
+[ 56%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/entropy_poll.c.obj
+[ 56%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/error.c.obj
+[ 56%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/gcm.c.obj
+[ 56%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/hkdf.c.obj
+[ 57%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/hmac_drbg.c.obj
+[ 57%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/lmots.c.obj
+[ 57%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/lms.c.obj
+[ 57%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/md.c.obj
+[ 59%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/md5.c.obj
+[ 59%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/memory_buffer_alloc.c.obj
+[ 59%] Built target baseline_upstream
+[ 59%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/nist_kw.c.obj
+[ 59%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/oid.c.obj
+[ 60%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/padlock.c.obj
+[ 60%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/pem.c.obj
+[ 60%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/pk.c.obj
+[ 60%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/pk_ecc.c.obj
+[ 62%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/pk_wrap.c.obj
+[ 62%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/pkcs12.c.obj
+[ 62%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/pkcs5.c.obj
+[ 62%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/pkparse.c.obj
+[ 63%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/pkwrite.c.obj
+[ 63%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/platform.c.obj
+[ 63%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/platform_util.c.obj
+[ 63%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/poly1305.c.obj
+[ 65%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto.c.obj
+[ 65%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_aead.c.obj
+[ 65%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_cipher.c.obj
+[ 65%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_client.c.obj
+[ 66%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_driver_wrappers_no_static.c.obj
+[ 66%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_ecp.c.obj
+[ 66%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_ffdh.c.obj
+[ 66%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_hash.c.obj
+[ 68%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_pake.c.obj
+[ 68%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_mac.c.obj
+[ 68%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_rsa.c.obj
+[ 68%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_se.c.obj
+[ 69%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_slot_management.c.obj
+[ 69%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_storage.c.obj
+[ 69%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_its_file.c.obj
+[ 69%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_util.c.obj
+[ 71%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/ripemd160.c.obj
+[ 71%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/rsa.c.obj
+[ 71%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/rsa_alt_helpers.c.obj
+[ 71%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/sha1.c.obj
+[ 72%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/sha256.c.obj
+[ 72%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/sha512.c.obj
+[ 72%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/sha3.c.obj
+[ 72%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/threading.c.obj
+[ 73%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/timing.c.obj
+[ 73%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/version.c.obj
+[ 73%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/version_features.c.obj
+[ 73%] Linking C static library libmbedcrypto.a
+[ 73%] Built target mbedcrypto
+[ 73%] Building C object _mbedtls/library/CMakeFiles/mbedx509.dir/pkcs7.c.obj
+[ 75%] Building C object _mbedtls/library/CMakeFiles/mbedx509.dir/x509.c.obj
+[ 75%] Building C object _mbedtls/library/CMakeFiles/mbedx509.dir/x509_crl.c.obj
+[ 75%] Building C object _mbedtls/library/CMakeFiles/mbedx509.dir/x509_create.c.obj
+[ 75%] Building C object _mbedtls/library/CMakeFiles/mbedx509.dir/x509_crt.c.obj
+[ 76%] Building C object _mbedtls/library/CMakeFiles/mbedx509.dir/x509_csr.c.obj
+[ 76%] Building C object _mbedtls/library/CMakeFiles/mbedx509.dir/x509write.c.obj
+[ 76%] Building C object _mbedtls/library/CMakeFiles/mbedx509.dir/x509write_crt.c.obj
+[ 76%] Building C object _mbedtls/library/CMakeFiles/mbedx509.dir/x509write_csr.c.obj
+[ 78%] Linking C static library libmbedx509.a
+[ 78%] Built target mbedx509
+[ 79%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/debug.c.obj
+[ 79%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/mps_reader.c.obj
+[ 79%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/mps_trace.c.obj
+[ 79%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/net_sockets.c.obj
+[ 81%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_ciphersuites.c.obj
+[ 81%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_cache.c.obj
+[ 81%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_client.c.obj
+[ 81%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_cookie.c.obj
+[ 82%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_debug_helpers_generated.c.obj
+[ 82%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_msg.c.obj
+[ 82%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_ticket.c.obj
+[ 82%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_tls.c.obj
+[ 84%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_tls12_client.c.obj
+[ 84%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_tls12_server.c.obj
+[ 84%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_tls13_keys.c.obj
+[ 84%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_tls13_server.c.obj
+[ 85%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_tls13_client.c.obj
+[ 85%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_tls13_generic.c.obj
+[ 85%] Linking C static library libmbedtls.a
+[ 85%] Built target mbedtls
+[ 85%] Building C object CMakeFiles/baseline.dir/app/sim/SimulatedExistingApp.c.obj
+[ 86%] Building C object CMakeFiles/baseline.dir/app/sim/SimulatedBrokerSession.c.obj
+[ 86%] Building C object CMakeFiles/baseline.dir/app/main.c.obj
+[ 86%] Building C object CMakeFiles/baseline.dir/app/sim/SimulatedCollector.c.obj
+[ 88%] Building C object CMakeFiles/baseline.dir/app/tasks/LogTask.c.obj
+[ 88%] Building C object CMakeFiles/baseline.dir/app/tasks/ServiceTask.c.obj
+[ 88%] Building C object CMakeFiles/baseline.dir/app/measure/Measure.c.obj
+[ 88%] Building C object CMakeFiles/baseline.dir/app/measure/Baseline.c.obj
+[ 89%] Building C object CMakeFiles/baseline.dir/app/platform/Startup.c.obj
+[ 89%] Building C object CMakeFiles/baseline.dir/app/platform/CmsdkUart.c.obj
+[ 89%] Building C object CMakeFiles/baseline.dir/app/platform/DeviceClock.c.obj
+[ 89%] Building C object CMakeFiles/baseline.dir/app/platform/DeviceCertStore.c.obj
+[ 91%] Building C object CMakeFiles/baseline.dir/app/platform/Syscalls.c.obj
+[ 91%] Building C object CMakeFiles/baseline.dir/app/platform/SemihostingExit.c.obj
+[ 91%] Building C object CMakeFiles/baseline.dir/app/platform/SemihostingIo.c.obj
+[ 91%] Building C object CMakeFiles/baseline.dir/app/net/EthernetIf.c.obj
+[ 92%] Building C object CMakeFiles/baseline.dir/app/storage/diskio.c.obj
+[ 92%] Building C object CMakeFiles/baseline.dir/app/storage/SemihostingDisk.c.obj
+[ 92%] Building C object CMakeFiles/baseline.dir/app/syslog/Syslog.c.obj
+[ 92%] Building C object CMakeFiles/baseline.dir/app/syslog/SyslogFields.c.obj
+[ 94%] Building C object CMakeFiles/baseline.dir/app/syslog/SyslogErrorHandler.c.obj
+[ 94%] Building C object CMakeFiles/baseline.dir/_deps/solidsyslog-src/Platform/LwipRaw/Source/SolidSyslogLwipRawAddress.c.obj
+[ 94%] Building C object CMakeFiles/baseline.dir/_deps/solidsyslog-src/Platform/LwipRaw/Source/SolidSyslogLwipRawAddressStatic.c.obj
+[ 94%] Building C object CMakeFiles/baseline.dir/_deps/solidsyslog-src/Platform/LwipRaw/Source/SolidSyslogLwipRawDatagram.c.obj
+[ 95%] Building C object CMakeFiles/baseline.dir/_deps/solidsyslog-src/Platform/LwipRaw/Source/SolidSyslogLwipRawDatagramStatic.c.obj
+[ 95%] Building C object CMakeFiles/baseline.dir/_deps/solidsyslog-src/Platform/LwipRaw/Source/SolidSyslogLwipRawTcpKeepaliveAll.c.obj
+[ 95%] Building C object CMakeFiles/baseline.dir/_deps/solidsyslog-src/Platform/LwipRaw/Source/SolidSyslogLwipRawTcpKeepaliveIdleOnly.c.obj
+[ 95%] Building C object CMakeFiles/baseline.dir/_deps/solidsyslog-src/Platform/LwipRaw/Source/SolidSyslogLwipRawTcpStream.c.obj
+[ 97%] Building C object CMakeFiles/baseline.dir/_deps/solidsyslog-src/Platform/LwipRaw/Source/SolidSyslogLwipRawTcpStreamStatic.c.obj
+[ 97%] Building C object CMakeFiles/baseline.dir/_deps/solidsyslog-src/Platform/LwipRaw/Source/SolidSyslogLwipRawResolver.c.obj
+[ 97%] Building C object CMakeFiles/baseline.dir/_deps/solidsyslog-src/Platform/LwipRaw/Source/SolidSyslogLwipRawResolverStatic.c.obj
+[ 97%] Building C object CMakeFiles/baseline.dir/_deps/solidsyslog-src/Platform/LwipRaw/Source/SolidSyslogLwipRawDnsResolver.c.obj
+[ 98%] Building C object CMakeFiles/baseline.dir/_deps/solidsyslog-src/Platform/LwipRaw/Source/SolidSyslogLwipRawDnsResolverStatic.c.obj
+[ 98%] Building C object CMakeFiles/baseline.dir/_deps/solidsyslog-src/Platform/LwipRaw/Source/SolidSyslogLwipRawMarshal.c.obj
+[ 98%] Building C object CMakeFiles/baseline.dir/_deps/solidsyslog-src/Platform/FreeRtos/Source/SolidSyslogFreeRtosMutex.c.obj
+[ 98%] Building C object CMakeFiles/baseline.dir/_deps/solidsyslog-src/Platform/FreeRtos/Source/SolidSyslogFreeRtosMutexStatic.c.obj
+[100%] Building C object CMakeFiles/baseline.dir/_deps/solidsyslog-src/Platform/FreeRtos/Source/SolidSyslogFreeRtosSysUpTime32.c.obj
+[100%] Building C object CMakeFiles/baseline.dir/_deps/solidsyslog-src/Platform/FreeRtos/Source/SolidSyslogFreeRtosSysUpTime64.c.obj
+[100%] Linking C executable baseline.elf
+[100%] Built target baseline
+=== prove the listeners ===
+  OK    udp    5514
+  OK    tcp    5601
+  OK    tls    6514
+  OK    mtls   6515
+  OK    mtls   6515 — refused a client with no certificate
+  OK    broker 8883
+  OK    broker 8883 — refused a client with no certificate
+=== run under QEMU (oracle up; the app reaches it via slirp) ===
+# solid-syslog-example — run (tcp)
+
+## Device (self-measured)
+
+```text
+[device] solid-syslog-example (FreeRTOS + lwIP + mbedTLS + FatFs)
+[device] starting simulated existing application...
+[sim] broker session to 10.0.2.2:8883: TLSv1.3, TLS1-3-CHACHA20-POLY1305-SHA256
+[device]   sim app (lwIP up, FatFs mounted, broker session held over mTLS): ready
+[device]   first record logged: yes
+[report] --- SolidSyslog cost above baseline (simulated existing application) ---
+[report] key,current,baseline,used_above_baseline
+[report] flash_text,360144,352804,7340
+[report] flash_data,496,320,176
+[report] static_bss,118648,111136,7512
+[report] heap_used,4440,4440,0
+[report] mbedtls_peak,21364,21360,4
+[report] mbedtls_free,11404,11408,-4
+[report] lwip_mem_free,7576,7576,0
+[report] lwip_pbufs_free,13,13,0
+[report] stack_log,788,116,672
+[report] stack_service,952,56,896
+[report] stack_harness,2848,2840,8
+[report] --- end ---
+[device]   records logged: 1
+[device] ready
+```
+
+### Size cross-check
+
+```text
+   text	   data	    bss	    dec	    hex	filename
+ 360136	    504	 118648	 479288	  75038	/w/build/baseline-cross/baseline.elf
+```
+
+## Listeners (proved before the device ran)
+
+```text
+  OK    udp    5514
+  OK    tcp    5601
+  OK    tls    6514
+  OK    mtls   6515
+  OK    mtls   6515 — refused a client with no certificate
+  OK    broker 8883
+  OK    broker 8883 — refused a client with no certificate
+```
+
+## Collector (syslog-ng) received
+
+```text
+wire   <134>1 2026-09-28T20:25:24.430000Z 10.0.2.15 solid-syslog-example - BOOT [meta sequenceId="1"] ﻿device started
+parsed PRIORITY=134 TIMESTAMP=2026-09-28T20:25:24+00:00 HOSTNAME=10.0.2.15 APP_NAME=solid-syslog-example PROCID= MSGID=BOOT STRUCTURED_DATA=[meta sequenceId="1"] MSG=device started
+```
+
+**RESULT: PASS**
