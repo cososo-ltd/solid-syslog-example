@@ -138,6 +138,10 @@ def amend(args):
     mapped = {s["commit"]: int(s["index"]) for s in stages}
     tip = git("rev-parse", "--verify", f"{args.ref}^{{commit}}").strip()
     chain = git("rev-list", "--first-parent", "--reverse", tip).split()
+    # Rebuilding keeps one parent per commit, so a merge would lose the others.
+    merges = git("rev-list", "--merges", tip).split()
+    if merges:
+        raise SystemExit(f"figures: {args.ref} is not linear; {merges[0][:7]} is a merge")
     missing = [c for c in mapped if c not in chain]
     if missing:
         raise SystemExit(f"figures: {len(missing)} swept commit(s) are not on {args.ref}, e.g. {missing[0]}")

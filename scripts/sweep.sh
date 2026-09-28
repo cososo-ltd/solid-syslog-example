@@ -27,6 +27,9 @@ fail() { echo "sweep: $*" >&2; exit 1; }
 
 # ---- map rows to commits -----------------------------------------------------
 tip="$(git rev-parse --verify "$REF^{commit}")"
+# A release branch is one commit per stage, so a merge anywhere means the rows
+# cannot be mapped.
+[ -z "$(git rev-list --merges "$tip")" ] || fail "$REF is not linear: $(git rev-list --merges "$tip" | head -1) is a merge"
 if [ -z "$(git diff-tree --root --no-commit-id --name-only -r "$tip" | grep -v '^evidence/' || true)" ]; then
     tip="$(git rev-parse "$tip^")"
 fi
@@ -43,7 +46,9 @@ commits=("${chain[@]: -$n}")
 for k in "${!rows[@]}"; do
     mapfile -t own < <(slugs_at "${commits[$k]}")
     if [ "${#own[@]}" -ne $(( k + 1 )) ] || [ "${own[*]}" != "${rows[*]:0:$(( k + 1 ))}" ]; then
-        fail "row $k '${rows[$k]}' maps to $(git log -1 --format='%h %s' "${commits[$k]}"), whose $STAGES ends at '${own[-1]:-}' after ${#own[@]} rows"
+        last=""
+        [ "${#own[@]}" -eq 0 ] || last="${own[${#own[@]}-1]}"
+        fail "row $k '${rows[$k]}' maps to $(git log -1 --format='%h %s' "${commits[$k]}"), whose $STAGES ends at '$last' after ${#own[@]} rows"
     fi
 done
 
