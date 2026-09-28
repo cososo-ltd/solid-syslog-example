@@ -60,9 +60,11 @@ fi
 # ---- one PKI for every stage -------------------------------------------------
 WORK="$(mktemp -d)"
 compose() { docker compose -p solid-syslog-sweep -f "$(hostpath "$1/docker/docker-compose.yml")" -f "$(hostpath "$WORK/override.yml")" "${@:2}"; }
+# The build is root-owned, so a root container removes it: certs, because it has
+# no network_mode and so starts whether or not the stack is still up.
 discard() {
+    compose "$1" run --rm --no-deps certs bash -c 'rm -rf /w/build /w/baseline-disk.img' >/dev/null 2>&1 || true
     compose "$1" down --volumes --remove-orphans >/dev/null 2>&1 || true
-    compose "$1" run --rm --no-deps run bash -c 'rm -rf /w/build /w/baseline-disk.img' >/dev/null 2>&1 || true
     git worktree remove --force "$1" >/dev/null 2>&1 || true
 }
 # Best effort: the containers write as root, so on Linux some of what they leave
