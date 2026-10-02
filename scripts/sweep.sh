@@ -59,7 +59,9 @@ fi
 
 # ---- one PKI for every stage -------------------------------------------------
 WORK="$(mktemp -d)"
-compose() { docker compose -p solid-syslog-sweep -f "$(hostpath "$1/docker/docker-compose.yml")" -f "$(hostpath "$WORK/override.yml")" "${@:2}"; }
+# A project per run, so concurrent sweeps on one daemon do not tear down each
+# other's stack between stages.
+compose() { docker compose -p "solid-syslog-sweep-$$" -f "$(hostpath "$1/docker/docker-compose.yml")" -f "$(hostpath "$WORK/override.yml")" "${@:2}"; }
 # The build is root-owned, so a root container removes it: certs, because it has
 # no network_mode and so starts whether or not the stack is still up.
 discard() {
