@@ -14,6 +14,7 @@
 #include "SolidSyslogBlockStore.h"
 #include "SolidSyslogCircularBuffer.h"
 #include "SolidSyslogConfig.h"
+#include "SolidSyslogDiscardPolicy.h"
 #include "SolidSyslogEndpoint.h"
 #include "SolidSyslogEndpointHost.h"
 #include "SolidSyslogFatFsFile.h"
@@ -48,6 +49,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 /* The collector, reached through QEMU's slirp gateway. A numeric literal keeps
@@ -177,6 +179,30 @@ static void CollectorEndpoint(struct SolidSyslogEndpoint* endpoint, void* contex
     endpoint->Port = SYSLOG_COLLECTOR_PORT;
 }
 
+/* What a full queue does with the record that does not fit. The ring, the store
+ * and the logger all ask this one function, so the pipeline applies one policy,
+ * and each asks at the moment it has to decide, so a change applies to the next
+ * record that meets a full queue. Oldest keeps the newest records. */
+static volatile enum SolidSyslogDiscardPolicy s_discardPolicy = SOLIDSYSLOG_DISCARD_POLICY_OLDEST;
+
+static enum SolidSyslogDiscardPolicy SyslogDiscardPolicy(void* context)
+{
+    (void) context;
+
+    return s_discardPolicy;
+}
+
+/* Called once, on the service task, when a queue has refused a record under
+ * Halt. The refusal has already been reported through the handler; this is the
+ * device's own reaction. Nothing moves until the policy changes or the device
+ * restarts. */
+static void SyslogHalted(void* context)
+{
+    (void) context;
+
+    (void) printf("[device] syslog halted: a full queue refused a record under the Halt policy\n");
+}
+
 void Syslog_Start(void)
 {
     SolidSyslogLwipRaw_SetMarshal(LwipCoreLockMarshal);
@@ -252,11 +278,12 @@ void Syslog_Start(void)
     struct SolidSyslogBlockStoreConfig storeConfig = {
         .BlockDevice = SolidSyslogFileBlockDevice_Create(SolidSyslogFatFsFile_Create(), SYSLOG_STORE_PREFIX, 0U),
         .MaxBlocks = SYSLOG_STORE_BLOCKS,
+        .GetDiscardPolicy = SyslogDiscardPolicy,
         .SecurityPolicy = SolidSyslogMbedTlsAesGcmPolicy_Create(&gcmConfig),
     };
 
     struct SolidSyslogConfig config = {
-        .Buffer = SolidSyslogCircularBuffer_Create(SolidSyslogFreeRtosMutex_Create(), s_ring, sizeof(s_ring), NULL, NULL),
+        .Buffer = SolidSyslogCircularBuffer_Create(SolidSyslogFreeRtosMutex_Create(), s_ring, sizeof(s_ring), SyslogDiscardPolicy, NULL),
         .Sender = sender,
         .Store = SolidSyslogBlockStore_Create(&storeConfig),
         /* PROCID stays unset - a bare-metal image has no process. */
@@ -265,6 +292,8 @@ void Syslog_Start(void)
         .GetAppName = SyslogFields_AppName,
         .Sd = s_sd,
         .SdCount = sizeof(s_sd) / sizeof(s_sd[0]),
+        .GetDiscardPolicy = SyslogDiscardPolicy,
+        .OnHalt = SyslogHalted,
     };
 
     s_logger = SolidSyslog_Create(&config);
@@ -303,4 +332,9 @@ void Syslog_ApplyPinChanges(void)
         }
         s_streamVersion++;
     }
+}
+
+void Syslog_SetDiscardPolicy(enum SolidSyslogDiscardPolicy policy)
+{
+    s_discardPolicy = policy;
 }

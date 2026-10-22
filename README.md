@@ -10,31 +10,47 @@ It builds on a baseline that simulates the sort of device you might be adding th
 measures itself: see [docs/baseline.md](docs/baseline.md) for what the baseline is, how the
 figures are made, and how to run it.
 
-## This stage — CA chain
+## This stage — Discard policy
 
-For a site that runs its own PKI: the collector's certificate must now chain to the site CA as well
-as match its pin. Either failing stops delivery.
+Decide what a full queue does with the record that does not fit, and keep the decision changeable
+while the device runs.
 
 ```c
-struct SolidSyslogMbedTlsHandleCredentialsConfig credentialsConfig = {
-    .CaChain = caChain,
-    /* ... the client credential, the Rng and the collector's pins, as before ... */
-};
+static enum SolidSyslogDiscardPolicy SyslogDiscardPolicy(void* context)
+{
+    (void) context;
+    return s_discardPolicy;
+}
+
+.Buffer = SolidSyslogCircularBuffer_Create(SolidSyslogFreeRtosMutex_Create(), s_ring, sizeof(s_ring), SyslogDiscardPolicy, NULL),
+
+/* on the store */
+.GetDiscardPolicy = SyslogDiscardPolicy,
+
+/* on the logger */
+.GetDiscardPolicy = SyslogDiscardPolicy,
+.OnHalt           = SyslogHalted,
 ```
 
-A pin never waives the chain, and a matching pin with a chain that does not verify is reported as
-`PEER_CERTIFICATE_UNTRUSTED`, distinct from `PEER_FINGERPRINT_MISMATCHED`. The pipeline element says
-which the device requires, so a collector can tell a device on the pin alone from one on both:
+Three places can be full: the ring, on the task that logs; the store, on the service task; and the
+logger itself, which holds a record for the sender between passes. Each asks the policy at the
+moment it has to decide, from the task it runs on. Give all three the same function, as here, so
+the pipeline applies one policy; the library does not check that they agree.
 
-```text
-... [logPipeline@32473 transport="mtls" collectorAuth="fingerprint+chain" atRest="aes-256-gcm"] ...
-```
+The answers are the library's `SolidSyslogDiscardPolicy`. Oldest, the default the earlier stages
+left in place, drops the oldest records to make room, so the newest survive. Newest refuses the
+record being written. Halt refuses it too, and the logger then stops moving records: it calls
+`OnHalt` once, on the service task, after the refusal has been reported, and moves nothing more
+until the policy answers otherwise or the device restarts. Records lost under any of the three are
+reported once when a run of losses starts, by the queue that lost them.
 
-**When you need it.** When the site runs a PKI and wants its devices under its own certificate
-policy. It adds a way for delivery to stop that the pin alone does not have: when the site CA or an
-intermediate expires or is replaced, every device holding it stops at once, and the store holds what
-it can until the new CA is provisioned, discarding the oldest when it fills. Without a PKI, the pin
-is enough.
+This device stays on Oldest, and `Syslog_SetDiscardPolicy` changes it from any task. `OnHalt` is
+the device's own reaction; here it is a line on the console, and on a device whose records must
+not be lost it is where the device stops.
+
+**When you need it.** If what happens to records on a full queue is a decision for the site or the
+commissioning engineer rather than the firmware, or if a device must stop rather than lose a
+record. A device content to keep the newest records can leave every policy argument `NULL`.
 
 ## License
 
