@@ -3,6 +3,8 @@
 #ifndef SYSLOG_H
 #define SYSLOG_H
 
+#include "SolidSyslogDiscardPolicy.h"
+
 #include <stdbool.h>
 
 struct SolidSyslog;
@@ -27,5 +29,10 @@ bool Syslog_RetireCollectorPin(void);
 
 /** Apply the pin changes asked for since the last call. Service task only. */
 void Syslog_ApplyPinChanges(void);
+
+/** What a full queue does with the record that does not fit. One answer serves
+ *  the ring, the store and the logger. Callable from any task; the next record
+ *  that meets a full queue sees it. */
+void Syslog_SetDiscardPolicy(enum SolidSyslogDiscardPolicy policy);
 
 #endif /* SYSLOG_H */
