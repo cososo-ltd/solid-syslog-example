@@ -1,0 +1,1478 @@
+ Image ghcr.io/cososo-ltd/cpputest-freertos-cross:sha-ad10bf2@sha256:481267bea7200641fac41d7136e7e08deeba1b311e9873aa6d1c311db5b4cf58 Pulling 
+ Image balabit/syslog-ng:4.8.2@sha256:728cc5b63b9044ad5f18062bac73fd5c30bb7ad256c2aa12799d924d4f6f1e72 Pulling 
+ Image ghcr.io/cososo-ltd/cpputest-freertos-cross:sha-ad10bf2@sha256:481267bea7200641fac41d7136e7e08deeba1b311e9873aa6d1c311db5b4cf58 Pulling 
+ 4f4fb700ef54 Pulling fs layer 0B
+ 99197f11d5df Pulling fs layer 0B
+ 561f45a82a55 Pulling fs layer 0B
+ a8a5ee71434c Pulling fs layer 0B
+ 0ccd223df873 Pulling fs layer 0B
+ f014853ae203 Pulling fs layer 0B
+ df3e9df5bc77 Pulling fs layer 0B
+ 33994c44a28f Pulling fs layer 0B
+ 411666b8791a Pulling fs layer 0B
+ 9258a85aeb45 Pulling fs layer 0B
+ 68629629b516 Pulling fs layer 0B
+ 71a1d5e471bc Pulling fs layer 0B
+ 5105630eb283 Pulling fs layer 0B
+ 4b47d808f57e Pulling fs layer 0B
+ 8c4e8bf58b7f Pulling fs layer 0B
+ 919bed938aa7 Pulling fs layer 0B
+ 63a2db179435 Pulling fs layer 0B
+ 92912f53fb14 Pulling fs layer 0B
+ 48c584ee2fba Pulling fs layer 0B
+ 4f4fb700ef54 Pulling fs layer 0B
+ eb7106491d9b Pulling fs layer 0B
+ aa1002bf400f Pulling fs layer 0B
+ 4f4fb700ef54 Pulling fs layer 0B
+ bee4b0f2cea7 Pulling fs layer 0B
+ 4f4fb700ef54 Pulling fs layer 0B
+ d5fc61442672 Pulling fs layer 0B
+ c2bb6fcacb33 Pulling fs layer 0B
+ ee932954728e Pulling fs layer 0B
+ df90804087fa Pulling fs layer 0B
+ 486f6dc34c36 Pulling fs layer 0B
+ a8242027f59d Pulling fs layer 0B
+ 8c1b5161fdb3 Pulling fs layer 0B
+ 4f4fb700ef54 Already exists 0B
+ 4f4fb700ef54 Already exists 0B
+ 4f4fb700ef54 Pulling fs layer 0B
+ 68629629b516 Pulling fs layer 0B
+ 5105630eb283 Pulling fs layer 0B
+ 8c4e8bf58b7f Pulling fs layer 0B
+ 63a2db179435 Pulling fs layer 0B
+ 48c584ee2fba Pulling fs layer 0B
+ 411666b8791a Pulling fs layer 0B
+ 9258a85aeb45 Pulling fs layer 0B
+ 71a1d5e471bc Pulling fs layer 0B
+ 4b47d808f57e Pulling fs layer 0B
+ 919bed938aa7 Pulling fs layer 0B
+ 92912f53fb14 Pulling fs layer 0B
+ 4f4fb700ef54 Pulling fs layer 0B
+ aa1002bf400f Pulling fs layer 0B
+ bee4b0f2cea7 Pulling fs layer 0B
+ df90804087fa Pulling fs layer 0B
+ 486f6dc34c36 Pulling fs layer 0B
+ d5fc61442672 Pulling fs layer 0B
+ eb7106491d9b Pulling fs layer 0B
+ a8242027f59d Pulling fs layer 0B
+ 8c1b5161fdb3 Pulling fs layer 0B
+ 4f4fb700ef54 Pulling fs layer 0B
+ c2bb6fcacb33 Pulling fs layer 0B
+ ee932954728e Pulling fs layer 0B
+ 4f4fb700ef54 Already exists 0B
+ 99197f11d5df Download complete 0B
+ df3e9df5bc77 Download complete 0B
+ 292a6bc0aecd Download complete 0B
+ 33994c44a28f Download complete 0B
+ 292a6bc0aecd Download complete 0B
+ 561f45a82a55 Download complete 0B
+ f014853ae203 Downloading 8.389MB
+ a8a5ee71434c Downloading 2.097MB
+ 0ccd223df873 Downloading 2.097MB
+ 9258a85aeb45 Download complete 0B
+ a8a5ee71434c Downloading 9.437MB
+ 0ccd223df873 Downloading 10.49MB
+ f014853ae203 Downloading 17.83MB
+ 48c584ee2fba Download complete 0B
+ aa1002bf400f Download complete 0B
+ aa1002bf400f Download complete 0B
+ 71a1d5e471bc Download complete 0B
+ 71a1d5e471bc Download complete 0B
+ 411666b8791a Downloading 1.049MB
+ 68629629b516 Downloading 3.146MB
+ 9258a85aeb45 Download complete 0B
+ 5105630eb283 Downloading 1.049MB
+ 4b47d808f57e Download complete 0B
+ 68629629b516 Downloading 3.146MB
+ 5105630eb283 Downloading 1.049MB
+ 4b47d808f57e Download complete 0B
+ 48c584ee2fba Download complete 0B
+ 411666b8791a Downloading 1.049MB
+ f014853ae203 Downloading 20.97MB
+ a8a5ee71434c Downloading 12.58MB
+ 0ccd223df873 Downloading 13.63MB
+ 411666b8791a Downloading 4.194MB
+ 8c4e8bf58b7f Downloading 3.146MB
+ bee4b0f2cea7 Downloading 3.146MB
+ d5fc61442672 Downloading 3.146MB
+ 919bed938aa7 Download complete 0B
+ 92912f53fb14 Downloading 2.097MB
+ 919bed938aa7 Download complete 0B
+ df90804087fa Downloading 3.146MB
+ d5fc61442672 Downloading 3.146MB
+ bee4b0f2cea7 Downloading 3.146MB
+ 92912f53fb14 Downloading 2.097MB
+ 486f6dc34c36 Download complete 0B
+ ee932954728e Download complete 0B
+ 411666b8791a Downloading 4.194MB
+ 68629629b516 Downloading 6.291MB
+ 486f6dc34c36 Download complete 0B
+ eb7106491d9b Downloading 2.097MB
+ a8242027f59d Downloading 2.097MB
+ 68629629b516 Downloading 6.291MB
+ 8c4e8bf58b7f Downloading 3.146MB
+ 8c1b5161fdb3 Downloading 2.097MB
+ c2bb6fcacb33 Downloading 2.097MB
+ 63a2db179435 Download complete 0B
+ eb7106491d9b Downloading 2.097MB
+ df90804087fa Downloading 2.097MB
+ c2bb6fcacb33 Downloading 2.097MB
+ a8242027f59d Downloading 2.097MB
+ 8c1b5161fdb3 Downloading 2.097MB
+ 5105630eb283 Downloading 4.194MB
+ ee932954728e Download complete 0B
+ 5105630eb283 Downloading 4.194MB
+ 63a2db179435 Download complete 0B
+ 5105630eb283 Downloading 9.437MB
+ a8a5ee71434c Downloading 17.83MB
+ 411666b8791a Download complete 0B
+ 0ccd223df873 Download complete 0B
+ f014853ae203 Downloading 26.21MB
+ 0d4cb699af04 Download complete 0B
+ df90804087fa Download complete 0B
+ d5fc61442672 Download complete 0B
+ bee4b0f2cea7 Download complete 0B
+ d5fc61442672 Download complete 0B
+ bee4b0f2cea7 Download complete 0B
+ 92912f53fb14 Download complete 0B
+ 411666b8791a Download complete 0B
+ 92912f53fb14 Download complete 0B
+ 68629629b516 Downloading 11.53MB
+ eb7106491d9b Download complete 0B
+ eb7106491d9b Download complete 0B
+ a8242027f59d Downloading 8.389MB
+ 68629629b516 Downloading 11.53MB
+ 8c4e8bf58b7f Downloading 8.389MB
+ 8c1b5161fdb3 Downloading 7.34MB
+ c2bb6fcacb33 Downloading 5.243MB
+ df90804087fa Download complete 0B
+ c2bb6fcacb33 Downloading 5.243MB
+ a8242027f59d Downloading 8.389MB
+ 8c1b5161fdb3 Downloading 8.389MB
+ 5105630eb283 Downloading 9.437MB
+ 8c4e8bf58b7f Downloading 8.389MB
+ f014853ae203 Downloading 41.94MB
+ a8a5ee71434c Downloading 31.46MB
+ a8242027f59d Downloading 10.49MB
+ 68629629b516 Downloading 20.97MB
+ 8c4e8bf58b7f Downloading 10.49MB
+ 8c1b5161fdb3 Downloading 13.63MB
+ c2bb6fcacb33 Downloading 10.49MB
+ 5105630eb283 Download complete 0B
+ 8c4e8bf58b7f Downloading 10.49MB
+ 68629629b516 Downloading 20.97MB
+ c2bb6fcacb33 Downloading 10.49MB
+ a8242027f59d Downloading 10.49MB
+ 8c1b5161fdb3 Downloading 13.63MB
+ 5105630eb283 Download complete 0B
+ 8c4e8bf58b7f Downloading 18.87MB
+ 68629629b516 Downloading 27.26MB
+ c2bb6fcacb33 Downloading 14.68MB
+ a8242027f59d Download complete 0B
+ 68629629b516 Downloading 27.26MB
+ 8c4e8bf58b7f Downloading 18.87MB
+ 8c1b5161fdb3 Downloading 18.87MB
+ c2bb6fcacb33 Downloading 14.68MB
+ a8242027f59d Download complete 0B
+ 8c1b5161fdb3 Downloading 18.87MB
+ f014853ae203 Download complete 0B
+ a8a5ee71434c Downloading 44.04MB
+ f014853ae203 Extracting 1B
+ a8a5ee71434c Downloading 59.77MB
+ 8c1b5161fdb3 Downloading 20.97MB
+ 8c4e8bf58b7f Downloading 20.97MB
+ 68629629b516 Download complete 0B
+ 8c4e8bf58b7f Downloading 20.97MB
+ 8c1b5161fdb3 Downloading 20.97MB
+ c2bb6fcacb33 Downloading 20.97MB
+ 68629629b516 Download complete 0B
+ c2bb6fcacb33 Downloading 20.97MB
+ f014853ae203 Extracting 1B
+ 68629629b516 Extracting 1B
+ 68629629b516 Extracting 1B
+ c2bb6fcacb33 Downloading 20.97MB
+ 8c1b5161fdb3 Downloading 24.12MB
+ 8c4e8bf58b7f Downloading 27.26MB
+ 8c4e8bf58b7f Downloading 27.26MB
+ 8c1b5161fdb3 Downloading 24.12MB
+ c2bb6fcacb33 Downloading 20.97MB
+ a8a5ee71434c Downloading 74.45MB
+ f014853ae203 Extracting 1B
+ 68629629b516 Extracting 1B
+ 68629629b516 Extracting 1B
+ a8a5ee71434c Downloading 85.98MB
+ 8c4e8bf58b7f Downloading 31.46MB
+ 8c1b5161fdb3 Downloading 30.29MB
+ c2bb6fcacb33 Downloading 27.26MB
+ c2bb6fcacb33 Downloading 27.26MB
+ 8c1b5161fdb3 Downloading 30.29MB
+ 8c4e8bf58b7f Downloading 31.46MB
+ f014853ae203 Extracting 1B
+ 68629629b516 Extracting 1B
+ 68629629b516 Extracting 1B
+ a8a5ee71434c Downloading 104.9MB
+ 8c4e8bf58b7f Downloading 32.51MB
+ c2bb6fcacb33 Downloading 31.46MB
+ 8c1b5161fdb3 Download complete 0B
+ 8c4e8bf58b7f Downloading 32.51MB
+ 8c1b5161fdb3 Download complete 0B
+ c2bb6fcacb33 Downloading 31.46MB
+ f014853ae203 Extracting 1B
+ 68629629b516 Extracting 1B
+ 68629629b516 Extracting 1B
+ a8a5ee71434c Downloading 118.9MB
+ 8c4e8bf58b7f Downloading 36.7MB
+ c2bb6fcacb33 Downloading 33.55MB
+ c2bb6fcacb33 Downloading 34.6MB
+ 8c4e8bf58b7f Downloading 36.7MB
+ f014853ae203 Extracting 1B
+ 68629629b516 Extracting 1B
+ 68629629b516 Extracting 1B
+ 8c4e8bf58b7f Downloading 41.94MB
+ c2bb6fcacb33 Downloading 39.85MB
+ 8c4e8bf58b7f Downloading 41.94MB
+ a8a5ee71434c Download complete 0B
+ c2bb6fcacb33 Downloading 39.85MB
+ f014853ae203 Extracting 1B
+ 68629629b516 Extracting 1B
+ 68629629b516 Extracting 1B
+ 8c4e8bf58b7f Downloading 41.94MB
+ c2bb6fcacb33 Downloading 41.94MB
+ c2bb6fcacb33 Downloading 41.94MB
+ 8c4e8bf58b7f Downloading 41.94MB
+ f014853ae203 Extracting 1B
+ 68629629b516 Extracting 1B
+ 68629629b516 Extracting 1B
+ 8c4e8bf58b7f Downloading 51.38MB
+ c2bb6fcacb33 Downloading 41.94MB
+ c2bb6fcacb33 Downloading 41.94MB
+ 8c4e8bf58b7f Downloading 51.38MB
+ f014853ae203 Extracting 1B
+ 68629629b516 Extracting 1B
+ 68629629b516 Extracting 1B
+ 8c4e8bf58b7f Downloading 52.43MB
+ c2bb6fcacb33 Downloading 47.19MB
+ 8c4e8bf58b7f Downloading 52.43MB
+ c2bb6fcacb33 Downloading 47.19MB
+ f014853ae203 Extracting 1B
+ 68629629b516 Extracting 1B
+ 68629629b516 Extracting 1B
+ 8c4e8bf58b7f Downloading 53.48MB
+ c2bb6fcacb33 Downloading 52.43MB
+ 8c4e8bf58b7f Downloading 53.48MB
+ c2bb6fcacb33 Downloading 52.43MB
+ f014853ae203 Extracting 1B
+ 68629629b516 Extracting 1B
+ 68629629b516 Extracting 1B
+ 8c4e8bf58b7f Downloading 55.57MB
+ c2bb6fcacb33 Downloading 52.43MB
+ 8c4e8bf58b7f Downloading 55.57MB
+ c2bb6fcacb33 Downloading 52.43MB
+ f014853ae203 Extracting 2B
+ 68629629b516 Extracting 1B
+ 68629629b516 Extracting 1B
+ c2bb6fcacb33 Downloading 52.43MB
+ 8c4e8bf58b7f Downloading 60.82MB
+ 8c4e8bf58b7f Downloading 60.82MB
+ c2bb6fcacb33 Downloading 52.43MB
+ f014853ae203 Extracting 2B
+ 68629629b516 Extracting 2B
+ 68629629b516 Extracting 2B
+ 8c4e8bf58b7f Downloading 62.91MB
+ c2bb6fcacb33 Downloading 60.82MB
+ 8c4e8bf58b7f Downloading 62.91MB
+ c2bb6fcacb33 Downloading 60.82MB
+ f014853ae203 Extracting 2B
+ 68629629b516 Extracting 2B
+ 68629629b516 Extracting 2B
+ 8c4e8bf58b7f Downloading 62.91MB
+ c2bb6fcacb33 Downloading 62.91MB
+ 8c4e8bf58b7f Downloading 62.91MB
+ c2bb6fcacb33 Downloading 62.91MB
+ f014853ae203 Extracting 2B
+ 68629629b516 Extracting 2B
+ 68629629b516 Extracting 2B
+ 8c4e8bf58b7f Downloading 68.16MB
+ c2bb6fcacb33 Downloading 70.25MB
+ c2bb6fcacb33 Downloading 70.25MB
+ 8c4e8bf58b7f Downloading 69.21MB
+ f014853ae203 Extracting 2B
+ 68629629b516 Extracting 2B
+ 68629629b516 Extracting 2B
+ 8c4e8bf58b7f Downloading 73.4MB
+ c2bb6fcacb33 Downloading 73.4MB
+ c2bb6fcacb33 Downloading 73.4MB
+ 8c4e8bf58b7f Downloading 73.4MB
+ f014853ae203 Extracting 2B
+ 68629629b516 Extracting 2B
+ 68629629b516 Extracting 2B
+ 8c4e8bf58b7f Downloading 73.4MB
+ c2bb6fcacb33 Downloading 74.45MB
+ c2bb6fcacb33 Downloading 74.45MB
+ 8c4e8bf58b7f Downloading 73.4MB
+ f014853ae203 Extracting 2B
+ 5105630eb283 Extracting 1B
+ 5105630eb283 Extracting 1B
+ 68629629b516 Pull complete 0B
+ 68629629b516 Pull complete 0B
+ 8c4e8bf58b7f Downloading 77.59MB
+ c2bb6fcacb33 Downloading 83.89MB
+ 8c4e8bf58b7f Downloading 77.59MB
+ c2bb6fcacb33 Downloading 83.89MB
+ f014853ae203 Extracting 2B
+ 5105630eb283 Extracting 1B
+ 5105630eb283 Extracting 1B
+ 8c4e8bf58b7f Downloading 81.79MB
+ c2bb6fcacb33 Downloading 83.89MB
+ 8c4e8bf58b7f Downloading 81.79MB
+ c2bb6fcacb33 Downloading 83.89MB
+ f014853ae203 Extracting 2B
+ 5105630eb283 Extracting 1B
+ 5105630eb283 Extracting 1B
+ 8c4e8bf58b7f Downloading 83.89MB
+ c2bb6fcacb33 Downloading 89.13MB
+ c2bb6fcacb33 Downloading 90.18MB
+ 8c4e8bf58b7f Downloading 83.89MB
+ f014853ae203 Extracting 2B
+ 5105630eb283 Extracting 1B
+ 5105630eb283 Extracting 1B
+ 8c4e8bf58b7f Downloading 89.13MB
+ c2bb6fcacb33 Downloading 94.37MB
+ c2bb6fcacb33 Downloading 94.37MB
+ 8c4e8bf58b7f Downloading 89.13MB
+ f014853ae203 Extracting 3B
+ 5105630eb283 Extracting 1B
+ 5105630eb283 Extracting 1B
+ c2bb6fcacb33 Downloading 94.37MB
+ 8c4e8bf58b7f Downloading 94.37MB
+ 8c4e8bf58b7f Downloading 94.37MB
+ c2bb6fcacb33 Downloading 94.37MB
+ f014853ae203 Extracting 3B
+ 5105630eb283 Pull complete 0B
+ 5105630eb283 Pull complete 0B
+ 8c4e8bf58b7f Downloading 94.37MB
+ c2bb6fcacb33 Downloading 100.7MB
+ c2bb6fcacb33 Downloading 100.7MB
+ 8c4e8bf58b7f Downloading 94.37MB
+ f014853ae203 Extracting 3B
+ 8c4e8bf58b7f Downloading 104.9MB
+ c2bb6fcacb33 Downloading 104.9MB
+ c2bb6fcacb33 Downloading 104.9MB
+ 8c4e8bf58b7f Downloading 104.9MB
+ f014853ae203 Extracting 3B
+ 8c4e8bf58b7f Downloading 104.9MB
+ c2bb6fcacb33 Downloading 104.9MB
+ c2bb6fcacb33 Downloading 104.9MB
+ 8c4e8bf58b7f Downloading 104.9MB
+ 0ccd223df873 Extracting 1B
+ f014853ae203 Pull complete 0B
+ 8c4e8bf58b7f Downloading 108MB
+ c2bb6fcacb33 Downloading 114.3MB
+ c2bb6fcacb33 Downloading 114.3MB
+ 8c4e8bf58b7f Downloading 108MB
+ 0ccd223df873 Extracting 1B
+ 8c4e8bf58b7f Downloading 114.3MB
+ c2bb6fcacb33 Downloading 115.3MB
+ c2bb6fcacb33 Downloading 115.3MB
+ 8c4e8bf58b7f Downloading 114.3MB
+ 0ccd223df873 Extracting 1B
+ 8c4e8bf58b7f Downloading 115.3MB
+ c2bb6fcacb33 Downloading 118.5MB
+ 8c4e8bf58b7f Downloading 115.3MB
+ c2bb6fcacb33 Downloading 118.5MB
+ 0ccd223df873 Extracting 1B
+ 8c4e8bf58b7f Downloading 121.6MB
+ c2bb6fcacb33 Downloading 124.8MB
+ c2bb6fcacb33 Downloading 124.8MB
+ 8c4e8bf58b7f Downloading 121.6MB
+ 0ccd223df873 Pull complete 0B
+ 8c4e8bf58b7f Downloading 125.8MB
+ c2bb6fcacb33 Downloading 125.8MB
+ c2bb6fcacb33 Downloading 125.8MB
+ 8c4e8bf58b7f Downloading 125.8MB
+ df3e9df5bc77 Pull complete 0B
+ a8a5ee71434c Extracting 1B
+ 8c4e8bf58b7f Downloading 131.1MB
+ c2bb6fcacb33 Downloading 130MB
+ 8c4e8bf58b7f Downloading 131.1MB
+ c2bb6fcacb33 Downloading 130MB
+ a8a5ee71434c Extracting 1B
+ 8c4e8bf58b7f Downloading 136.3MB
+ c2bb6fcacb33 Downloading 134.2MB
+ 8c4e8bf58b7f Downloading 136.3MB
+ c2bb6fcacb33 Downloading 134.2MB
+ a8a5ee71434c Extracting 1B
+ 8c4e8bf58b7f Downloading 136.3MB
+ c2bb6fcacb33 Downloading 136.3MB
+ c2bb6fcacb33 Downloading 136.3MB
+ 8c4e8bf58b7f Downloading 136.3MB
+ a8a5ee71434c Extracting 1B
+ 8c4e8bf58b7f Downloading 142.6MB
+ c2bb6fcacb33 Downloading 141.6MB
+ c2bb6fcacb33 Downloading 141.6MB
+ 8c4e8bf58b7f Downloading 142.6MB
+ a8a5ee71434c Extracting 1B
+ c2bb6fcacb33 Downloading 146.8MB
+ 8c4e8bf58b7f Downloading 146.8MB
+ 8c4e8bf58b7f Downloading 146.8MB
+ c2bb6fcacb33 Downloading 146.8MB
+ a8a5ee71434c Extracting 1B
+ 8c4e8bf58b7f Downloading 148.9MB
+ c2bb6fcacb33 Downloading 147.8MB
+ 8c4e8bf58b7f Downloading 148.9MB
+ c2bb6fcacb33 Downloading 148.9MB
+ a8a5ee71434c Extracting 1B
+ 8c4e8bf58b7f Downloading 157.3MB
+ c2bb6fcacb33 Downloading 153.1MB
+ c2bb6fcacb33 Downloading 153.1MB
+ 8c4e8bf58b7f Downloading 157.3MB
+ a8a5ee71434c Extracting 1B
+ 8c4e8bf58b7f Downloading 157.3MB
+ c2bb6fcacb33 Downloading 157.3MB
+ c2bb6fcacb33 Downloading 157.3MB
+ 8c4e8bf58b7f Downloading 157.3MB
+ a8a5ee71434c Extracting 1B
+ 8c4e8bf58b7f Downloading 162.5MB
+ c2bb6fcacb33 Downloading 157.3MB
+ 8c4e8bf58b7f Downloading 162.5MB
+ c2bb6fcacb33 Downloading 157.3MB
+ a8a5ee71434c Extracting 1B
+ c2bb6fcacb33 Downloading 165.7MB
+ 8c4e8bf58b7f Downloading 167.8MB
+ 8c4e8bf58b7f Downloading 167.8MB
+ c2bb6fcacb33 Downloading 165.7MB
+ a8a5ee71434c Extracting 1B
+ 8c4e8bf58b7f Downloading 167.8MB
+ c2bb6fcacb33 Downloading 167.8MB
+ c2bb6fcacb33 Downloading 167.8MB
+ 8c4e8bf58b7f Downloading 167.8MB
+ a8a5ee71434c Extracting 2B
+ 8c4e8bf58b7f Downloading 174.1MB
+ c2bb6fcacb33 Downloading 170.9MB
+ c2bb6fcacb33 Downloading 170.9MB
+ 8c4e8bf58b7f Downloading 174.1MB
+ a8a5ee71434c Extracting 2B
+ 8c4e8bf58b7f Downloading 177.2MB
+ c2bb6fcacb33 Downloading 175.1MB
+ 8c4e8bf58b7f Downloading 177.2MB
+ c2bb6fcacb33 Downloading 175.1MB
+ a8a5ee71434c Extracting 2B
+ 8c4e8bf58b7f Downloading 178.3MB
+ c2bb6fcacb33 Downloading 178.3MB
+ c2bb6fcacb33 Downloading 178.3MB
+ 8c4e8bf58b7f Downloading 178.3MB
+ a8a5ee71434c Extracting 2B
+ 8c4e8bf58b7f Downloading 183.5MB
+ c2bb6fcacb33 Downloading 180.4MB
+ c2bb6fcacb33 Downloading 180.4MB
+ 8c4e8bf58b7f Downloading 183.5MB
+ a8a5ee71434c Extracting 2B
+ 8c4e8bf58b7f Downloading 188.7MB
+ c2bb6fcacb33 Downloading 188.7MB
+ 8c4e8bf58b7f Downloading 188.7MB
+ c2bb6fcacb33 Downloading 188.7MB
+ a8a5ee71434c Extracting 2B
+ 8c4e8bf58b7f Downloading 191.9MB
+ c2bb6fcacb33 Downloading 188.7MB
+ c2bb6fcacb33 Downloading 188.7MB
+ 8c4e8bf58b7f Downloading 191.9MB
+ a8a5ee71434c Extracting 2B
+ 8c4e8bf58b7f Downloading 197.1MB
+ c2bb6fcacb33 Downloading 199.2MB
+ c2bb6fcacb33 Downloading 199.2MB
+ 8c4e8bf58b7f Downloading 197.1MB
+ a8a5ee71434c Extracting 2B
+ 8c4e8bf58b7f Downloading 199.2MB
+ c2bb6fcacb33 Downloading 199.2MB
+ c2bb6fcacb33 Downloading 199.2MB
+ 8c4e8bf58b7f Downloading 199.2MB
+ a8a5ee71434c Extracting 2B
+ 8c4e8bf58b7f Downloading 201.3MB
+ c2bb6fcacb33 Downloading 201.3MB
+ c2bb6fcacb33 Downloading 201.3MB
+ 8c4e8bf58b7f Downloading 201.3MB
+ a8a5ee71434c Extracting 2B
+ 8c4e8bf58b7f Downloading 207.6MB
+ c2bb6fcacb33 Downloading 207.6MB
+ 8c4e8bf58b7f Downloading 207.6MB
+ c2bb6fcacb33 Downloading 207.6MB
+ a8a5ee71434c Extracting 3B
+ 8c4e8bf58b7f Downloading 209.7MB
+ c2bb6fcacb33 Downloading 209.7MB
+ c2bb6fcacb33 Downloading 209.7MB
+ 8c4e8bf58b7f Downloading 209.7MB
+ a8a5ee71434c Extracting 3B
+ 8c4e8bf58b7f Downloading 210.8MB
+ c2bb6fcacb33 Downloading 213.9MB
+ 8c4e8bf58b7f Downloading 210.8MB
+ c2bb6fcacb33 Downloading 213.9MB
+ a8a5ee71434c Extracting 3B
+ c2bb6fcacb33 Downloading 218.1MB
+ 8c4e8bf58b7f Downloading 216MB
+ 8c4e8bf58b7f Downloading 216MB
+ c2bb6fcacb33 Downloading 218.1MB
+ a8a5ee71434c Extracting 3B
+ 8c4e8bf58b7f Downloading 220.2MB
+ c2bb6fcacb33 Downloading 220.2MB
+ c2bb6fcacb33 Downloading 220.2MB
+ 8c4e8bf58b7f Downloading 220.2MB
+ a8a5ee71434c Extracting 3B
+ 8c4e8bf58b7f Downloading 220.2MB
+ c2bb6fcacb33 Downloading 223.3MB
+ 8c4e8bf58b7f Downloading 221.2MB
+ c2bb6fcacb33 Downloading 223.3MB
+ a8a5ee71434c Extracting 3B
+ 8c4e8bf58b7f Downloading 230.7MB
+ c2bb6fcacb33 Downloading 230.7MB
+ 8c4e8bf58b7f Downloading 230.7MB
+ c2bb6fcacb33 Downloading 230.7MB
+ a8a5ee71434c Extracting 3B
+ 8c4e8bf58b7f Downloading 230.7MB
+ c2bb6fcacb33 Downloading 230.7MB
+ 8c4e8bf58b7f Downloading 230.7MB
+ c2bb6fcacb33 Downloading 230.7MB
+ a8a5ee71434c Extracting 3B
+ 8c4e8bf58b7f Downloading 240.1MB
+ c2bb6fcacb33 Downloading 234.6MB
+ 8c4e8bf58b7f Downloading 240.1MB
+ c2bb6fcacb33 Downloading 234.6MB
+ a8a5ee71434c Extracting 3B
+ 8c4e8bf58b7f Downloading 241.2MB
+ c2bb6fcacb33 Downloading 234.6MB
+ c2bb6fcacb33 Downloading 234.6MB
+ 8c4e8bf58b7f Downloading 241.2MB
+ a8a5ee71434c Extracting 3B
+ 8c4e8bf58b7f Downloading 244.3MB
+ c2bb6fcacb33 Downloading 234.6MB
+ 8c4e8bf58b7f Downloading 244.3MB
+ c2bb6fcacb33 Downloading 234.6MB
+ a8a5ee71434c Extracting 4B
+ 8c4e8bf58b7f Downloading 251.7MB
+ c2bb6fcacb33 Download complete 0B
+ 8c4e8bf58b7f Downloading 251.7MB
+ c2bb6fcacb33 Download complete 0B
+ a8a5ee71434c Extracting 4B
+ 8c4e8bf58b7f Downloading 251.7MB
+ 8c4e8bf58b7f Downloading 251.7MB
+ a8a5ee71434c Extracting 4B
+ 8c4e8bf58b7f Downloading 262.1MB
+ 8c4e8bf58b7f Downloading 262.1MB
+ a8a5ee71434c Extracting 4B
+ 8c4e8bf58b7f Downloading 262.1MB
+ 8c4e8bf58b7f Downloading 262.1MB
+ a8a5ee71434c Extracting 4B
+ 8c4e8bf58b7f Downloading 269.5MB
+ 8c4e8bf58b7f Downloading 269.5MB
+ a8a5ee71434c Extracting 4B
+ 4f4fb700ef54 Pull complete 0B
+ 99197f11d5df Pull complete 0B
+ 33994c44a28f Pull complete 0B
+ 561f45a82a55 Pull complete 0B
+ a8a5ee71434c Pull complete 0B
+ Image balabit/syslog-ng:4.8.2@sha256:728cc5b63b9044ad5f18062bac73fd5c30bb7ad256c2aa12799d924d4f6f1e72 Pulled 
+ 8c4e8bf58b7f Downloading 272.6MB
+ 8c4e8bf58b7f Downloading 272.6MB
+ 4f4fb700ef54 Pull complete 0B
+ 4f4fb700ef54 Pull complete 0B
+ 8c4e8bf58b7f Downloading 272.6MB
+ 8c4e8bf58b7f Downloading 272.6MB
+ 8c4e8bf58b7f Downloading 280MB
+ 8c4e8bf58b7f Downloading 280MB
+ 8c4e8bf58b7f Downloading 283.1MB
+ 8c4e8bf58b7f Downloading 283.1MB
+ 8c4e8bf58b7f Downloading 285.2MB
+ 8c4e8bf58b7f Downloading 285.2MB
+ 8c4e8bf58b7f Downloading 290.5MB
+ 8c4e8bf58b7f Downloading 290.5MB
+ 8c4e8bf58b7f Downloading 293.6MB
+ 8c4e8bf58b7f Downloading 293.6MB
+ 8c4e8bf58b7f Downloading 293.6MB
+ 8c4e8bf58b7f Downloading 293.6MB
+ 8c4e8bf58b7f Downloading 304.1MB
+ 8c4e8bf58b7f Downloading 304.1MB
+ 8c4e8bf58b7f Downloading 304.1MB
+ 8c4e8bf58b7f Downloading 304.1MB
+ 8c4e8bf58b7f Downloading 314.6MB
+ 8c4e8bf58b7f Downloading 314.6MB
+ 8c4e8bf58b7f Downloading 314.6MB
+ 8c4e8bf58b7f Downloading 314.6MB
+ 8c4e8bf58b7f Downloading 320.9MB
+ 8c4e8bf58b7f Downloading 320.9MB
+ 8c4e8bf58b7f Downloading 324MB
+ 8c4e8bf58b7f Downloading 324MB
+ 8c4e8bf58b7f Downloading 325.1MB
+ 8c4e8bf58b7f Downloading 325.1MB
+ 8c4e8bf58b7f Downloading 332.4MB
+ 8c4e8bf58b7f Downloading 332.4MB
+ 8c4e8bf58b7f Downloading 335.5MB
+ 8c4e8bf58b7f Downloading 335.5MB
+ 8c4e8bf58b7f Downloading 338.7MB
+ 8c4e8bf58b7f Downloading 338.7MB
+ 8c4e8bf58b7f Downloading 342.9MB
+ 8c4e8bf58b7f Downloading 342.9MB
+ 8c4e8bf58b7f Downloading 346MB
+ 8c4e8bf58b7f Downloading 346MB
+ 8c4e8bf58b7f Downloading 347.1MB
+ 8c4e8bf58b7f Downloading 347.1MB
+ 8c4e8bf58b7f Downloading 353.4MB
+ 8c4e8bf58b7f Downloading 353.4MB
+ 8c4e8bf58b7f Downloading 356.5MB
+ 8c4e8bf58b7f Downloading 356.5MB
+ 8c4e8bf58b7f Downloading 356.5MB
+ 8c4e8bf58b7f Downloading 356.5MB
+ 8c4e8bf58b7f Downloading 364.9MB
+ 8c4e8bf58b7f Downloading 364.9MB
+ 8c4e8bf58b7f Downloading 367MB
+ 8c4e8bf58b7f Downloading 367MB
+ 8c4e8bf58b7f Downloading 373.3MB
+ 8c4e8bf58b7f Downloading 373.3MB
+ 8c4e8bf58b7f Downloading 377.5MB
+ 8c4e8bf58b7f Downloading 377.5MB
+ 8c4e8bf58b7f Downloading 382.7MB
+ 8c4e8bf58b7f Downloading 382.7MB
+ 8c4e8bf58b7f Downloading 388MB
+ 8c4e8bf58b7f Downloading 388MB
+ 8c4e8bf58b7f Downloading 388MB
+ 8c4e8bf58b7f Downloading 388MB
+ 8c4e8bf58b7f Downloading 395.3MB
+ 8c4e8bf58b7f Downloading 395.3MB
+ 8c4e8bf58b7f Downloading 398.5MB
+ 8c4e8bf58b7f Downloading 398.5MB
+ 8c4e8bf58b7f Downloading 399.5MB
+ 8c4e8bf58b7f Downloading 399.5MB
+ 8c4e8bf58b7f Downloading 404.8MB
+ 8c4e8bf58b7f Downloading 404.8MB
+ 8c4e8bf58b7f Downloading 408.9MB
+ 8c4e8bf58b7f Downloading 408.9MB
+ 8c4e8bf58b7f Downloading 411MB
+ 8c4e8bf58b7f Downloading 411MB
+ 8c4e8bf58b7f Downloading 416.3MB
+ 8c4e8bf58b7f Downloading 416.3MB
+ 8c4e8bf58b7f Downloading 419.4MB
+ 8c4e8bf58b7f Downloading 419.4MB
+ 8c4e8bf58b7f Downloading 420.5MB
+ 8c4e8bf58b7f Downloading 420.5MB
+ 8c4e8bf58b7f Downloading 425.7MB
+ 8c4e8bf58b7f Downloading 425.7MB
+ 8c4e8bf58b7f Downloading 429.9MB
+ 8c4e8bf58b7f Downloading 429.9MB
+ 8c4e8bf58b7f Downloading 429.9MB
+ 8c4e8bf58b7f Downloading 429.9MB
+ 8c4e8bf58b7f Downloading 436.2MB
+ 8c4e8bf58b7f Downloading 436.2MB
+ 8c4e8bf58b7f Downloading 440.4MB
+ 8c4e8bf58b7f Downloading 440.4MB
+ 8c4e8bf58b7f Downloading 444.6MB
+ 8c4e8bf58b7f Downloading 444.6MB
+ 8c4e8bf58b7f Downloading 450.9MB
+ 8c4e8bf58b7f Downloading 450.9MB
+ 8c4e8bf58b7f Downloading 450.9MB
+ 8c4e8bf58b7f Downloading 450.9MB
+ 8c4e8bf58b7f Downloading 459.3MB
+ 8c4e8bf58b7f Downloading 460.3MB
+ 8c4e8bf58b7f Downloading 461.4MB
+ 8c4e8bf58b7f Downloading 461.4MB
+ 8c4e8bf58b7f Downloading 466.6MB
+ 8c4e8bf58b7f Downloading 466.6MB
+ 8c4e8bf58b7f Downloading 471.9MB
+ 8c4e8bf58b7f Downloading 471.9MB
+ 8c4e8bf58b7f Downloading 471.9MB
+ 8c4e8bf58b7f Downloading 471.9MB
+ 8c4e8bf58b7f Downloading 480.2MB
+ 8c4e8bf58b7f Downloading 480.2MB
+ 8c4e8bf58b7f Downloading 482.3MB
+ 8c4e8bf58b7f Downloading 482.3MB
+ 8c4e8bf58b7f Downloading 484.2MB
+ 8c4e8bf58b7f Downloading 484.2MB
+ 8c4e8bf58b7f Downloading 484.2MB
+ 8c4e8bf58b7f Downloading 484.2MB
+ 8c4e8bf58b7f Downloading 484.2MB
+ 8c4e8bf58b7f Downloading 484.2MB
+ 8c4e8bf58b7f Downloading 484.2MB
+ 8c4e8bf58b7f Downloading 484.2MB
+ 8c4e8bf58b7f Downloading 484.2MB
+ 8c4e8bf58b7f Downloading 484.2MB
+ 8c4e8bf58b7f Downloading 484.2MB
+ 8c4e8bf58b7f Downloading 484.2MB
+ 8c4e8bf58b7f Downloading 484.2MB
+ 8c4e8bf58b7f Downloading 484.2MB
+ 8c4e8bf58b7f Downloading 484.2MB
+ 8c4e8bf58b7f Downloading 484.2MB
+ 8c4e8bf58b7f Download complete 0B
+ 8c4e8bf58b7f Download complete 0B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 1B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 2B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 3B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 4B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 5B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 6B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 7B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 8B
+ 8c4e8bf58b7f Extracting 9B
+ 8c4e8bf58b7f Extracting 9B
+ 8c4e8bf58b7f Extracting 9B
+ 8c4e8bf58b7f Extracting 9B
+ 8c4e8bf58b7f Extracting 9B
+ 8c4e8bf58b7f Extracting 9B
+ 8c4e8bf58b7f Extracting 9B
+ 8c4e8bf58b7f Extracting 9B
+ 8c4e8bf58b7f Extracting 9B
+ 8c4e8bf58b7f Extracting 9B
+ 8c4e8bf58b7f Extracting 9B
+ 8c4e8bf58b7f Extracting 9B
+ 8c4e8bf58b7f Extracting 9B
+ 8c4e8bf58b7f Extracting 9B
+ 8c4e8bf58b7f Extracting 9B
+ 8c4e8bf58b7f Extracting 9B
+ 8c4e8bf58b7f Extracting 9B
+ 8c4e8bf58b7f Extracting 9B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 10B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 11B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 12B
+ 8c4e8bf58b7f Extracting 13B
+ 8c4e8bf58b7f Extracting 13B
+ 8c4e8bf58b7f Extracting 13B
+ 8c4e8bf58b7f Extracting 13B
+ 8c4e8bf58b7f Extracting 13B
+ 8c4e8bf58b7f Extracting 13B
+ 8c4e8bf58b7f Extracting 13B
+ 8c4e8bf58b7f Extracting 13B
+ 8c4e8bf58b7f Extracting 13B
+ 8c4e8bf58b7f Extracting 13B
+ 8c4e8bf58b7f Pull complete 0B
+ 8c4e8bf58b7f Pull complete 0B
+ 48c584ee2fba Pull complete 0B
+ 48c584ee2fba Pull complete 0B
+ 63a2db179435 Pull complete 0B
+ 63a2db179435 Pull complete 0B
+ 411666b8791a Extracting 1B
+ 411666b8791a Extracting 1B
+ 411666b8791a Extracting 1B
+ 411666b8791a Extracting 1B
+ 411666b8791a Extracting 1B
+ 411666b8791a Extracting 1B
+ 9258a85aeb45 Pull complete 0B
+ 71a1d5e471bc Pull complete 0B
+ 71a1d5e471bc Pull complete 0B
+ 4b47d808f57e Pull complete 0B
+ 9258a85aeb45 Pull complete 0B
+ 919bed938aa7 Extracting 1B
+ 4b47d808f57e Pull complete 0B
+ 919bed938aa7 Extracting 1B
+ 411666b8791a Pull complete 0B
+ 411666b8791a Pull complete 0B
+ 919bed938aa7 Extracting 1B
+ 919bed938aa7 Extracting 1B
+ 919bed938aa7 Pull complete 0B
+ 919bed938aa7 Pull complete 0B
+ 92912f53fb14 Extracting 1B
+ 92912f53fb14 Extracting 1B
+ 92912f53fb14 Extracting 1B
+ 92912f53fb14 Extracting 1B
+ 92912f53fb14 Extracting 1B
+ 92912f53fb14 Extracting 1B
+ 92912f53fb14 Extracting 1B
+ 92912f53fb14 Extracting 1B
+ 92912f53fb14 Extracting 1B
+ 92912f53fb14 Extracting 1B
+ 92912f53fb14 Extracting 1B
+ 92912f53fb14 Extracting 1B
+ 92912f53fb14 Extracting 1B
+ 92912f53fb14 Extracting 1B
+ 92912f53fb14 Pull complete 0B
+ 92912f53fb14 Pull complete 0B
+ aa1002bf400f Pull complete 0B
+ aa1002bf400f Pull complete 0B
+ bee4b0f2cea7 Extracting 1B
+ bee4b0f2cea7 Extracting 1B
+ bee4b0f2cea7 Extracting 1B
+ bee4b0f2cea7 Extracting 1B
+ bee4b0f2cea7 Extracting 1B
+ bee4b0f2cea7 Extracting 1B
+ df90804087fa Extracting 1B
+ bee4b0f2cea7 Pull complete 0B
+ bee4b0f2cea7 Pull complete 0B
+ df90804087fa Extracting 1B
+ df90804087fa Extracting 1B
+ df90804087fa Extracting 1B
+ df90804087fa Extracting 1B
+ df90804087fa Extracting 1B
+ df90804087fa Pull complete 0B
+ df90804087fa Pull complete 0B
+ 486f6dc34c36 Pull complete 0B
+ 486f6dc34c36 Pull complete 0B
+ d5fc61442672 Extracting 1B
+ d5fc61442672 Extracting 1B
+ d5fc61442672 Extracting 1B
+ d5fc61442672 Extracting 1B
+ d5fc61442672 Pull complete 0B
+ eb7106491d9b Extracting 1B
+ d5fc61442672 Pull complete 0B
+ eb7106491d9b Extracting 1B
+ eb7106491d9b Pull complete 0B
+ eb7106491d9b Pull complete 0B
+ a8242027f59d Extracting 1B
+ a8242027f59d Extracting 1B
+ a8242027f59d Extracting 1B
+ a8242027f59d Extracting 1B
+ a8242027f59d Extracting 1B
+ a8242027f59d Extracting 1B
+ a8242027f59d Extracting 1B
+ a8242027f59d Extracting 1B
+ a8242027f59d Extracting 1B
+ a8242027f59d Extracting 1B
+ a8242027f59d Extracting 1B
+ a8242027f59d Extracting 1B
+ a8242027f59d Pull complete 0B
+ 8c1b5161fdb3 Extracting 1B
+ a8242027f59d Pull complete 0B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 1B
+ 8c1b5161fdb3 Extracting 2B
+ 8c1b5161fdb3 Extracting 2B
+ 8c1b5161fdb3 Extracting 2B
+ 8c1b5161fdb3 Extracting 2B
+ 8c1b5161fdb3 Pull complete 0B
+ c2bb6fcacb33 Extracting 1B
+ 8c1b5161fdb3 Pull complete 0B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 1B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 2B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 3B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 4B
+ c2bb6fcacb33 Extracting 5B
+ c2bb6fcacb33 Extracting 5B
+ c2bb6fcacb33 Extracting 5B
+ c2bb6fcacb33 Extracting 5B
+ c2bb6fcacb33 Extracting 5B
+ c2bb6fcacb33 Extracting 5B
+ c2bb6fcacb33 Extracting 5B
+ c2bb6fcacb33 Extracting 5B
+ c2bb6fcacb33 Extracting 5B
+ c2bb6fcacb33 Extracting 5B
+ c2bb6fcacb33 Extracting 5B
+ c2bb6fcacb33 Extracting 5B
+ c2bb6fcacb33 Extracting 5B
+ c2bb6fcacb33 Extracting 5B
+ c2bb6fcacb33 Extracting 5B
+ c2bb6fcacb33 Extracting 5B
+ c2bb6fcacb33 Extracting 5B
+ c2bb6fcacb33 Extracting 5B
+ c2bb6fcacb33 Extracting 5B
+ c2bb6fcacb33 Extracting 5B
+ ee932954728e Pull complete 0B
+ ee932954728e Pull complete 0B
+ c2bb6fcacb33 Pull complete 0B
+ Image ghcr.io/cososo-ltd/cpputest-freertos-cross:sha-ad10bf2@sha256:481267bea7200641fac41d7136e7e08deeba1b311e9873aa6d1c311db5b4cf58 Pulled 
+ c2bb6fcacb33 Pull complete 0B
+ Image ghcr.io/cososo-ltd/cpputest-freertos-cross:sha-ad10bf2@sha256:481267bea7200641fac41d7136e7e08deeba1b311e9873aa6d1c311db5b4cf58 Pulled 
+ Network solid-syslog-sweep-2724_default Creating 
+ Network solid-syslog-sweep-2724_default Created 
+ Volume solid-syslog-sweep-2724_oracle-output Creating 
+ Volume solid-syslog-sweep-2724_oracle-output Created 
+ Container solid-syslog-sweep-2724-certs-1 Creating 
+ Container solid-syslog-sweep-2724-certs-1 Created 
+ Container solid-syslog-sweep-2724-syslog-ng-1 Creating 
+ Container solid-syslog-sweep-2724-syslog-ng-1 Created 
+ Container solid-syslog-sweep-2724-broker-1 Creating 
+ Container solid-syslog-sweep-2724-broker-1 Created 
+ Container solid-syslog-sweep-2724-certs-1 Starting 
+ Container solid-syslog-sweep-2724-certs-1 Started 
+ Container solid-syslog-sweep-2724-certs-1 Waiting 
+ Container solid-syslog-sweep-2724-certs-1 Exited 
+ Container solid-syslog-sweep-2724-syslog-ng-1 Starting 
+ Container solid-syslog-sweep-2724-syslog-ng-1 Started 
+ Container solid-syslog-sweep-2724-certs-1 Waiting 
+ Container solid-syslog-sweep-2724-certs-1 Exited 
+ Container solid-syslog-sweep-2724-broker-1 Starting 
+ Container solid-syslog-sweep-2724-broker-1 Started 
+ Container solid-syslog-sweep-2724-run-run-606ab1966e5f Creating 
+ Container solid-syslog-sweep-2724-run-run-606ab1966e5f Created 
+=== build (Baseline) ===
+Preset CMake variables:
+
+  CMAKE_BUILD_TYPE="MinSizeRel"
+  CMAKE_EXPORT_COMPILE_COMMANDS="ON"
+  CMAKE_TOOLCHAIN_FILE:FILEPATH="/w/cmake/arm-none-eabi.cmake"
+
+-- The C compiler identification is GNU 12.2.1
+-- The ASM compiler identification is GNU
+-- Found assembler: /usr/bin/arm-none-eabi-gcc
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/arm-none-eabi-gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Could NOT find Doxygen (missing: DOXYGEN_EXECUTABLE) 
+-- Doxygen needs to be installed to generate the doxygen documentation
+-- Found Python3: /usr/bin/python3 (found version "3.11.2") found components: Interpreter 
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Performing Test C_COMPILER_SUPPORTS_WFORMAT_SIGNEDNESS
+-- Performing Test C_COMPILER_SUPPORTS_WFORMAT_SIGNEDNESS - Success
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /w/build/baseline-cross
+[  0%] Building C object _mbedtls/3rdparty/p256-m/CMakeFiles/p256m.dir/p256-m_driver_entrypoints.c.obj
+[  0%] Building C object _mbedtls/3rdparty/p256-m/CMakeFiles/p256m.dir/p256-m/p256-m.c.obj
+[  0%] Building C object CMakeFiles/baseline_upstream.dir/opt/freertos/kernel/tasks.c.obj
+[  0%] Building C object _mbedtls/3rdparty/everest/CMakeFiles/everest.dir/library/everest.c.obj
+[  0%] Building C object _mbedtls/3rdparty/everest/CMakeFiles/everest.dir/library/x25519.c.obj
+[  1%] Building C object _mbedtls/3rdparty/everest/CMakeFiles/everest.dir/library/Hacl_Curve25519_joined.c.obj
+[  3%] Linking C static library libp256m.a
+[  3%] Linking C static library libeverest.a
+[  3%] Building C object CMakeFiles/baseline_upstream.dir/opt/freertos/kernel/queue.c.obj
+[  3%] Built target p256m
+[  5%] Building C object CMakeFiles/baseline_upstream.dir/opt/freertos/kernel/list.c.obj
+[  5%] Built target everest
+[  5%] Building C object CMakeFiles/baseline_upstream.dir/opt/freertos/kernel/timers.c.obj
+[  5%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/aes.c.obj
+[  5%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/aesni.c.obj
+[  6%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/aesce.c.obj
+[  6%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/aria.c.obj
+[  6%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/asn1parse.c.obj
+[  6%] Building C object CMakeFiles/baseline_upstream.dir/opt/freertos/kernel/event_groups.c.obj
+[  8%] Building C object CMakeFiles/baseline_upstream.dir/opt/freertos/kernel/portable/GCC/ARM_CM3/port.c.obj
+[ 10%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/asn1write.c.obj
+[ 10%] Building C object CMakeFiles/baseline_upstream.dir/opt/freertos/kernel/portable/MemMang/heap_1.c.obj
+[ 10%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/init.c.obj
+[ 10%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/base64.c.obj
+[ 11%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/def.c.obj
+[ 11%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/bignum.c.obj
+[ 11%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/dns.c.obj
+[ 11%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/inet_chksum.c.obj
+[ 11%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ip.c.obj
+[ 13%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/bignum_core.c.obj
+[ 13%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/bignum_mod.c.obj
+[ 15%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/mem.c.obj
+[ 15%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/bignum_mod_raw.c.obj
+[ 15%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/memp.c.obj
+[ 16%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/block_cipher.c.obj
+[ 16%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/netif.c.obj
+[ 18%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/pbuf.c.obj
+[ 18%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/raw.c.obj
+[ 18%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/camellia.c.obj
+[ 18%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/stats.c.obj
+[ 20%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/sys.c.obj
+[ 20%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/ccm.c.obj
+[ 20%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/altcp.c.obj
+[ 20%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/altcp_alloc.c.obj
+[ 21%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/chacha20.c.obj
+[ 23%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/altcp_tcp.c.obj
+[ 23%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/tcp.c.obj
+[ 23%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/tcp_in.c.obj
+[ 23%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/chachapoly.c.obj
+[ 25%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/tcp_out.c.obj
+[ 25%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/cipher.c.obj
+[ 26%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/cipher_wrap.c.obj
+[ 26%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/constant_time.c.obj
+[ 26%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/timeouts.c.obj
+[ 26%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/udp.c.obj
+[ 28%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ipv4/acd.c.obj
+[ 28%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/cmac.c.obj
+[ 30%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/ctr_drbg.c.obj
+[ 30%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/des.c.obj
+[ 30%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ipv4/autoip.c.obj
+[ 30%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ipv4/dhcp.c.obj
+[ 30%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/dhm.c.obj
+[ 31%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ipv4/etharp.c.obj
+[ 31%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ipv4/icmp.c.obj
+[ 33%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/ecdh.c.obj
+[ 33%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ipv4/igmp.c.obj
+[ 35%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ipv4/ip4_frag.c.obj
+[ 35%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/ecdsa.c.obj
+[ 35%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/ecjpake.c.obj
+[ 35%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ipv4/ip4.c.obj
+[ 35%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/core/ipv4/ip4_addr.c.obj
+[ 36%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/ecp.c.obj
+[ 36%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/ecp_curves.c.obj
+[ 38%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/api/api_lib.c.obj
+[ 38%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/api/api_msg.c.obj
+[ 38%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/ecp_curves_new.c.obj
+[ 38%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/api/err.c.obj
+[ 38%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/api/if_api.c.obj
+[ 38%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/entropy.c.obj
+[ 40%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/api/netbuf.c.obj
+[ 40%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/api/netdb.c.obj
+[ 40%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/api/netifapi.c.obj
+[ 41%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/api/sockets.c.obj
+[ 41%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/api/tcpip.c.obj
+[ 41%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/src/netif/ethernet.c.obj
+[ 43%] Building C object CMakeFiles/baseline_upstream.dir/opt/lwip/contrib/ports/freertos/sys_arch.c.obj
+[ 43%] Building C object CMakeFiles/baseline_upstream.dir/app/net/smsc9220/smsc9220_eth_drv.c.obj
+[ 43%] Building C object CMakeFiles/baseline_upstream.dir/fatfs/ff.c.obj
+[ 45%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/entropy_poll.c.obj
+[ 46%] Building C object CMakeFiles/baseline_upstream.dir/app/storage/ffsystem.c.obj
+[ 46%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/error.c.obj
+[ 46%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/gcm.c.obj
+[ 48%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/hkdf.c.obj
+[ 48%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/hmac_drbg.c.obj
+[ 48%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/lmots.c.obj
+[ 50%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/lms.c.obj
+[ 50%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/md.c.obj
+[ 50%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/md5.c.obj
+[ 51%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/memory_buffer_alloc.c.obj
+[ 51%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/nist_kw.c.obj
+[ 51%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/oid.c.obj
+[ 53%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/padlock.c.obj
+[ 53%] Built target baseline_upstream
+[ 53%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/pem.c.obj
+[ 53%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/pk.c.obj
+[ 55%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/pk_ecc.c.obj
+[ 55%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/pk_wrap.c.obj
+[ 55%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/pkcs12.c.obj
+[ 56%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/pkcs5.c.obj
+[ 56%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/pkparse.c.obj
+[ 56%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/pkwrite.c.obj
+[ 58%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/platform.c.obj
+[ 58%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/platform_util.c.obj
+[ 58%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/poly1305.c.obj
+[ 60%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto.c.obj
+[ 60%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_aead.c.obj
+[ 60%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_client.c.obj
+[ 60%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_cipher.c.obj
+[ 61%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_driver_wrappers_no_static.c.obj
+[ 61%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_ecp.c.obj
+[ 61%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_ffdh.c.obj
+[ 63%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_hash.c.obj
+[ 63%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_mac.c.obj
+[ 63%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_pake.c.obj
+[ 65%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_rsa.c.obj
+[ 65%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_se.c.obj
+[ 65%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_slot_management.c.obj
+[ 66%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_crypto_storage.c.obj
+[ 66%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_its_file.c.obj
+[ 66%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/psa_util.c.obj
+[ 68%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/ripemd160.c.obj
+[ 68%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/rsa.c.obj
+[ 68%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/rsa_alt_helpers.c.obj
+[ 70%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/sha1.c.obj
+[ 70%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/sha256.c.obj
+[ 70%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/sha512.c.obj
+[ 71%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/sha3.c.obj
+[ 71%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/threading.c.obj
+[ 71%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/timing.c.obj
+[ 73%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/version.c.obj
+[ 73%] Building C object _mbedtls/library/CMakeFiles/mbedcrypto.dir/version_features.c.obj
+[ 73%] Linking C static library libmbedcrypto.a
+[ 73%] Built target mbedcrypto
+[ 75%] Building C object _mbedtls/library/CMakeFiles/mbedx509.dir/pkcs7.c.obj
+[ 75%] Building C object _mbedtls/library/CMakeFiles/mbedx509.dir/x509_create.c.obj
+[ 75%] Building C object _mbedtls/library/CMakeFiles/mbedx509.dir/x509.c.obj
+[ 76%] Building C object _mbedtls/library/CMakeFiles/mbedx509.dir/x509_crl.c.obj
+[ 76%] Building C object _mbedtls/library/CMakeFiles/mbedx509.dir/x509_crt.c.obj
+[ 76%] Building C object _mbedtls/library/CMakeFiles/mbedx509.dir/x509_csr.c.obj
+[ 78%] Building C object _mbedtls/library/CMakeFiles/mbedx509.dir/x509write.c.obj
+[ 78%] Building C object _mbedtls/library/CMakeFiles/mbedx509.dir/x509write_crt.c.obj
+[ 78%] Building C object _mbedtls/library/CMakeFiles/mbedx509.dir/x509write_csr.c.obj
+[ 80%] Linking C static library libmbedx509.a
+[ 80%] Built target mbedx509
+[ 81%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/debug.c.obj
+[ 81%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/mps_reader.c.obj
+[ 81%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/mps_trace.c.obj
+[ 81%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/net_sockets.c.obj
+[ 83%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_ciphersuites.c.obj
+[ 83%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_cache.c.obj
+[ 83%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_client.c.obj
+[ 85%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_debug_helpers_generated.c.obj
+[ 85%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_cookie.c.obj
+[ 85%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_msg.c.obj
+[ 86%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_ticket.c.obj
+[ 86%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_tls.c.obj
+[ 86%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_tls12_client.c.obj
+[ 88%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_tls12_server.c.obj
+[ 88%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_tls13_keys.c.obj
+[ 88%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_tls13_server.c.obj
+[ 90%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_tls13_client.c.obj
+[ 90%] Building C object _mbedtls/library/CMakeFiles/mbedtls.dir/ssl_tls13_generic.c.obj
+[ 90%] Linking C static library libmbedtls.a
+[ 90%] Built target mbedtls
+[ 90%] Building C object CMakeFiles/baseline.dir/app/sim/SimulatedExistingApp.c.obj
+[ 90%] Building C object CMakeFiles/baseline.dir/app/main.c.obj
+[ 90%] Building C object CMakeFiles/baseline.dir/app/sim/SimulatedBrokerSession.c.obj
+[ 91%] Building C object CMakeFiles/baseline.dir/app/sim/SimulatedCollector.c.obj
+[ 91%] Building C object CMakeFiles/baseline.dir/app/tasks/LogTask.c.obj
+[ 91%] Building C object CMakeFiles/baseline.dir/app/tasks/ServiceTask.c.obj
+[ 93%] Building C object CMakeFiles/baseline.dir/app/measure/Measure.c.obj
+[ 93%] Building C object CMakeFiles/baseline.dir/app/measure/Baseline.c.obj
+[ 93%] Building C object CMakeFiles/baseline.dir/app/platform/Startup.c.obj
+[ 95%] Building C object CMakeFiles/baseline.dir/app/platform/CmsdkUart.c.obj
+[ 95%] Building C object CMakeFiles/baseline.dir/app/platform/DeviceClock.c.obj
+[ 95%] Building C object CMakeFiles/baseline.dir/app/platform/DeviceCertStore.c.obj
+[ 96%] Building C object CMakeFiles/baseline.dir/app/platform/Syscalls.c.obj
+[ 96%] Building C object CMakeFiles/baseline.dir/app/platform/SemihostingExit.c.obj
+[ 96%] Building C object CMakeFiles/baseline.dir/app/platform/SemihostingIo.c.obj
+[ 98%] Building C object CMakeFiles/baseline.dir/app/net/EthernetIf.c.obj
+[ 98%] Building C object CMakeFiles/baseline.dir/app/storage/diskio.c.obj
+[ 98%] Building C object CMakeFiles/baseline.dir/app/storage/SemihostingDisk.c.obj
+[100%] Linking C executable baseline.elf
+[100%] Built target baseline
+=== prove the listeners ===
+  OK    udp    5514
+  OK    tcp    5601
+  OK    tls    6514
+  OK    mtls   6515
+  OK    mtls   6515 — refused a client with no certificate
+  OK    broker 8883
+  OK    broker 8883 — refused a client with no certificate
+=== run under QEMU (oracle up; the app reaches it via slirp) ===
+# solid-syslog-example — run (Baseline)
+
+## Device (self-measured)
+
+```text
+[device] solid-syslog-example (FreeRTOS + lwIP + mbedTLS + FatFs)
+[device] starting simulated existing application...
+[sim] broker session to 10.0.2.2:8883: TLSv1.3, TLS1-3-CHACHA20-POLY1305-SHA256
+[device]   sim app (lwIP up, FatFs mounted, broker session held over mTLS): ready
+[report] --- SolidSyslog cost above baseline (simulated existing application) ---
+[report] key,current,baseline,used_above_baseline
+[report] flash_text,352804,352804,0
+[report] flash_data,320,320,0
+[report] static_bss,111136,111136,0
+[report] heap_used,4440,4440,0
+[report] mbedtls_peak,21360,21360,0
+[report] mbedtls_free,11408,11408,0
+[report] lwip_mem_free,7576,7576,0
+[report] lwip_pbufs_free,13,13,0
+[report] stack_log,116,116,0
+[report] stack_service,56,56,0
+[report] stack_harness,2840,2840,0
+[report] --- end ---
+[device]   records logged: 0
+[device] ready
+```
+
+### Size cross-check
+
+```text
+   text	   data	    bss	    dec	    hex	filename
+ 352796	    328	 111136	 464260	  71584	/w/build/baseline-cross/baseline.elf
+```
+
+## Listeners (proved before the device ran)
+
+```text
+  OK    udp    5514
+  OK    tcp    5601
+  OK    tls    6514
+  OK    mtls   6515
+  OK    mtls   6515 — refused a client with no certificate
+  OK    broker 8883
+  OK    broker 8883 — refused a client with no certificate
+```
+
+## Collector (syslog-ng) received
+
+```text
+(nothing — this device sends no records yet)
+```
+
+**RESULT: PASS**
