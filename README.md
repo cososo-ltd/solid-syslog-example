@@ -14,6 +14,7 @@ This branch holds only this page. The integrations are on the release branches.
 | [`release/0.1.0`](https://github.com/cososo-ltd/solid-syslog-example/tree/release/0.1.0) | 0.1.0 | `a8d3979` |
 | [`release/0.2.0`](https://github.com/cososo-ltd/solid-syslog-example/tree/release/0.2.0) | 0.2.0 | `25676cc` (`v0.2.0`) |
 | [`release/0.3.0`](https://github.com/cososo-ltd/solid-syslog-example/tree/release/0.3.0) | 0.3.0 | `83a0239` (`v0.3.0`) |
+| [`release/0.4.0`](https://github.com/cososo-ltd/solid-syslog-example/tree/release/0.4.0) | 0.4.0 | `f681bb4` (`v0.4.0`) |
 
 `release/0.1.0` pins `a8d3979`, seven commits before `v0.1.0`. Those seven change
 documentation, CI and release metadata, plus one library source file: the FatFs adapter
