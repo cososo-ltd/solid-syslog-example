@@ -12,6 +12,8 @@
 # Writes <out-dir>/stages.csv, figures.csv, figures.md and reports/NN-<slug>.md.
 # Exits non-zero if the stack does not match its stage list, or any stage fails.
 # MAP_ONLY=1 prints the row-to-commit mapping and stops.
+# PIN=<sha> sweeps every stage against that library commit in place of the one
+# the stage pins, so a change to the library is tried before anything is committed.
 set -euo pipefail
 
 REF="${1:?usage: scripts/sweep.sh <ref> [out-dir]}"
@@ -96,6 +98,7 @@ mkdir -p "$OUT/reports"
 echo "index,slug,commit,verdict" > "$OUT/stages.csv"
 echo "index,slug,commit,key,current,baseline,above_baseline" > "$OUT/figures.csv"
 failed=0
+[ -z "${PIN:-}" ] || echo "pin overridden to $PIN"
 
 for k in "${!rows[@]}"; do
     slug="${rows[$k]}" c="${commits[$k]}"
@@ -104,6 +107,9 @@ for k in "${!rows[@]}"; do
     echo "=== [$((k + 1))/$n] $slug  $(git log -1 --format='%h %s' "$c")"
 
     out="$(git worktree add --detach "$wt" "$c" 2>&1)" || fail "cannot check out $c: $out"
+    if [ -n "${PIN:-}" ] && [ -f "$wt/solid-syslog.pin" ]; then
+        printf '%s\n' "$PIN" > "$wt/solid-syslog.pin"
+    fi
     compose "$wt" down --volumes --remove-orphans >/dev/null 2>&1 || true
     set +e
     compose "$wt" run --rm -e TAG= -e TOL= -e CAPTURE=0 run > "$OUT/reports/$name.log" 2>&1
