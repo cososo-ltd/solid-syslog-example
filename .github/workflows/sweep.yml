@@ -6,7 +6,8 @@ name: Sweep
 # Run by hand for a release, or started by solid-syslog's Example Sweep workflow
 # with `library-changed` when a change lands on its main that could reach this
 # stack: that sweeps the latest release branch with the pin overridden to the
-# commit named, commits nothing, and answers with `sweep-finished`.
+# commit named, in the container image that commit's own CI pins, commits
+# nothing, and answers with `sweep-finished`.
 on:
   workflow_dispatch:
     inputs:
@@ -15,6 +16,9 @@ on:
         required: true
       pin:
         description: A solid-syslog commit to sweep against in place of the one each stage pins
+        required: false
+      image:
+        description: A container image to run every stage in, in place of the one the branch names
         required: false
   repository_dispatch:
     types: [library-changed]
@@ -35,6 +39,7 @@ jobs:
     timeout-minutes: 90
     env:
       PIN: ${{ inputs.pin || github.event.client_payload.sha }}
+      IMAGE: ${{ inputs.image || github.event.client_payload.image }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
@@ -54,7 +59,7 @@ jobs:
             [ -n "$REF" ] || { echo "no release/ branch" >&2; exit 1; }
           fi
           echo "ref=$REF" >> "$GITHUB_OUTPUT"
-          echo "sweeping $REF${PIN:+ at library $PIN}"
+          echo "sweeping $REF${PIN:+ at library $PIN}${IMAGE:+ in $IMAGE}"
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
