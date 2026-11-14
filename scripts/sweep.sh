@@ -14,6 +14,9 @@
 # MAP_ONLY=1 prints the row-to-commit mapping and stops.
 # PIN=<sha> sweeps every stage against that library commit in place of the one
 # the stage pins, so a change to the library is tried before anything is committed.
+# IMAGE=<ref> runs every stage in that container image in place of the cross image
+# the stage's compose file names. Figures from a sweep with either override are
+# not the branch's and are never committed as evidence.
 set -euo pipefail
 
 REF="${1:?usage: scripts/sweep.sh <ref> [out-dir]}"
@@ -90,6 +93,12 @@ services:
       - $(hostpath "$WORK/pki"):/pki
     command: bash -c "mkdir -p /w/build/certs && { [ -f /pki/ca.crt ] || bash scripts/gen-certs.sh /pki; } && cp -a /pki/. /w/build/certs/"
 EOF
+# Every service on the cross image, so the override moves the whole stage.
+if [ -n "${IMAGE:-}" ]; then
+    for service in certs broker run; do
+        printf '  %s:\n    image: %s\n' "$service" "$IMAGE" >> "$WORK/override.yml"
+    done
+fi
 
 # ---- run each stage ----------------------------------------------------------
 mkdir -p "$OUT" && OUT="$(cd "$OUT" && pwd)"
@@ -99,6 +108,7 @@ echo "index,slug,commit,verdict" > "$OUT/stages.csv"
 echo "index,slug,commit,key,current,baseline,above_baseline" > "$OUT/figures.csv"
 failed=0
 [ -z "${PIN:-}" ] || echo "pin overridden to $PIN"
+[ -z "${IMAGE:-}" ] || echo "image overridden to $IMAGE"
 
 for k in "${!rows[@]}"; do
     slug="${rows[$k]}" c="${commits[$k]}"
