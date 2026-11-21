@@ -66,5 +66,10 @@ check "unknown: names nothing"                 test -z "$(named)"
 compare no-such-branch no-other-branch
 check "unknown: two refs that are no commit exit 1" test $? -eq 1
 
+git checkout -q -b unlisted make
+git rm -q measurements/stages.tsv && git commit -q -m "feat: no list"
+compare cmake unlisted
+check "unlisted: a branch with no stage list exits 1" test $? -eq 1
+
 [ "$failures" -eq 0 ] || { echo "$failures failed"; cat "$SCRATCH/err"; exit 1; }
 echo "all passed"

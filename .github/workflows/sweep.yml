@@ -41,10 +41,6 @@ jobs:
   sweep:
     runs-on: ubuntu-latest
     timeout-minutes: 90
-    # wip/next is pushed from here. No ruleset covers it; release/** and main
-    # are covered, and this token cannot rewrite either.
-    permissions:
-      contents: write
     env:
       PIN: ${{ inputs.pin || github.event.client_payload.sha }}
       IMAGE: ${{ inputs.image || github.event.client_payload.image }}
@@ -63,6 +59,21 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      # wip/next is pushed with a token minted from the release GitHub App. The
+      # stages carry a workflow of their own, and the job's token may not push a
+      # commit that adds or changes one. No ruleset covers wip/next; release/**
+      # and main are covered, so this token cannot rewrite either.
+      - uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        if: github.event_name == 'repository_dispatch'
+        id: push-token
+        with:
+          app-id: ${{ secrets.RELEASE_PLEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_PLEASE_PRIVATE_KEY }}
+          owner: cososo-ltd
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
+          permission-workflows: write
+
       # Twice at most: a fix pushed to wip/next while this ran loses the lease,
       # and the second attempt starts from that fix.
       - name: Rebase wip/next
@@ -70,7 +81,7 @@ jobs:
         if: github.event_name == 'repository_dispatch'
         working-directory: stack
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.push-token.outputs.token }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -83,7 +94,8 @@ jobs:
             source=$(sed -n 's/^source=//p' ../next.out)
             was=$(sed -n 's/^was=//p' ../next.out)
             tip=$(sed -n 's/^tip=//p' ../next.out)
-            if [ "$rc" -eq 2 ]; then
+            # Exit 2 is also how awk and grep fail, so the stage has to be named.
+            if [ "$rc" -eq 2 ] && grep -q '^conflict=' ../next.out; then
               sed -n '/^conflict=/p; /^commit=/p' ../next.out >> "$GITHUB_OUTPUT"
               echo "ref=$source" >> "$GITHUB_OUTPUT"
               echo "$(sed -n 's/^conflict=//p' ../next.out) does not apply; wip/next is left as it was"
@@ -99,7 +111,10 @@ jobs:
               echo "wip/next is $tip, from $source at $was"
               exit 0
             fi
-            echo "wip/next moved during the rebase"
+            # Refused for the lease only if the branch is no longer where it was.
+            now=$(git ls-remote "$remote" refs/heads/wip/next | cut -f1)
+            [ "$now" != "$expect" ] || { echo "the push of wip/next was refused, and not because it moved" >&2; exit 1; }
+            echo "wip/next moved during the rebase, to $now"
           done
           exit 1
 
@@ -128,6 +143,7 @@ jobs:
           case "$rc" in
             0) echo "app/ is the same as $SIBLING's at every stage" ;;
             2) differing=$(paste -sd, - < ../differing.out)
+               [ -n "$differing" ] || exit 1
                echo "differing=$differing" >> "$GITHUB_OUTPUT"
                echo "app/ differs from $SIBLING at: $differing" ;;
             *) exit 1 ;;

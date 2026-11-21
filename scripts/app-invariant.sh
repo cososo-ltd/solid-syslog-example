@@ -8,7 +8,9 @@
 # Stages are paired by slug. Exits 0 where every stage matches. Where some do
 # not, prints the slug of each stage whose app/ differs or that only one stack
 # has, one per line, and exits 2. Exits 1 if the comparison could not be made.
-set -euo pipefail
+set -Eeuo pipefail
+# Exit 2 is this script's own answer, and also how sort and awk fail.
+trap 'exit 1' ERR
 
 REF="${1:?usage: scripts/app-invariant.sh <ref> <sibling-ref>}"
 SIBLING="${2:?usage: scripts/app-invariant.sh <ref> <sibling-ref>}"
