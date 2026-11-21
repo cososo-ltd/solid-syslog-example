@@ -9,13 +9,12 @@
 # image, so it is written again with solid-syslog.pin at <library-sha> and both
 # compose files on <image>, and every commit after it is rebased onto the result.
 #
-# Moves no ref and pushes nothing. On success prints
+# Moves no ref and pushes nothing. Prints
 #   source=<the ref the stages came from>
 #   was=<its tip>
-#   tip=<the rebased tip>
-# and the caller decides what to do with <tip>. Where a stage does not apply it
-# prints conflict=<NN-slug> and commit=<the stage commit>, and exits 2. Any other
-# failure exits 1.
+# and then, on success, tip=<the rebased tip>, which the caller decides what to
+# do with. Where a stage does not apply it prints conflict=<NN-slug> and
+# commit=<the stage commit> instead, and exits 2. Any other failure exits 1.
 set -euo pipefail
 
 SHA="${1:?usage: scripts/next.sh <library-sha> <image>}"
@@ -48,6 +47,7 @@ root="$(git rev-list --max-parents=0 "$tip")"
 [ "$(echo "$root" | wc -l)" -eq 1 ] || fail "$source has more than one root"
 count="$(git rev-list --count "$tip")"
 note "$count commits of $source, Baseline $(git log -1 --format=%h "$root")"
+printf 'source=%s\nwas=%s\n' "$source" "$was"
 
 WORK="$(mktemp -d)"
 cleanup() {
@@ -111,4 +111,4 @@ fi
 [ "$(git rev-list --count "$tip")" -eq "$count" ] || fail "the rebase kept $(git rev-list --count "$tip") of $count commits"
 MAP_ONLY=1 bash "$TOOLS/sweep.sh" "$tip" >/dev/null || fail "the rebased stages no longer match $STAGES"
 
-printf 'source=%s\nwas=%s\ntip=%s\n' "$source" "$was" "$tip"
+printf 'tip=%s\n' "$tip"

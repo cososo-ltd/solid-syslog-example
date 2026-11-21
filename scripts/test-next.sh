@@ -105,6 +105,7 @@ run_next "$NEW_SHA" "$OLD_IMAGE"
 check "clash: exits 2"                         test $? -eq 2
 check "clash: names the stage"                 test "$(value conflict)" = 03-clash
 check "clash: names the commit"                test "$(value commit)" = "$clash"
+check "clash: names the source"                test "$(value source)" = origin/wip/next
 check "clash: reports no tip"                  test -z "$(value tip)"
 check "clash: leaves no worktree behind"       test "$(git worktree list | wc -l)" -eq 1
 
