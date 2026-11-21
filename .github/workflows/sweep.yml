@@ -219,6 +219,8 @@ jobs:
           if [ -f sweep-out/stages.csv ]; then
             failed=$(awk -F, 'NR > 1 && $4 !~ /^"PASS/ { printf "%s%02d-%s", (n++ ? "," : ""), $1, $2 }' sweep-out/stages.csv)
           fi
+          # A payload holds ten properties at most, so the rebase and the app/
+          # comparison each travel as one.
           gh api repos/cososo-ltd/solid-syslog/dispatches \
             -f event_type=sweep-finished \
             -f "client_payload[stack]=${GITHUB_REPOSITORY#*/}" \
@@ -226,11 +228,11 @@ jobs:
             -f "client_payload[ref]=${REF#origin/}" \
             -f "client_payload[verdict]=$verdict" \
             -f "client_payload[failed]=$failed" \
-            -f "client_payload[rebase]=$NEXT" \
-            -f "client_payload[conflict]=$CONFLICT" \
-            -f "client_payload[conflict_commit]=$CONFLICT_COMMIT" \
-            -f "client_payload[invariant]=$INVARIANT" \
-            -f "client_payload[differing]=$DIFFERING" \
+            -f "client_payload[rebase][outcome]=$NEXT" \
+            -f "client_payload[rebase][conflict]=$CONFLICT" \
+            -f "client_payload[rebase][commit]=$CONFLICT_COMMIT" \
+            -f "client_payload[app][outcome]=$INVARIANT" \
+            -f "client_payload[app][differing]=$DIFFERING" \
             -f "client_payload[run_url]=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           echo "sweep-finished sent: $verdict${failed:+ ($failed)}${CONFLICT:+, $CONFLICT does not apply}${DIFFERING:+, app/ differs at $DIFFERING}, app/ comparison $INVARIANT"
           [ "$verdict" = pass ]
