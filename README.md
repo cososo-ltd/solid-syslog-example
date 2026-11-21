@@ -33,3 +33,21 @@ measured in one run over the finished branch and committed once at its tip, unde
 The SolidSyslog documentation links these branches by name, and that documentation ships
 in signed, version-stamped bundles. A release branch is created once, when its release is
 published, and is never deleted or rewritten.
+
+## `wip/next` is rewritten
+
+Between releases, `wip/next` holds the next release's stages on a Baseline pinned at a
+recent commit of SolidSyslog's `main`. The Sweep workflow writes it again whenever a
+change to the library could reach this example, so nothing should link it or build on
+it. A release branch is the published form.
+
+A stage is one commit, so a stage is fixed on `wip/next` by amending its commit. The
+next rewrite starts from what it finds there, and the fix is carried forward:
+
+```bash
+git fetch origin && git switch --detach origin/wip/next
+# edit, then fold the change into the stage's own commit
+git commit -a --fixup <stage commit>
+GIT_SEQUENCE_EDITOR=true git rebase -i --autosquash --root
+git push --force-with-lease=wip/next origin HEAD:wip/next
+```
