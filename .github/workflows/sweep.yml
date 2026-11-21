@@ -5,9 +5,13 @@ name: Sweep
 #
 # Run by hand for a release, or started by solid-syslog's Example Sweep workflow
 # with `library-changed` when a change lands on its main that could reach this
-# stack: that sweeps the latest release branch with the pin overridden to the
-# commit named, in the container image that commit's own CI pins, commits
-# nothing, and answers with `sweep-finished`.
+# stack. That writes wip/next again: the stages rebased onto a Baseline pinned at
+# the commit named, on the container image that commit's own CI pins. It then
+# sweeps wip/next as pushed and answers with `sweep-finished`. The stages are
+# wip/next's own once it exists, so a stage fixed there by hand stays fixed; the
+# first run takes them from the latest release branch. A stage that does not apply
+# leaves wip/next as it was, and what is swept is the old wip/next with the pin
+# and the image overridden.
 on:
   workflow_dispatch:
     inputs:
@@ -23,7 +27,7 @@ on:
   repository_dispatch:
     types: [library-changed]
 
-run-name: Sweep ${{ inputs.ref || 'latest release' }} at library ${{ inputs.pin || github.event.client_payload.sha || 'its pin' }}
+run-name: Sweep ${{ inputs.ref || 'wip/next' }} at library ${{ inputs.pin || github.event.client_payload.sha || 'its pin' }}
 
 permissions:
   contents: read
@@ -37,40 +41,98 @@ jobs:
   sweep:
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    # wip/next is pushed from here. No ruleset covers it; release/** and main
+    # are covered, and this token cannot rewrite either.
+    permissions:
+      contents: write
     env:
       PIN: ${{ inputs.pin || github.event.client_payload.sha }}
       IMAGE: ${{ inputs.image || github.event.client_payload.image }}
+      SIBLING: ${{ github.event.repository.name == 'solid-syslog-example' && 'solid-syslog-example-make' || 'solid-syslog-example' }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           path: tools
           persist-credentials: false
 
-      # The chain names no branch: it sweeps the newest release.
-      - name: Choose the ref
-        id: ref
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REF: ${{ inputs.ref }}
-        run: |
-          if [ -z "$REF" ]; then
-            REF=$(gh api "repos/${GITHUB_REPOSITORY}/branches?per_page=100" --paginate --jq '.[].name' \
-                    | grep '^release/' | sort -V | tail -1)
-            [ -n "$REF" ] || { echo "no release/ branch" >&2; exit 1; }
-          fi
-          echo "ref=$REF" >> "$GITHUB_OUTPUT"
-          echo "sweeping $REF${PIN:+ at library $PIN}${IMAGE:+ in $IMAGE}"
-
+      # Every branch, because the chain names none: next.sh chooses the stages.
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
-          ref: ${{ steps.ref.outputs.ref }}
+          ref: ${{ inputs.ref }}
           path: stack
           fetch-depth: 0
           persist-credentials: false
+
+      # Twice at most: a fix pushed to wip/next while this ran loses the lease,
+      # and the second attempt starts from that fix.
+      - name: Rebase wip/next
+        id: next
+        if: github.event_name == 'repository_dispatch'
+        working-directory: stack
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          for _ in 1 2; do
+            git fetch -q --prune "$remote" '+refs/heads/*:refs/remotes/origin/*'
+            rc=0
+            bash ../tools/scripts/next.sh "$PIN" "$IMAGE" > ../next.out || rc=$?
+            cat ../next.out
+            source=$(sed -n 's/^source=//p' ../next.out)
+            was=$(sed -n 's/^was=//p' ../next.out)
+            tip=$(sed -n 's/^tip=//p' ../next.out)
+            if [ "$rc" -eq 2 ]; then
+              sed -n '/^conflict=/p; /^commit=/p' ../next.out >> "$GITHUB_OUTPUT"
+              echo "ref=$source" >> "$GITHUB_OUTPUT"
+              echo "$(sed -n 's/^conflict=//p' ../next.out) does not apply; wip/next is left as it was"
+              exit 0
+            fi
+            [ "$rc" -eq 0 ] || exit "$rc"
+            # Seeded from a release branch, wip/next must not exist yet.
+            expect=""
+            [ "$source" != origin/wip/next ] || expect="$was"
+            if git push -q "$remote" "--force-with-lease=refs/heads/wip/next:$expect" "$tip:refs/heads/wip/next"; then
+              echo "ref=$tip" >> "$GITHUB_OUTPUT"
+              echo "rebased=true" >> "$GITHUB_OUTPUT"
+              echo "wip/next is $tip, from $source at $was"
+              exit 0
+            fi
+            echo "wip/next moved during the rebase"
+          done
+          exit 1
+
+      # Paired by slug with the sibling's wip/next, which need not be at the same
+      # library commit: app/ does not depend on the pin.
+      - name: Compare app/ with the sibling stack
+        id: invariant
+        if: steps.next.outputs.rebased == 'true'
+        working-directory: stack
+        run: |
+          if ! git fetch -q "https://github.com/cososo-ltd/${SIBLING}.git" '+refs/heads/wip/next:refs/sibling/wip/next'; then
+            echo "$SIBLING has no wip/next yet"
+            exit 0
+          fi
+          differing=$(bash ../tools/scripts/app-invariant.sh "$REF" refs/sibling/wip/next | paste -sd, -) || true
+          echo "differing=$differing" >> "$GITHUB_OUTPUT"
+          echo "app/ differs from $SIBLING at: ${differing:-no stage}"
+        env:
+          REF: ${{ steps.next.outputs.ref }}
+
+      # A rebased wip/next is swept as pushed: the pin and the image are its own.
       - name: Sweep
         id: sweep
         working-directory: stack
-        run: bash ../tools/scripts/sweep.sh HEAD ../sweep-out
+        env:
+          REF: ${{ steps.next.outputs.ref || 'HEAD' }}
+          REBASED: ${{ steps.next.outputs.rebased }}
+        run: |
+          if [ "$REBASED" = true ]; then
+            unset PIN IMAGE
+          fi
+          echo "sweeping $REF${PIN:+ at library $PIN}${IMAGE:+ in $IMAGE}"
+          bash ../tools/scripts/sweep.sh "$REF" ../sweep-out
 
       - name: Publish figures to job summary
         if: always()
@@ -99,15 +161,24 @@ jobs:
           repositories: solid-syslog
           permission-contents: write
 
+      # The run is green only where the rebase applied, app/ matches the sibling
+      # and every stage passed: solid-syslog reads the last green run's title as
+      # the last library commit this stack was good at.
       - name: Send sweep-finished to solid-syslog
         if: always() && github.event_name == 'repository_dispatch'
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          OUTCOME: ${{ steps.sweep.outcome }}
-          REF: ${{ steps.ref.outputs.ref }}
+          NEXT: ${{ steps.next.outcome }}
+          SWEEP: ${{ steps.sweep.outcome }}
+          REBASED: ${{ steps.next.outputs.rebased }}
+          REF: ${{ steps.next.outputs.ref }}
+          CONFLICT: ${{ steps.next.outputs.conflict }}
+          CONFLICT_COMMIT: ${{ steps.next.outputs.commit }}
+          DIFFERING: ${{ steps.invariant.outputs.differing }}
         run: |
-          verdict=fail
-          [ "$OUTCOME" = success ] && verdict=pass
+          verdict=pass
+          [ "$NEXT" = success ] && [ "$SWEEP" = success ] && [ -z "$CONFLICT" ] && [ -z "$DIFFERING" ] || verdict=fail
+          [ "$REBASED" != true ] || REF=wip/next
           failed=""
           if [ -f sweep-out/stages.csv ]; then
             failed=$(awk -F, 'NR > 1 && $4 !~ /^"PASS/ { printf "%s%02d-%s", (n++ ? "," : ""), $1, $2 }' sweep-out/stages.csv)
@@ -116,8 +187,13 @@ jobs:
             -f event_type=sweep-finished \
             -f "client_payload[stack]=${GITHUB_REPOSITORY#*/}" \
             -f "client_payload[sha]=$PIN" \
-            -f "client_payload[ref]=$REF" \
+            -f "client_payload[ref]=${REF#origin/}" \
             -f "client_payload[verdict]=$verdict" \
             -f "client_payload[failed]=$failed" \
+            -f "client_payload[rebase]=$NEXT" \
+            -f "client_payload[conflict]=$CONFLICT" \
+            -f "client_payload[conflict_commit]=$CONFLICT_COMMIT" \
+            -f "client_payload[differing]=$DIFFERING" \
             -f "client_payload[run_url]=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          echo "sweep-finished sent: $verdict${failed:+ ($failed)}"
+          echo "sweep-finished sent: $verdict${failed:+ ($failed)}${CONFLICT:+, $CONFLICT does not apply}${DIFFERING:+, app/ differs at $DIFFERING}"
+          [ "$verdict" = pass ]
