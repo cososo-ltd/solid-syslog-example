@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  next:
+  scripts:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -19,3 +19,5 @@ jobs:
           persist-credentials: false
       - name: Test scripts/next.sh
         run: bash scripts/test-next.sh
+      - name: Test scripts/app-invariant.sh
+        run: bash scripts/test-app-invariant.sh

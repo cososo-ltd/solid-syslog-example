@@ -104,25 +104,39 @@ jobs:
           exit 1
 
       # Paired by slug with the sibling's wip/next, which need not be at the same
-      # library commit: app/ does not depend on the pin.
+      # library commit: app/ does not depend on the pin. A sibling with no
+      # wip/next yet is not compared; a comparison that cannot be made fails the
+      # step, and the sweep still runs.
       - name: Compare app/ with the sibling stack
         id: invariant
         if: steps.next.outputs.rebased == 'true'
         working-directory: stack
+        env:
+          REF: ${{ steps.next.outputs.ref }}
         run: |
-          if ! git fetch -q "https://github.com/cososo-ltd/${SIBLING}.git" '+refs/heads/wip/next:refs/sibling/wip/next'; then
+          sibling="https://github.com/cososo-ltd/${SIBLING}.git"
+          rc=0
+          git ls-remote --exit-code --heads "$sibling" refs/heads/wip/next > /dev/null || rc=$?
+          if [ "$rc" -eq 2 ]; then
             echo "$SIBLING has no wip/next yet"
             exit 0
           fi
-          differing=$(bash ../tools/scripts/app-invariant.sh "$REF" refs/sibling/wip/next | paste -sd, -) || true
-          echo "differing=$differing" >> "$GITHUB_OUTPUT"
-          echo "app/ differs from $SIBLING at: ${differing:-no stage}"
-        env:
-          REF: ${{ steps.next.outputs.ref }}
+          [ "$rc" -eq 0 ] || { echo "cannot reach $SIBLING" >&2; exit 1; }
+          git fetch -q "$sibling" '+refs/heads/wip/next:refs/sibling/wip/next'
+          rc=0
+          bash ../tools/scripts/app-invariant.sh "$REF" refs/sibling/wip/next > ../differing.out || rc=$?
+          case "$rc" in
+            0) echo "app/ is the same as $SIBLING's at every stage" ;;
+            2) differing=$(paste -sd, - < ../differing.out)
+               echo "differing=$differing" >> "$GITHUB_OUTPUT"
+               echo "app/ differs from $SIBLING at: $differing" ;;
+            *) exit 1 ;;
+          esac
 
       # A rebased wip/next is swept as pushed: the pin and the image are its own.
       - name: Sweep
         id: sweep
+        if: ${{ !cancelled() && steps.next.outcome != 'failure' }}
         working-directory: stack
         env:
           REF: ${{ steps.next.outputs.ref || 'HEAD' }}
@@ -174,10 +188,14 @@ jobs:
           REF: ${{ steps.next.outputs.ref }}
           CONFLICT: ${{ steps.next.outputs.conflict }}
           CONFLICT_COMMIT: ${{ steps.next.outputs.commit }}
+          INVARIANT: ${{ steps.invariant.outcome }}
           DIFFERING: ${{ steps.invariant.outputs.differing }}
         run: |
+          # The comparison is skipped where nothing was rebased, and may only
+          # pass or be skipped: an app/ never compared is not an app/ that matches.
           verdict=pass
-          [ "$NEXT" = success ] && [ "$SWEEP" = success ] && [ -z "$CONFLICT" ] && [ -z "$DIFFERING" ] || verdict=fail
+          [ "$NEXT" = success ] && [ "$SWEEP" = success ] && [ "$INVARIANT" != failure ] \
+            && [ -z "$CONFLICT" ] && [ -z "$DIFFERING" ] || verdict=fail
           [ "$REBASED" != true ] || REF=wip/next
           failed=""
           if [ -f sweep-out/stages.csv ]; then
@@ -193,7 +211,8 @@ jobs:
             -f "client_payload[rebase]=$NEXT" \
             -f "client_payload[conflict]=$CONFLICT" \
             -f "client_payload[conflict_commit]=$CONFLICT_COMMIT" \
+            -f "client_payload[invariant]=$INVARIANT" \
             -f "client_payload[differing]=$DIFFERING" \
             -f "client_payload[run_url]=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          echo "sweep-finished sent: $verdict${failed:+ ($failed)}${CONFLICT:+, $CONFLICT does not apply}${DIFFERING:+, app/ differs at $DIFFERING}"
+          echo "sweep-finished sent: $verdict${failed:+ ($failed)}${CONFLICT:+, $CONFLICT does not apply}${DIFFERING:+, app/ differs at $DIFFERING}, app/ comparison $INVARIANT"
           [ "$verdict" = pass ]
