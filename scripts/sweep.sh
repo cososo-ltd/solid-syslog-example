@@ -136,6 +136,11 @@ for k in "${!rows[@]}"; do
     else
         verdict="FAIL (no run report; see reports/$name.log)"
     fi
+    # In another image the Baseline is another build, and the figures are not the branch's.
+    if [ "$k" -eq 0 ] && [ -z "${IMAGE:-}" ] && [[ "$verdict" == PASS* ]]; then
+        adrift="$(bash "$TOOLS/baseline-adrift.sh" "$OUT/figures.csv")"
+        [ -z "$adrift" ] || verdict="FAIL (the Baseline measured $adrift above measurements/Baseline.csv, which is not its own)"
+    fi
     [ "$rc" -eq 0 ] && [[ "$verdict" == PASS* ]] || { failed=$((failed + 1)); [[ "$verdict" == PASS* ]] && verdict="FAIL (exit $rc)"; }
     echo "$k,$slug,$c,\"$verdict\"" >> "$OUT/stages.csv"
     echo "    $verdict"

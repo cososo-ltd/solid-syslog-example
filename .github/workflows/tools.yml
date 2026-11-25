@@ -21,5 +21,7 @@ jobs:
         run: bash scripts/test-next.sh
       - name: Test scripts/app-invariant.sh
         run: bash scripts/test-app-invariant.sh
+      - name: Test scripts/baseline-adrift.sh
+        run: bash scripts/test-baseline-adrift.sh
       - name: Test scripts/release.sh
         run: bash scripts/test-release.sh
