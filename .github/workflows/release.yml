@@ -1,0 +1,259 @@
+name: Release
+
+# Cuts this stack's release once SolidSyslog's v<version> tag exists. One run
+# makes the four parts: the release/<version> branch pinned at the tag, the
+# evidence commit at its tip, this stack's own v<version> tag with its GitHub
+# Release and sweep-<version>.zip, and the row in main's README.
+#
+# Nothing is measured here. The evidence is the output of the Sweep run named,
+# which must be the green sweep the chain started for wip/next as it stands, and
+# scripts/release.sh states what makes its figures hold at the tag and refuses a
+# release where they would not.
+#
+# A dry run builds everything and pushes nothing: the branch is in the run's
+# artifact as a bundle, beside the Release's description, the zip and the README.
+# A release branch is permanent, so a dry run is what an unticked box gets.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: The version, as in release/<version>
+        required: true
+      tag:
+        description: The full SHA of the commit SolidSyslog's v<version> tag names
+        required: true
+      run:
+        description: The id of this stack's Sweep run whose output is the evidence
+        required: true
+      dry-run:
+        description: Build everything and push nothing
+        type: boolean
+        default: true
+
+run-name: Release ${{ inputs.version }}${{ inputs.dry-run && ', a dry run' || '' }}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  VERSION: ${{ inputs.version }}
+  STACK: ${{ github.event.repository.name }}
+
+jobs:
+  # The branch and its evidence commit.
+  branch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      tip: ${{ steps.build.outputs.tip }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          path: tools
+          persist-credentials: false
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          path: stack
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          repository: cososo-ltd/solid-syslog
+          path: library
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Fetch the Sweep run and its output
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN: ${{ inputs.run }}
+        run: |
+          [[ "$RUN" =~ ^[0-9]+$ ]] || { echo "'$RUN' is not a run id" >&2; exit 1; }
+          gh api "repos/${GITHUB_REPOSITORY}/actions/runs/$RUN" \
+            --jq '"id=\(.id)\nevent=\(.event)\nconclusion=\(.conclusion)\ntitle=\(.display_title)\npath=\(.path)"' > run-facts
+          cat run-facts
+          grep -Fxq "path=.github/workflows/sweep.yml" run-facts || { echo "run $RUN is not a Sweep run" >&2; exit 1; }
+          gh run download "$RUN" --repo "$GITHUB_REPOSITORY" --name sweep --dir sweep-out
+
+      - name: Build the branch
+        id: build
+        working-directory: stack
+        env:
+          TAG: ${{ inputs.tag }}
+          DRY_RUN: ${{ inputs.dry-run && '1' || '0' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rc=0
+          bash ../tools/scripts/release.sh "$VERSION" "$TAG" ../sweep-out ../run-facts ../library ../made > ../release.out || rc=$?
+          cat ../release.out
+          {
+            echo "## Release $VERSION"
+            sed -n 's/^refused=/- refused: /p; s/^would-refuse=/- a release would be refused: /p' ../release.out
+          } >> "$GITHUB_STEP_SUMMARY"
+          # Exit 2 is also how awk and grep fail, so the refusal has to be named.
+          if [ "$rc" -eq 2 ] && grep -q '^refused=' ../release.out; then
+            echo "release/$VERSION is not cut"
+            exit 1
+          fi
+          [ "$rc" -eq 0 ] || exit "$rc"
+          tip=$(sed -n 's/^tip=//p' ../release.out)
+          [ -n "$tip" ] || exit 1
+          echo "tip=$tip" >> "$GITHUB_OUTPUT"
+          git branch -f "release/$VERSION" "$tip"
+          git bundle create "../made/release-$VERSION.bundle" "release/$VERSION"
+          (cd ../sweep-out && zip -q -r "../made/sweep-$VERSION.zip" .)
+          {
+            echo "release/$VERSION would be \`$tip\`, $(sed -n 's/^stages=//p' ../release.out) stages measured at \`$(sed -n 's/^pin=//p' ../release.out)\`."
+            if [ -s ../made/prose.txt ]; then
+              echo
+              echo "Stage messages that quote a figure outside their figures block, which nothing rewrites:"
+              echo
+              sed 's/^/- /' ../made/prose.txt
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release
+          path: made/
+          if-no-files-found: error
+
+      # The stages carry a workflow of their own, which the job's token may not
+      # push. A ruleset lets release/** be created and never rewritten or deleted.
+      - uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        if: ${{ !inputs.dry-run }}
+        id: push-token
+        with:
+          app-id: ${{ secrets.RELEASE_PLEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_PLEASE_PRIVATE_KEY }}
+          owner: cososo-ltd
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
+          permission-workflows: write
+
+      # The empty lease is the refusal to move a branch that is already there.
+      - name: Push release/${{ inputs.version }}
+        if: ${{ !inputs.dry-run }}
+        working-directory: stack
+        env:
+          GH_TOKEN: ${{ steps.push-token.outputs.token }}
+          TIP: ${{ steps.build.outputs.tip }}
+        run: |
+          remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push -q "$remote" "--force-with-lease=refs/heads/release/$VERSION:" "$TIP:refs/heads/release/$VERSION"
+          echo "release/$VERSION is $TIP"
+
+      # release.sh has shown that every link SolidSyslog's documentation at the
+      # tag makes to this stack's release branches is to this one.
+      - name: Check the link SolidSyslog's documentation makes resolves
+        if: ${{ !inputs.dry-run }}
+        run: |
+          url="https://github.com/${GITHUB_REPOSITORY}/tree/release/$VERSION"
+          for _ in 1 2 3 4 5; do
+            if curl -fsS -o /dev/null "$url"; then
+              echo "$url resolves"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "$url does not resolve" >&2
+          exit 1
+
+  # This stack's own tag and GitHub Release, at the branch tip. With an asset
+  # named, gh creates the Release as a draft, uploads, then publishes, so a failed
+  # upload leaves a draft and not a Release without its file.
+  publish:
+    needs: branch
+    if: ${{ !inputs.dry-run }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: release
+
+      - uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        id: app-token
+        with:
+          app-id: ${{ secrets.RELEASE_PLEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_PLEASE_PRIVATE_KEY }}
+          owner: cososo-ltd
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
+          permission-workflows: write
+
+      - name: Create v${{ inputs.version }} and its Release
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          TIP: ${{ needs.branch.outputs.tip }}
+        run: |
+          gh release create "v$VERSION" --repo "$GITHUB_REPOSITORY" --target "$TIP" \
+            --title "$VERSION" --latest --notes-file notes.md "sweep-$VERSION.zip"
+          assets=$(gh release view "v$VERSION" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')
+          [ "$assets" = "sweep-$VERSION.zip" ] || { echo "v$VERSION carries: $assets" >&2; exit 1; }
+          echo "v$VERSION is published with $assets"
+
+  # main takes changes by pull request only, so the row is one, merged here.
+  readme:
+    needs: [branch, publish]
+    if: ${{ !inputs.dry-run }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: release
+          path: made
+
+      - uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        id: app-token
+        with:
+          app-id: ${{ secrets.RELEASE_PLEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_PLEASE_PRIVATE_KEY }}
+          owner: cososo-ltd
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Add the release's row to main's README
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          cp made/README.md README.md
+          if git diff --quiet -- README.md; then
+            echo "main's README already has the row"
+            exit 0
+          fi
+          branch="docs/release-$VERSION-row"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -q -c "$branch"
+          git commit -q -m "docs: the release/$VERSION row" -- README.md
+          git push -q "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:refs/heads/$branch"
+          url=$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" \
+            --title "docs: the release/$VERSION row" \
+            --body "The row for \`release/$VERSION\` in the Releases table, written by the Release workflow.")
+          # A pull request is not mergeable until GitHub has compared it with main.
+          for _ in 1 2 3 4 5; do
+            if gh pr merge "$url" --rebase --delete-branch; then
+              echo "merged $url"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "$url is open and not merged" >&2
+          exit 1

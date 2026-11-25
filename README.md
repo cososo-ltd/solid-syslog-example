@@ -34,6 +34,47 @@ The SolidSyslog documentation links these branches by name, and that documentati
 in signed, version-stamped bundles. A release branch is created once, when its release is
 published, and is never deleted or rewritten.
 
+## A release is cut by the Release workflow
+
+Once SolidSyslog's `v<version>` tag exists, the **Release** workflow makes this example's
+release of the same version. It is run from the Actions tab with the version, the commit
+that tag names, and the **Sweep** run whose output is the release's evidence:
+
+```bash
+gh workflow run release.yml --repo cososo-ltd/solid-syslog-example \
+  -f version=<version> -f tag=<full SHA of SolidSyslog's v<version>> \
+  -f run=<Sweep run id> -f dry-run=false
+```
+
+It takes the stages from `wip/next`, writes each stage's figures into its commit
+message, rebases them onto a Baseline pinned at the tag, and commits the run's output at
+the tip under `evidence/`. It then pushes `release/<version>`, creates this repository's
+`v<version>` tag and GitHub Release with `sweep-<version>.zip`, and adds the row to the
+table above.
+
+Nothing is measured by the workflow. The run it is given must be the green sweep that
+SolidSyslog's Example Sweep workflow started for `wip/next` as it stands, and the
+release is refused unless that run's figures hold at the tag:
+
+- SolidSyslog's `v<version>` is the commit named, and `release/<version>` does not exist.
+- Between the commit the run measured and the tag, SolidSyslog changed nothing under the
+  paths its `example-sweep.yml` names, which are the ones a change reaches this example
+  through.
+- `wip/next` is on the container image SolidSyslog's CI pins at the tag.
+- Every link from SolidSyslog's documentation at the tag to a release branch here is to
+  `release/<version>`.
+
+Where SolidSyslog changed, or the image moved, the answer is to sweep again: run
+SolidSyslog's Example Sweep workflow for the commit the tag names, and give the Release
+workflow that run.
+
+`dry-run` is ticked unless it is cleared. A dry run makes every check, reports each one
+that would refuse the release, builds the branch and pushes nothing; the branch is in the
+run's `release` artifact as a Git bundle, beside the Release's description, the zip and
+the README. The run's summary lists the stage messages that quote a figure in their
+prose, which nothing rewrites: correct those on `wip/next`, sweep again, and release from
+that run.
+
 ## `wip/next` is rewritten
 
 Between releases, `wip/next` holds the next release's stages on a Baseline pinned at a
