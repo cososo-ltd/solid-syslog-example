@@ -202,17 +202,7 @@ The SolidSyslog $VERSION integration, built with $BUILT_WITH: the Baseline and o
 \`sweep-$VERSION.zip\` is the output of the sweep that measured every stage in one run (Sweep run $run, $n/$n pass), also committed at the branch tip under \`evidence/\`. $measured
 EOF
 
-row="| [\`release/$VERSION\`]($branch_url/$VERSION) | $VERSION | \`${TAG:0:7}\` (\`v$VERSION\`) |"
-git show origin/main:README.md > "$WORK/README.md"
-grep -q '^| \[`release/' "$WORK/README.md" || fail "main's README has no Releases table"
-if grep -Fq "\`release/$VERSION\`" "$WORK/README.md"; then
-    cp "$WORK/README.md" "$OUT/README.md"
-else
-    awk -v row="$row" '
-        /^\| \[`release\// { last = NR }
-        { line[NR] = $0 }
-        END { for (i = 1; i <= NR; i++) { print line[i]; if (i == last) print row } }
-    ' "$WORK/README.md" > "$OUT/README.md"
-fi
+git show origin/main:README.md > "$OUT/README.md"
+STACK="$STACK" bash "$TOOLS/readme-row.sh" "$OUT/README.md" "$VERSION" "$TAG"
 
 printf 'tip=%s\npin=%s\nstages=%s\n' "$tip" "$pin" "$n"
