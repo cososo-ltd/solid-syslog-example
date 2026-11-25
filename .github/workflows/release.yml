@@ -196,15 +196,21 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           TIP: ${{ needs.branch.outputs.tip }}
         run: |
-          # A draft is what an earlier attempt's failed upload left.
-          if [ "$(gh release view "v$VERSION" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft 2>/dev/null)" = true ]; then
+          # An earlier attempt may have left a draft, where its upload failed, or
+          # the Release itself, where it failed after publishing.
+          draft=$(gh release view "v$VERSION" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft 2>/dev/null || true)
+          if [ "$draft" = true ]; then
             gh release delete "v$VERSION" --repo "$GITHUB_REPOSITORY" --yes
           fi
-          gh release create "v$VERSION" --repo "$GITHUB_REPOSITORY" --target "$TIP" \
-            --title "$VERSION" --latest --notes-file notes.md "sweep-$VERSION.zip"
+          if [ "$draft" != false ]; then
+            gh release create "v$VERSION" --repo "$GITHUB_REPOSITORY" --target "$TIP" \
+              --title "$VERSION" --latest --notes-file notes.md "sweep-$VERSION.zip"
+          fi
+          tagged=$(gh api "repos/${GITHUB_REPOSITORY}/commits/v$VERSION" --jq .sha)
+          [ "$tagged" = "$TIP" ] || { echo "v$VERSION is $tagged, and release/$VERSION is $TIP" >&2; exit 1; }
           assets=$(gh release view "v$VERSION" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')
           [ "$assets" = "sweep-$VERSION.zip" ] || { echo "v$VERSION carries: $assets" >&2; exit 1; }
-          echo "v$VERSION is published with $assets"
+          echo "v$VERSION is published at $tagged with $assets"
 
   # main takes changes by pull request only, so the row is one, merged here.
   readme:
@@ -217,11 +223,6 @@ jobs:
         with:
           ref: main
           persist-credentials: false
-
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: release
-          path: made
 
       - uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         id: app-token
@@ -236,8 +237,9 @@ jobs:
       - name: Add the release's row to main's README
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          TAG: ${{ inputs.tag }}
         run: |
-          cp made/README.md README.md
+          bash scripts/readme-row.sh README.md "$VERSION" "$TAG"
           if git diff --quiet -- README.md; then
             echo "main's README already has the row"
             exit 0

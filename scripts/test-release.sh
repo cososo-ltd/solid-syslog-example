@@ -133,6 +133,8 @@ check "cut: the notes name the run"                grep -Fq "Sweep run 4242, 3/3
 check "cut: the README gains the row"              grep -Fxq "| [\`release/0.2.0\`]($LINK/0.2.0) | 0.2.0 | \`${TAG:0:7}\` (\`v0.2.0\`) |" "$SCRATCH/made/README.md"
 check "cut: the row follows the last release"      test "$(grep -n 'release/0.2.0' "$SCRATCH/made/README.md" | cut -d: -f1)" -eq 8
 check "cut: the rest of the README stands"         test "$(wc -l < "$SCRATCH/made/README.md")" -eq 10
+STACK="$STACK" bash "$TOOLS/readme-row.sh" "$SCRATCH/made/README.md" 0.2.0 "$TAG"
+check "cut: the row is not added twice"            test "$(grep -c 'release/0.2.0' "$SCRATCH/made/README.md")" -eq 1
 check "cut: no ref moved"                          test "$(git rev-parse origin/wip/next)" = "$(git ls-remote origin refs/heads/wip/next | cut -f1)"
 check "cut: no release branch was made"            test -z "$(git ls-remote origin 'refs/heads/release/*')"
 cut="$(value tip)"
