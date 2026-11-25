@@ -25,6 +25,8 @@
 #   exists   origin/release/<version> is already there
 #   run      the run is not a green sweep the chain started at wip/next's pin
 #   stages   the run did not measure wip/next as it stands, or a stage failed
+#   baseline the Baseline measured above measurements/Baseline.csv, so that file
+#            was captured from another Baseline and every stage is charged for it
 #   tag      SolidSyslog's v<version> is not <tag-sha>
 #   library  a path that reaches this stack differs between the pin and the tag
 #   image    wip/next is not on the image SolidSyslog's CI pins at the tag
@@ -79,6 +81,9 @@ if [ "${swept[*]}" != "${chain[*]}" ]; then
 fi
 unpassed="$(awk -F, 'NR > 1 && $4 !~ /^"PASS/ { printf "%s%02d-%s", (c++ ? ", " : ""), $1, $2 }' "$SWEEP/stages.csv")"
 [ -z "$unpassed" ] || refuse stages "the run did not pass $unpassed"
+
+adrift="$(awk -F, 'NR > 1 && $1 == 0 && $4 ~ /^(flash_text|flash_data|static_bss)$/ && $7 != 0 { printf "%s%s %+d B", (c++ ? ", " : ""), $4, $7 }' "$SWEEP/figures.csv")"
+[ -z "$adrift" ] || refuse baseline "the Baseline measured $adrift above measurements/Baseline.csv, which is not this Baseline's"
 
 pin="$(git show "$source:solid-syslog.pin" | tr -d '[:space:]')"
 [[ "$pin" =~ ^[0-9a-f]{40}$ ]] || fail "wip/next's solid-syslog.pin is not a full commit SHA"
