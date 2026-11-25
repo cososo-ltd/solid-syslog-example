@@ -93,6 +93,16 @@ run_next "$NEWER_SHA" "$NEW_IMAGE"
 check "same: succeeds"                         test $? -eq 0
 check "same: the tip does not move"            test "$(value tip)" = "$(value was)"
 
+# ---- a release's Baseline, from stages named by commit -------------------------
+named="$(git rev-parse origin/release/0.1.0~1)"
+STAGES_FROM="$named" PIN_LABEL=v0.2.0 run_next "$NEW_SHA" "$NEW_IMAGE"
+check "named: succeeds"                        test $? -eq 0
+check "named: the stages come from the commit" test "$(value source)" = "$named"
+check "named: wip/next's fix is not in them"   test "$(in_tip app/main.c | tail -1)" = "/* logger */"
+check "named: the pin line is the release's"   grep -Fxq "v0.2.0, 22222222." <(git log -1 --format=%B "$(root_of "$(value tip)")")
+STAGES_FROM=nonesuch run_next "$NEW_SHA" "$NEW_IMAGE"
+check "named: a commit that is not one is refused" test $? -eq 1
+
 # ---- a stage that does not apply ----------------------------------------------
 git checkout -q -B clash origin/wip/next
 printf 'clash\tclash\twhat clash gives\n' >> measurements/stages.tsv
