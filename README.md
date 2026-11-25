@@ -62,9 +62,10 @@ release is refused unless that run's figures hold at the tag:
   paths its `example-sweep.yml` names, which are the ones a change reaches this example
   through.
 - `wip/next` is on the container image SolidSyslog's CI pins at the tag.
-- The Baseline measured nothing above `measurements/Baseline.csv`. Every stage's cost is
-  counted from that file, so it has to be this Baseline's own: where the image or an
-  upstream has moved since it was captured, capture it again on `wip/next`'s Baseline.
+- The Baseline's flash and static RAM measured exactly what `measurements/Baseline.csv`
+  records. Every stage's cost is counted from that file, so it has to be this Baseline's
+  own: where the image or an upstream has moved since it was captured, capture it again
+  on `wip/next`'s Baseline.
 - Every link from SolidSyslog's documentation at the tag to a release branch here is to
   `release/<version>`.
 
@@ -72,10 +73,12 @@ Where SolidSyslog changed, or the image moved, the answer is to sweep again: run
 SolidSyslog's Example Sweep workflow for the commit the tag names, and give the Release
 workflow that run.
 
-`dry-run` is ticked unless it is cleared. A dry run makes every check, reports each one
-that would refuse the release, builds the branch and pushes nothing; the branch is in the
-run's `release` artifact as a Git bundle, beside the Release's description, the zip and
-the README. The run's summary lists the stage messages that quote a figure in their
+`dry-run` is ticked unless it is cleared. A dry run reports each check that would refuse
+the release, builds the branch anyway and pushes nothing; the branch is in the run's
+`release` artifact as a Git bundle, beside the Release's description, the zip and the
+README. The one thing that stops a dry run is a `wip/next` that has moved since the Sweep
+run it was given, since the run's figures are then not that branch's: sweep again. The
+run's summary lists the stage messages that quote a figure in their
 prose, which nothing rewrites: correct those on `wip/next`, sweep again, and release from
 that run.
 

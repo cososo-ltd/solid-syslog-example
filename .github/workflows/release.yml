@@ -157,6 +157,8 @@ jobs:
   # named, gh creates the Release as a draft, uploads, then publishes, so a failed
   # upload leaves a draft and not a Release without its file. The branch job
   # cannot run twice for one version, so what may need a second attempt is here.
+  # The tag is created on a commit whose workflows are not main's, which is what
+  # the token's workflows permission is for.
   publish:
     needs: branch
     if: ${{ !inputs.dry-run }}
@@ -190,6 +192,7 @@ jobs:
           owner: cososo-ltd
           repositories: ${{ github.event.repository.name }}
           permission-contents: write
+          permission-workflows: write
 
       - name: Create v${{ inputs.version }} and its Release
         env:
