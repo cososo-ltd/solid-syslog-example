@@ -153,10 +153,19 @@ jobs:
           git push -q "$remote" "--force-with-lease=refs/heads/release/$VERSION:" "$TIP:refs/heads/release/$VERSION"
           echo "release/$VERSION is $TIP"
 
+  # This stack's own tag and GitHub Release, at the branch tip. With an asset
+  # named, gh creates the Release as a draft, uploads, then publishes, so a failed
+  # upload leaves a draft and not a Release without its file. The branch job
+  # cannot run twice for one version, so what may need a second attempt is here.
+  publish:
+    needs: branch
+    if: ${{ !inputs.dry-run }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
       # release.sh has shown that every link SolidSyslog's documentation at the
       # tag makes to this stack's release branches is to this one.
       - name: Check the link SolidSyslog's documentation makes resolves
-        if: ${{ !inputs.dry-run }}
         run: |
           url="https://github.com/${GITHUB_REPOSITORY}/tree/release/$VERSION"
           for _ in 1 2 3 4 5; do
@@ -169,15 +178,6 @@ jobs:
           echo "$url does not resolve" >&2
           exit 1
 
-  # This stack's own tag and GitHub Release, at the branch tip. With an asset
-  # named, gh creates the Release as a draft, uploads, then publishes, so a failed
-  # upload leaves a draft and not a Release without its file.
-  publish:
-    needs: branch
-    if: ${{ !inputs.dry-run }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: release
@@ -190,13 +190,16 @@ jobs:
           owner: cososo-ltd
           repositories: ${{ github.event.repository.name }}
           permission-contents: write
-          permission-workflows: write
 
       - name: Create v${{ inputs.version }} and its Release
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           TIP: ${{ needs.branch.outputs.tip }}
         run: |
+          # A draft is what an earlier attempt's failed upload left.
+          if [ "$(gh release view "v$VERSION" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft 2>/dev/null)" = true ]; then
+            gh release delete "v$VERSION" --repo "$GITHUB_REPOSITORY" --yes
+          fi
           gh release create "v$VERSION" --repo "$GITHUB_REPOSITORY" --target "$TIP" \
             --title "$VERSION" --latest --notes-file notes.md "sweep-$VERSION.zip"
           assets=$(gh release view "v$VERSION" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')
@@ -212,6 +215,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
+          ref: main
           persist-credentials: false
 
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
@@ -238,15 +242,20 @@ jobs:
             echo "main's README already has the row"
             exit 0
           fi
+          # The branch is this workflow's own, so a second attempt writes it again
+          # and takes up the pull request the first one opened.
           branch="docs/release-$VERSION-row"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -q -c "$branch"
           git commit -q -m "docs: the release/$VERSION row" -- README.md
-          git push -q "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:refs/heads/$branch"
-          url=$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" \
-            --title "docs: the release/$VERSION row" \
-            --body "The row for \`release/$VERSION\` in the Releases table, written by the Release workflow.")
+          git push -q --force "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:refs/heads/$branch"
+          url=$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$branch" --base main --state open --json url --jq '.[0].url // empty')
+          if [ -z "$url" ]; then
+            url=$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" \
+              --title "docs: the release/$VERSION row" \
+              --body "The row for \`release/$VERSION\` in the Releases table, written by the Release workflow.")
+          fi
           # A pull request is not mergeable until GitHub has compared it with main.
           for _ in 1 2 3 4 5; do
             if gh pr merge "$url" --rebase --delete-branch; then
