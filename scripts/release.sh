@@ -22,7 +22,7 @@
 # stages=<how many>.
 #
 # A release that must not be cut prints refused=<why> for each reason and exits 2:
-#   exists   origin/release/<version> is already there
+#   exists   origin/release/<version> or this stack's v<version> tag is already there
 #   run      the run is not a green sweep the chain started at wip/next's pin
 #   stages   the run did not measure wip/next as it stands, or a stage failed
 #   baseline the Baseline measured above measurements/Baseline.csv, so that file
@@ -100,6 +100,9 @@ fi
 # ---- the release is the one asked for, and not yet cut -----------------------
 if git rev-parse -q --verify "origin/release/$VERSION^{commit}" >/dev/null; then
     refuse exists "release/$VERSION is already at $(git rev-parse --short "origin/release/$VERSION")"
+fi
+if git rev-parse -q --verify "refs/tags/v$VERSION^{commit}" >/dev/null; then
+    refuse exists "this stack's v$VERSION tag is already at $(git rev-parse --short "refs/tags/v$VERSION^{commit}")"
 fi
 tagged="$(library rev-parse -q --verify "refs/tags/v$VERSION^{commit}" || true)"
 if [ "$tagged" != "$TAG" ]; then

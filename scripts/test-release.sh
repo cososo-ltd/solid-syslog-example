@@ -158,6 +158,10 @@ check "dry run: succeeds"                          test $? -eq 0
 check "dry run: says what would refuse it"         grep -Fxq "would-refuse=exists" "$SCRATCH/out"
 check "dry run: builds the branch anyway"          test -n "$(value tip)"
 git push -q origin :refs/heads/release/0.2.0
+git push -q origin origin/wip/next:refs/tags/v0.2.0
+release 0.2.0 "$TAG"
+check "exists: a tag of the version alone is refused" refused exists
+git push -q origin :refs/tags/v0.2.0 && git tag -d v0.2.0 >/dev/null
 
 # ---- a run that is not the one ------------------------------------------------
 run_is workflow_dispatch success "Sweep wip/next at library $PIN"
