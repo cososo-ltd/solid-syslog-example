@@ -56,7 +56,8 @@ Nothing is measured by the workflow. The run it is given must be the green sweep
 SolidSyslog's Example Sweep workflow started for `wip/next` as it stands, and the
 release is refused unless that run's figures hold at the tag:
 
-- SolidSyslog's `v<version>` is the commit named, and `release/<version>` does not exist.
+- SolidSyslog's `v<version>` is the commit named, and neither `release/<version>` nor a
+  `v<version>` tag exists here.
 - Between the commit the run measured and the tag, SolidSyslog changed nothing under the
   paths its `example-sweep.yml` names, which are the ones a change reaches this example
   through.
