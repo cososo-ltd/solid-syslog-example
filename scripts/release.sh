@@ -82,7 +82,7 @@ fi
 unpassed="$(awk -F, 'NR > 1 && $4 !~ /^"PASS/ { printf "%s%02d-%s", (c++ ? ", " : ""), $1, $2 }' "$SWEEP/stages.csv")"
 [ -z "$unpassed" ] || refuse stages "the run did not pass $unpassed"
 
-adrift="$(awk -F, 'NR > 1 && $1 == 0 && $4 ~ /^(flash_text|flash_data|static_bss)$/ && $7 != 0 { printf "%s%s %+d B", (c++ ? ", " : ""), $4, $7 }' "$SWEEP/figures.csv")"
+adrift="$(bash "$TOOLS/baseline-adrift.sh" "$SWEEP/figures.csv")"
 [ -z "$adrift" ] || refuse baseline "the Baseline measured $adrift above measurements/Baseline.csv, which is not this Baseline's"
 
 pin="$(git show "$source:solid-syslog.pin" | tr -d '[:space:]')"
