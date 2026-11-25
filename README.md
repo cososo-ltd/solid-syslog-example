@@ -61,6 +61,9 @@ release is refused unless that run's figures hold at the tag:
   paths its `example-sweep.yml` names, which are the ones a change reaches this example
   through.
 - `wip/next` is on the container image SolidSyslog's CI pins at the tag.
+- The Baseline measured nothing above `measurements/Baseline.csv`. Every stage's cost is
+  counted from that file, so it has to be this Baseline's own: where the image or an
+  upstream has moved since it was captured, capture it again on `wip/next`'s Baseline.
 - Every link from SolidSyslog's documentation at the tag to a release branch here is to
   `release/<version>`.
 

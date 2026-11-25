@@ -175,6 +175,12 @@ check "stages: a stage that failed is refused"     refused stages
 check "stages: and named"                          grep -Fq "01-linked" "$SCRATCH/err"
 sweep_of origin/wip/next
 
+sed -i 's/^0,Baseline,\([0-9a-f]*\),flash_text,1000,1000,0$/0,Baseline,\1,flash_text,1042,1000,42/' "$SCRATCH/sweep/figures.csv"
+release 0.2.0 "$TAG"
+check "baseline: one that grew since its capture is refused" refused baseline
+check "baseline: and by how much"                  grep -Fq "flash_text +42 B" "$SCRATCH/err"
+sweep_of origin/wip/next
+
 git checkout -q -B moved origin/wip/next
 git commit -q --amend -m "feat: logger, reworded"
 git push -q --force origin HEAD:refs/heads/wip/next
