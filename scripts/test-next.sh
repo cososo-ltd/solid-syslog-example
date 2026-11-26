@@ -10,6 +10,15 @@ SCRATCH="$(mktemp -d)"
 trap 'rm -rf "$SCRATCH"' EXIT
 export GIT_AUTHOR_NAME=Test GIT_AUTHOR_EMAIL=test@example.invalid
 export GIT_COMMITTER_NAME=Test GIT_COMMITTER_EMAIL=test@example.invalid
+# capture.sh needs Docker; here it counts its calls and freezes other figures.
+cat > "$SCRATCH/capture.sh" <<'CAPTURE'
+#!/usr/bin/env bash
+echo run >> "$CAPTURED"
+printf '# Baseline figures\nflash_text,140\nstatic_bss,50\n' > "$1/measurements/Baseline.csv"
+CAPTURE
+printf '#!/usr/bin/env bash\nexit 1\n' > "$SCRATCH/no-capture.sh"
+export CAPTURE="$SCRATCH/capture.sh" CAPTURED="$SCRATCH/captured"
+captures() { wc -l < "$CAPTURED"; }
 
 OLD_SHA=1111111111111111111111111111111111111111
 NEW_SHA=2222222222222222222222222222222222222222
@@ -39,6 +48,7 @@ echo "$OLD_SHA" > solid-syslog.pin
 printf 'x-cross-image: &cross-image %s\nservices:\n  run:\n    image: *cross-image\n' "$OLD_IMAGE" > docker/docker-compose.yml
 printf 'services:\n  dev:\n    image: %s\n' "$OLD_IMAGE" > .devcontainer/docker-compose.yml
 printf '# slug\tname\tgives\nBaseline\tBaseline\ta device\n' > measurements/stages.tsv
+printf '# Baseline figures\nflash_text,100\nstatic_bss,50\n' > measurements/Baseline.csv
 echo "int main(void) { return 0; }" > app/main.c
 git add -A
 git commit -q -m "Baseline: a working product
@@ -71,6 +81,9 @@ check "seed: the message names the commit"     grep -Fxq "22222222, a commit on 
 check "seed: the old pin line is gone"         test -z "$(git log -1 --format=%B "$(root_of "$(value tip)")" | grep -F v0.1.0)"
 check "seed: the rest of the message stands"   grep -Fxq "  Flash  1 B" <(git log -1 --format=%B "$(root_of "$(value tip)")")
 check "seed: the stages are kept"              test "$(in_tip app/main.c | tail -1)" = "/* logger */"
+check "seed: the Baseline is captured once"    test "$(captures)" -eq 1
+check "seed: the capture is in the Baseline"   grep -Fxq "flash_text,140" <(git show "$(root_of "$(value tip)"):measurements/Baseline.csv")
+check "seed: names the figure that moved"      test "$(value baseline)" = "flash_text 100 -> 140"
 check "seed: the release branch is untouched"  test "$(git rev-parse origin/release/0.1.0)" = "$(value was)"
 git push -q origin "$(value tip):refs/heads/wip/next"
 
@@ -85,6 +98,8 @@ check "fix: succeeds"                          test $? -eq 0
 check "fix: the stages come from wip/next"     test "$(value source)" = origin/wip/next
 check "fix: the pin is the newer commit"       test "$(in_tip solid-syslog.pin)" = "$NEWER_SHA"
 check "fix: the hand fix survives"             test "$(in_tip app/main.c | tail -1)" = "/* fixed by hand */"
+check "fix: the pin alone captures nothing"    test "$(captures)" -eq 1
+check "fix: names no figure"                   test -z "$(value baseline)"
 check "fix: still one commit per stage"        test "$(git rev-list --count "$(value tip)")" -eq 3
 git push -q --force origin "$(value tip):refs/heads/wip/next"
 
@@ -118,6 +133,16 @@ check "clash: names the commit"                test "$(value commit)" = "$clash"
 check "clash: names the source"                test "$(value source)" = origin/wip/next
 check "clash: reports no tip"                  test -z "$(value tip)"
 check "clash: leaves no worktree behind"       test "$(git worktree list | wc -l)" -eq 1
+
+# ---- a Baseline that does not run ---------------------------------------------
+git push -q --force origin "$clash~1:refs/heads/wip/next"
+CAPTURE="$SCRATCH/no-capture.sh" run_next "$NEW_SHA" "$OLD_IMAGE"
+check "capture: exits 3"                       test $? -eq 3
+check "capture: says the capture failed"       test "$(value capture)" = failed
+check "capture: reports no tip"                test -z "$(value tip)"
+check "capture: leaves no worktree behind"     test "$(git worktree list | wc -l)" -eq 1
+run_next "$NEW_SHA" "$OLD_IMAGE"
+check "capture: the same figures name none"    test $? -eq 0 -a -z "$(value baseline)"
 
 # ---- arguments ----------------------------------------------------------------
 run_next 2222222 "$NEW_IMAGE"

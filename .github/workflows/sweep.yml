@@ -9,9 +9,11 @@ name: Sweep
 # the commit named, on the container image that commit's own CI pins. It then
 # sweeps wip/next as pushed and answers with `sweep-finished`. The stages are
 # wip/next's own once it exists, so a stage fixed there by hand stays fixed; the
-# first run takes them from the latest release branch. A stage that does not apply
-# leaves wip/next as it was, and what is swept is the old wip/next with the pin
-# and the image overridden.
+# first run takes them from the latest release branch. Where the image moves, the
+# Baseline is run and its measurements/Baseline.csv captured again in the same
+# commit. A stage that does not apply, or a Baseline that does not run, leaves
+# wip/next as it was, and what is swept is the old wip/next with the pin and the
+# image overridden.
 on:
   workflow_dispatch:
     inputs:
@@ -103,6 +105,12 @@ jobs:
               echo "$(sed -n 's/^conflict=//p' ../next.out) does not apply; wip/next is left as it was"
               exit 0
             fi
+            if [ "$rc" -eq 3 ] && grep -q '^capture=failed' ../next.out; then
+              echo "capture=failed" >> "$GITHUB_OUTPUT"
+              echo "ref=$source" >> "$GITHUB_OUTPUT"
+              echo "the Baseline did not run; wip/next is left as it was"
+              exit 0
+            fi
             [ "$rc" -eq 0 ] || exit "$rc"
             # Seeded from a release branch, wip/next must not exist yet.
             expect=""
@@ -110,6 +118,11 @@ jobs:
             if git push -q "$remote" "--force-with-lease=refs/heads/wip/next:$expect" "$tip:refs/heads/wip/next"; then
               echo "ref=$tip" >> "$GITHUB_OUTPUT"
               echo "rebased=true" >> "$GITHUB_OUTPUT"
+              baseline=$(sed -n 's/^baseline=//p' ../next.out)
+              if [ -n "$baseline" ]; then
+                echo "baseline=$baseline" >> "$GITHUB_OUTPUT"
+                echo "The Baseline was captured again: $baseline." >> "$GITHUB_STEP_SUMMARY"
+              fi
               echo "wip/next is $tip, from $source at $was"
               exit 0
             fi
@@ -193,8 +206,8 @@ jobs:
           repositories: solid-syslog
           permission-contents: write
 
-      # The run is green only where the rebase applied, app/ matches the sibling
-      # and every stage passed: solid-syslog reads the last green run's title as
+      # The run is green only where the rebase applied, the Baseline ran where it
+      # had to, app/ matches the sibling and every stage passed: solid-syslog reads the last green run's title as
       # the last library commit this stack was good at.
       - name: Send sweep-finished to solid-syslog
         if: always() && github.event_name == 'repository_dispatch'
@@ -206,6 +219,8 @@ jobs:
           REF: ${{ steps.next.outputs.ref }}
           CONFLICT: ${{ steps.next.outputs.conflict }}
           CONFLICT_COMMIT: ${{ steps.next.outputs.commit }}
+          CAPTURE: ${{ steps.next.outputs.capture }}
+          BASELINE: ${{ steps.next.outputs.baseline }}
           INVARIANT: ${{ steps.invariant.outcome }}
           DIFFERING: ${{ steps.invariant.outputs.differing }}
         run: |
@@ -213,7 +228,7 @@ jobs:
           # pass or be skipped: an app/ never compared is not an app/ that matches.
           verdict=pass
           [ "$NEXT" = success ] && [ "$SWEEP" = success ] && [ "$INVARIANT" != failure ] \
-            && [ -z "$CONFLICT" ] && [ -z "$DIFFERING" ] || verdict=fail
+            && [ -z "$CONFLICT" ] && [ -z "$CAPTURE" ] && [ -z "$DIFFERING" ] || verdict=fail
           [ "$REBASED" != true ] || REF=wip/next
           failed=""
           if [ -f sweep-out/stages.csv ]; then
@@ -231,8 +246,10 @@ jobs:
             -f "client_payload[rebase][outcome]=$NEXT" \
             -f "client_payload[rebase][conflict]=$CONFLICT" \
             -f "client_payload[rebase][commit]=$CONFLICT_COMMIT" \
+            -f "client_payload[rebase][capture]=$CAPTURE" \
+            -f "client_payload[rebase][baseline]=$BASELINE" \
             -f "client_payload[app][outcome]=$INVARIANT" \
             -f "client_payload[app][differing]=$DIFFERING" \
             -f "client_payload[run_url]=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          echo "sweep-finished sent: $verdict${failed:+ ($failed)}${CONFLICT:+, $CONFLICT does not apply}${DIFFERING:+, app/ differs at $DIFFERING}, app/ comparison $INVARIANT"
+          echo "sweep-finished sent: $verdict${failed:+ ($failed)}${CONFLICT:+, $CONFLICT does not apply}${CAPTURE:+, the Baseline did not run}${DIFFERING:+, app/ differs at $DIFFERING}, app/ comparison $INVARIANT"
           [ "$verdict" = pass ]
