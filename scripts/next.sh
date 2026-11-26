@@ -9,6 +9,10 @@
 # image, so it is written again with solid-syslog.pin at <library-sha> and both
 # compose files on <image>, and every commit after it is rebased onto the result.
 #
+# Every stage's cost is counted from the Baseline's measurements/Baseline.csv, so
+# where the Baseline changes in anything but the pin, scripts/capture.sh runs it
+# and the file is written again in the same commit.
+#
 # STAGES_FROM=<commit> takes the stages from that commit in place of either
 # branch. PIN_LABEL=<name> writes the Baseline's pin line as a release's,
 # "<name>, <short sha>.", in place of a commit on main's.
@@ -16,15 +20,18 @@
 # Moves no ref and pushes nothing. Prints
 #   source=<the ref the stages came from>
 #   was=<its tip>
+#   baseline=<each figure a capture moved, as "<key> <was> -> <now>">
 # and then, on success, tip=<the rebased tip>, which the caller decides what to
 # do with. Where a stage does not apply it prints conflict=<NN-slug> and
-# commit=<the stage commit> instead, and exits 2. Any other failure exits 1.
+# commit=<the stage commit> instead, and exits 2. Where the Baseline did not run
+# it prints capture=failed and exits 3. Any other failure exits 1.
 set -euo pipefail
 
 SHA="${1:?usage: scripts/next.sh <library-sha> <image>}"
 IMAGE="${2:?usage: scripts/next.sh <library-sha> <image>}"
 TOOLS="$(cd "$(dirname "$0")" && pwd)"
 STAGES=measurements/stages.tsv
+BASELINE=measurements/Baseline.csv
 CROSS='ghcr\.io/cososo-ltd/cpputest-freertos-cross'
 PIN_LINE='solid-syslog.pin names the SolidSyslog commit the stages build against:'
 
@@ -89,6 +96,22 @@ awk -v marker="$PIN_LINE" -v line="$pin_line" '
 ' "$WORK/message.was" > "$WORK/message"
 
 git -C "$base" add -A
+# The pin does not reach the Baseline, which has no SolidSyslog in it.
+if [ -n "$(git -C "$base" diff --cached --name-only | grep -Fxv solid-syslog.pin || true)" ]; then
+    note "the Baseline is another build, so $BASELINE is captured again"
+    if ! bash "${CAPTURE:-$TOOLS/capture.sh}" "$base" >&2; then
+        echo "capture=failed"
+        note "the Baseline did not run"
+        exit 3
+    fi
+    moved="$(git show "$root:$BASELINE" | awk -F, '
+        /^#/ || NF != 2 { next }
+        FNR == NR       { was[$1] = $2; next }
+        $2 != was[$1]   { printf "%s%s %s -> %s", (n++ ? ", " : ""), $1, was[$1], $2 }
+    ' - "$base/$BASELINE")"
+    [ -z "$moved" ] || echo "baseline=$moved"
+    git -C "$base" add -A
+fi
 if git -C "$base" diff --cached --quiet && cmp -s "$WORK/message.was" "$WORK/message"; then
     new="$root"
     note "the Baseline is already at ${SHA:0:8} on this image"
