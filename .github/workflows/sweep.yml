@@ -93,7 +93,8 @@ jobs:
           for _ in 1 2; do
             git fetch -q --prune "$remote" '+refs/heads/*:refs/remotes/origin/*'
             rc=0
-            bash ../tools/scripts/next.sh "$PIN" "$IMAGE" > ../next.out || rc=$?
+            # next.sh runs the Baseline, which is wip/next's own code, so without the token.
+            env -u GH_TOKEN bash ../tools/scripts/next.sh "$PIN" "$IMAGE" > ../next.out || rc=$?
             cat ../next.out
             source=$(sed -n 's/^source=//p' ../next.out)
             was=$(sed -n 's/^was=//p' ../next.out)
