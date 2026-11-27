@@ -43,6 +43,9 @@ jobs:
   sweep:
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    permissions:
+      contents: read
+      actions: read
     env:
       PIN: ${{ inputs.pin || github.event.client_payload.sha }}
       IMAGE: ${{ inputs.image || github.event.client_payload.image }}
@@ -207,13 +210,22 @@ jobs:
           repositories: solid-syslog
           permission-contents: write
 
-      # The run is green only where the rebase applied, the Baseline ran where it
-      # had to, app/ matches the sibling and every stage passed: solid-syslog reads the last green run's title as
-      # the last library commit this stack was good at.
+      - name: Note that the sweep was cancelled
+        id: cancelled
+        if: cancelled() && github.event_name == 'repository_dispatch'
+        run: echo "cancelled=true" >> "$GITHUB_OUTPUT"
+
+      # A sweep cancelled because a newer one replaced it sends nothing: the newer
+      # one reports. The run is green only where the rebase applied, the Baseline
+      # ran where it had to, app/ matches the sibling and every stage passed:
+      # solid-syslog reads the last green run's title as the last library commit
+      # this stack was good at.
       - name: Send sweep-finished to solid-syslog
         if: always() && github.event_name == 'repository_dispatch'
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          STACK_TOKEN: ${{ github.token }}
+          CANCELLED: ${{ steps.cancelled.outputs.cancelled }}
           NEXT: ${{ steps.next.outcome }}
           SWEEP: ${{ steps.sweep.outcome }}
           REBASED: ${{ steps.next.outputs.rebased }}
@@ -225,6 +237,15 @@ jobs:
           INVARIANT: ${{ steps.invariant.outcome }}
           DIFFERING: ${{ steps.invariant.outputs.differing }}
         run: |
+          if [ "$CANCELLED" = true ]; then
+            # A lookup that fails is read as no newer sweep, so the failure is sent.
+            newer=$(GH_TOKEN="$STACK_TOKEN" gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/sweep.yml/runs?event=repository_dispatch&per_page=10" \
+                      --jq "[.workflow_runs[] | select(.id > $GITHUB_RUN_ID)] | length" || echo 0)
+            if [ "${newer:-0}" -gt 0 ]; then
+              echo "superseded by a newer sweep, which reports in this one's place"
+              exit 0
+            fi
+          fi
           # The comparison is skipped where nothing was rebased, and may only
           # pass or be skipped: an app/ never compared is not an app/ that matches.
           verdict=pass
